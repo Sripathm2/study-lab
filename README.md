@@ -325,6 +325,20 @@ The trick that makes remove clean: recursive helpers take a subtree and **return
 - Kth smallest → in-order, stop at k.
 - Lowest common ancestor in a BST → walk down comparing both targets to the current node.
 
+---
+
+## Hash table
+
+best for key-value store. or to track frequencies. given a H(x)=H(y) then x might be equal to y but if H(x)!= H(y) then x is not equal to y. keys are immutable.
+
+### Positives
+- 
+
+### Negatives
+- 
+
+### Algorithm / thought process
+
 
 ---
 

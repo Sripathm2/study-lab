@@ -140,7 +140,6 @@ public class Heap<E extends Comparable<E>> {
 
     // Insert value into the heap. O(log n). Throw NullPointerException if value is null
     // (matches java.util.PriorityQueue behavior).
-    @SuppressWarnings("unchecked")
     public void add(E value) {
         if(value == null){
             throw new NullPointerException();
@@ -172,6 +171,7 @@ public class Heap<E extends Comparable<E>> {
 
     // Remove the first occurrence of value. Return true if removed, false if not present or null.
     // O(n) — linear scan to find, O(log n) to restore heap property.
+    @SuppressWarnings("unchecked")
     public boolean remove(E value) {
         if(value == null){
             return false;
@@ -243,10 +243,10 @@ class Heap_Main {
         }
     }
 
-    private static void checkTrue(String name, boolean cond) {
-        if (cond) { passed++; System.out.println("PASS: " + name); }
-        else      { failed++; System.out.println("FAIL: " + name); }
-    }
+    // private static void checkTrue(String name, boolean cond) {
+    //     if (cond) { passed++; System.out.println("PASS: " + name); }
+    //     else      { failed++; System.out.println("FAIL: " + name); }
+    // }
 
     private static void checkThrows(String name, Class<? extends Throwable> expected, Runnable r) {
         try {
