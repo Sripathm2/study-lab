@@ -11,7 +11,6 @@ import java.util.Objects;
 // at sorted ranks i and i-1 (adjacent in sorted order). lcp[0] = 0.
 public class Suffix_array {
     private final String text;
-    private final int n;
     private int[] sa;    // sorted suffix start indices, length n
     private int[] lcp;   // lcp[i] = LCP(suffix at rank i, suffix at rank i-1); length n
     private ArrayList<String> suffixesArray;  
@@ -20,7 +19,6 @@ public class Suffix_array {
     // Throw NullPointerException if text is null.
     public Suffix_array(String text) {
         this.text = text;   // leave NPE/field setup for you; n/sa/lcp to be built
-        this.n = 0;
         this.suffixesArray = new ArrayList<String>();
         int index = 0;
         for(index = 0; index < this.text.length(); index ++){
