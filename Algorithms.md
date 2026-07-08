@@ -615,3 +615,34 @@ O(V + E) — each vertex is entered once and each edge is examined once (twice f
 - **Reachability** falls straight out of DFS: whatever it marks visited from `start` is exactly the set reachable from `start`.
 
 ---
+
+## Breadth_first_search
+
+Traverse a graph level by level: visit the start, then all vertices one edge away, then all two edges away, and so on. Because it reaches vertices in order of increasing distance, BFS gives **shortest paths in unweighted graphs** — and recording where each vertex was first reached lets you rebuild the path.
+
+### Idea
+Use a **queue** (FIFO). Seed it with the start, then repeatedly dequeue a vertex and enqueue its unvisited neighbors. The FIFO order is what makes it breadth-first: everything at distance `d` is dequeued before anything at distance `d+1`.
+
+```
+mark start visited; dist[start] = 0; parent[start] = -1; enqueue start
+while queue not empty:
+    v = dequeue
+    for each neighbor w of v (ascending):
+        if w not visited:
+            mark w visited
+            dist[w]  = dist[v] + 1
+            parent[w] = v          # remember how we first reached w
+            enqueue w
+```
+
+**Path reconstruction.** `parent[w]` is the vertex from which `w` was first discovered — i.e. the step before `w` on a shortest path. To get the route from `start` to `target`, walk parents backward from `target` (`target, parent[target], parent[parent[target]], …`) until you hit `start`, then **reverse**. If `target` was never visited (`parent`/`dist` still unset), there is no path.
+
+### Complexity
+O(V + E) time — each vertex enqueued once, each edge examined once. O(V) space for the queue plus the `visited`, `dist`, and `parent` arrays.
+
+### Notes
+- **Mark visited when you ENQUEUE, not when you dequeue.** If you only mark on dequeue, a vertex can be enqueued several times (once per neighbor that points to it) before it's processed, inflating work to worse than O(V+E) and letting duplicates through. Marking on enqueue guarantees each vertex enters the queue exactly once — this is the single most common BFS bug.
+- **Shortest paths hold only for unweighted graphs** (or all-equal weights). BFS counts *edges*, not weight; with varying weights you need Dijkstra. The "first time reached = shortest" guarantee comes precisely from the level-by-level FIFO order.
+- **`parent[start] = -1`** marks the root of the search and is the stop condition for the backward walk.
+- **Ties.** When several shortest paths exist, which one you reconstruct depends on neighbor order (ascending here) and first-parent-wins. All are equally short; the length is unique even though the path isn't.
+- **BFS vs DFS.** Same O(V+E), same "visit everything reachable," opposite order: queue (wide) vs stack/recursion (deep). BFS → unweighted shortest paths, level structure, bipartite checking. DFS → topological sort, cycle detection, bridges/SCC. Reach for BFS whenever "fewest edges" or "closest first" matters.
