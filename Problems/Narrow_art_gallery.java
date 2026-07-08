@@ -14,12 +14,72 @@ import java.util.Objects;
 //   right -> next row may close none / right   (not left: diagonal block)
 public class Narrow_art_gallery {
 
+
+    private static int[][][] dp;
+
     // rooms[i][0] = left value, rooms[i][1] = right value (0 <= v).
     // Return the maximum total value of open rooms after closing exactly k rooms.
     // Throw NullPointerException if rooms or any row is null.
     // Throw IllegalArgumentException if any row's length != 2, k < 0, or k > rooms.length.
     public static int maxOpenValue(int[][] rooms, int k) {
-        return 0;
+        if(rooms == null){
+            throw new NullPointerException();
+        }
+        if(k < 0 || k > rooms.length){
+            throw new IllegalArgumentException();
+        }
+        int total_sum = 0;
+        for(int i = 0; i < rooms.length; i++){
+            if(rooms[i] == null){
+                throw new NullPointerException();
+            }
+            if(rooms[i].length != 2){
+                throw new IllegalArgumentException();
+            }
+            total_sum += rooms[i][0];
+            total_sum += rooms[i][1];
+        }
+        dp = new int[rooms.length + 1][k+1][3];
+        for(int i = 0; i < dp.length; i++){
+            for(int j = 0; j < dp[i].length; j++){
+                dp[i][j][0] = -1;
+                dp[i][j][1] = -1;
+                dp[i][j][2] = -1;
+            }
+        }
+
+        int value = min_value_lost(rooms, k, 0, 1);
+        return total_sum-value;
+    }
+
+    public static int min_value_lost(int[][]rooms, int k, int row, int direction){
+        if(row >= rooms.length && k > 0){
+            return 10000;
+        }
+        if(k <= 0){
+            return 0;
+        }
+
+        if(dp[row][k][direction] != -1){
+            return dp[row][k][direction];
+        }
+        int min_value = min_value_lost(rooms, k, row +1, 1); // did not pick any room from this sequence; 
+        if(direction == 1 || direction == 0) {
+            // I took no room from last or left one.
+            int value = min_value_lost(rooms, k-1, row+1, 0) + rooms[row][0];
+            if(min_value > value){
+                min_value = value;
+            }
+        }
+        if(direction == 1 || direction == 2) {
+            // I took no room from last or right one.
+            int value = min_value_lost(rooms, k-1, row+1, 2) + rooms[row][1];
+            if(min_value > value){
+                min_value = value;
+            }
+        }
+        dp[row][k][direction] = min_value;
+        return dp[row][k][direction];
     }
 }
 

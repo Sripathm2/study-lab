@@ -429,3 +429,64 @@ O(N · k · 3) states, O(1) work each → **O(N·k)** time. Space O(N·k) for th
 - **Feasibility.** Any `0 ≤ k ≤ N` is achievable — closing the left room in any `k` rows (all same side) satisfies both rules — so a valid answer always exists in range.
 - **Equivalent framings.** Maximizing open value equals `totalValue − (minimum closed value)`; some solutions (e.g. Fiset's recursive one) minimize the closed sum instead. Same optimum, just complement.
 - Sample checks (verified via DP and an independent subset brute): `17`, `17`, `102`.
+
+--- 
+
+## Knapsack_01
+
+**Problem.** Given `n` items, each with a weight and a value, and a knapsack of capacity `W`, pick a subset whose total weight is ≤ `W` and whose total value is maximal. Each item is taken **at most once** (0/1 — you can't take fractions or duplicates).
+
+### Idea
+The decision for each item is binary: take it or leave it. Process items one at a time and track, for every capacity budget, the best value achievable so far.
+
+`dp[i][w]` = best value using the first `i` items with a weight budget of `w`. For item `i` (1-indexed, so `weights[i-1]`):
+```
+dp[0][w] = 0                                     (no items -> no value)
+dp[i][w] = dp[i-1][w]                            if weights[i-1] > w   (can't fit -> must skip)
+         = max( dp[i-1][w],                      skip item i
+                values[i-1] + dp[i-1][w - weights[i-1]] )   take item i
+```
+The answer is `dp[n][W]`. The "take" branch charges the item's weight against the budget and adds its value; the `max` picks whichever of take/skip is better.
+
+### Complexity
+O(n·W) time and O(n·W) space. Space collapses to **O(W)** with a single rolling row — but you must iterate the capacity loop **downward** (`w` from `W` to `weights[i-1]`). Going downward guarantees each item is used at most once, since `dp[w - weight]` still refers to the *previous* item's row; iterating upward would let the same item be re-taken (that's exactly the unbounded-knapsack variant).
+
+Note this is "pseudo-polynomial": `W` is a value, not an input length, so the cost is exponential in the number of bits of `W`. Knapsack is NP-hard; the DP is efficient only when `W` is modest.
+
+### Notes
+- **Downward capacity loop is the 0/1 vs unbounded switch.** Descending `w` → each item once (0/1). Ascending `w` → unlimited copies (unbounded knapsack). Same code otherwise — this one line is the whole difference.
+- **Base case is all zeros** (no items, or capacity 0, yields value 0), assuming non-negative values.
+- **Fractional knapsack is a different problem** — there a greedy by value/weight ratio is optimal; for 0/1, greedy fails and you need this DP.
+- Reconstructing *which* items were chosen (not just the value) means walking the full `dp[i][w]` table backward: at each `i`, if `dp[i][w] != dp[i-1][w]` the item was taken, so subtract its weight and continue. That requires the 2D table, not the O(W) rolling row.
+- Sample checks (independently verified): `w{1,3,4,5} v{1,4,5,7} cap7 → 9`, `w{2,3,4,5} v{3,4,5,6} cap5 → 7`.
+
+---
+
+## Knapsack_01_items
+
+**Problem.** Same as 0/1 knapsack, but return **both** the maximum value and *which items* achieve it — the indices of an optimal subset, not just the number.
+
+### Idea
+Compute the value exactly as before, but keep the **full 2D table** `dp[i][w]` (the rolling O(W) row can't reconstruct — it forgets the history). Then walk the table backward to recover the choices:
+
+```
+build dp[0..n][0..W]  as in plain 0/1 knapsack
+w = W
+for i from n down to 1:
+    if dp[i][w] != dp[i-1][w]:      # value changed => item i-1 was taken
+        record index i-1
+        w -= weights[i-1]           # give back its weight
+    # else: dp[i][w] == dp[i-1][w] => item i-1 was skipped, w unchanged
+reverse the recorded indices to get them ascending
+```
+
+The logic: `dp[i][w]` differs from `dp[i-1][w]` exactly when including item `i-1` beat excluding it, i.e. the optimum at this cell *used* that item. When they're equal, the item wasn't needed, so skip it and keep the same budget.
+
+### Complexity
+O(n·W) time and O(n·W) space — the space is now mandatory, since reconstruction needs the whole table. The backward walk is an extra O(n) on top.
+
+### Notes
+- **Reconstruction forces the 2D table.** The O(W) rolling optimization discards the per-item rows, so it can give the value but not the items. If you only need the value, use the rolling row; if you need the picks, keep the table.
+- **The "equal ⇒ skipped" rule is a tie-break.** When taking and skipping an item yield the same value, this convention skips it, producing one specific optimal set. A different rule (prefer taking on ties) yields a different but equally optimal set — so **the item set isn't unique in general**, only the value is. That's why a good test validates the returned set (distinct, fits capacity, sums to the optimal value) rather than demanding one exact answer, except where the optimum is unique.
+- **Return items ascending.** The backward walk collects indices from `n-1` down to `0`, so reverse them (or push-front) before returning.
+- **Value-only vs items:** the plain `maxValue` and this `maxValueWithItems` must agree on the value for every input — a cheap consistency check between the two versions.
