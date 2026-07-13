@@ -1,4 +1,4 @@
-package Algorithms;
+package Problems;
 import java.util.Objects;
 
 // Find the maximum value in a 2D array AND its (row, col) position, recursively.

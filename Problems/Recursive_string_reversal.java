@@ -1,4 +1,4 @@
-package Algorithms;
+package Problems;
 import java.util.Objects;
 
 // Reverse a string using recursion: peel off one character, reverse the rest,

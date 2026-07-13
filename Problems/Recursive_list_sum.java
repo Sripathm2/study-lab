@@ -1,4 +1,4 @@
-package Algorithms;
+package Problems;
 import java.util.Objects;
 
 // Iterate an array using recursion instead of a loop: process one element,

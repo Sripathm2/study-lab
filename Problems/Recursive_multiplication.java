@@ -1,4 +1,4 @@
-package Algorithms;
+package Problems;
 import java.util.Objects;
 
 // Multiply two integers using recursion (no * operator) — repeated addition,

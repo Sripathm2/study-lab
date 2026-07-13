@@ -1,4 +1,4 @@
-package Algorithms;
+package Problems;
 import java.util.Objects;
 
 // Find the minimum value in a 1D array using a THREE-WAY divide-and-conquer
