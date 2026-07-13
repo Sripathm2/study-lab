@@ -1,617 +1,573 @@
-# Data Structures — Implementation Notes
+# Problems — Implementation Notes
 
-Positives, negatives, and algorithm thought-process for each structure built from scratch in the `Data_structures/` package (including the two `Graph` implementations — they are structures, so their notes live here; the algorithms that run on them are in `Algorithms_notes.md`). No code — contracts and reasoning only. Where the implementation deviates from the intended design, a **Code flag** line points at it (details in `01_Mismatch_report.md`).
+Idea, complexity, and notes for each named problem in the `Problems/` package — the recursion exercises, the DP problems, grid shortest path, Held-Karp TSP, and the bipartite max-flow problems. Reconciled against the code; **Code flag** lines mark implementation deviations and known bugs (details in `01_Mismatch_report.md`).
+
+*(The five recursion/divide-and-conquer exercise files — `Recursive_multiplication`, `Recursive_list_sum`, `Recursive_string_reversal`, `Recursive_max_2d`, `Three_way_min` — are documented here per the reorganization: they are exercise-style leaf files, recommended to move from `Algorithms/` to `Problems/`.)*
 
 ## Contents
-1. [Static_array](#static_arraye)
-2. [Dynamic_array](#dynamic_arraye)
-3. [Singly_linked_list](#singly_linked_liste)
-4. [Doubly_linked_list](#doubly_linked_liste)
-5. [Stack](#stacke)
-6. [Queue](#queuee)
-7. [Heap](#heape-extends-comparablee)
-8. [Priority_queue](#priority_queuee)
-9. [Union_find](#union_find)
-10. [Union_find_compressed](#union_find_compressed)
-11. [Binary_search_tree](#binary_search_treee-extends-comparablee)
-12. [Hash tables (chaining + double hashing)](#hash-tables-hash_table_chaining-and-hash_table_double_hashing)
-13. [Fenwick_tree](#fenwick_tree-binary-indexed-tree)
-14. [Suffix_array + LCP array](#suffix_array--lcp-array)
-15. [Balanced binary search trees](#balanced-binary-search-trees)
-16. [AVL tree](#avl-tree)
-17. [Indexed priority queue](#indexed_priority_queue)
-18. [Sparse table](#sparse_table)
-19. [Graph_adjacency_matrix](#graph_adjacency_matrix)
-20. [Graph_adjacency_list](#graph_adjacency_list)
+**Recursion exercises:** [Recursion](#recursion) · [Recursive_multiplication](#recursive_multiplication) · [Recursive_list_sum](#recursive_list_sum) · [Recursive_string_reversal](#recursive_string_reversal) · [Recursive_max_2d](#recursive_max_2d) · [Three_way_min](#three_way_min)
+**Dynamic programming:** [Dynamic programming](#dynamic-programming) · [Magical_cows](#magical_cows) · [Tiling](#tiling) · [Tiling_general](#tiling_general) · [Domino_tiling_3xn](#domino_tiling_3xn) · [Domino_tromino_tiling](#domino_tromino_tiling) · [Mountain_scenes](#mountain_scenes) · [Narrow_art_gallery](#narrow_art_gallery) · [Knapsack_01](#knapsack_01) · [Knapsack_01_items](#knapsack_01_items)
+**Greedy:** [Job_sequencing_deadlines](#job_sequencing_deadlines)
+**Graph problems:** [Grid_shortest_path](#grid_shortest_path) · [Traveling_salesman](#traveling_salesman)
+**Backtracking:** [N_queens](#n_queens)
+**Bipartite matching via max flow:** [Overview](#bipartite-matching-via-max-flow--notes) · [Mice_and_owls](#mice_and_owls) · [Elementary Math](#elementary-math-variant--notes-only-no-implementation)
 
 ---
 
-## Static_array<E>
+## Recursion
 
-Fixed-capacity contiguous backing. Index maps directly to a memory offset.
+A function that calls itself, used when a problem can be broken into smaller subproblems of the same shape. Each call solves a smaller instance until the problem is small enough to answer directly.
 
-### Positives
-- Access by index O(1) — direct offset, no walking.
-- Set into any slot is O(1) (no resize ever happens).
-- Lowest memory overhead of any structure — no pointers, no spare capacity.
-- Cache-friendly: contiguous layout.
+### Idea
+Every recursive function has three pieces:
 
-### Negatives
-- Fixed size. Can't grow; full means full.
-- Search is O(n) (unsorted) — `contains`/`indexOf` scan the whole backing.
-- No insert/remove-with-shift here at all — this class is purely get/set over a fixed block; shifting semantics live in the dynamic array.
+- **Base case** — the terminating condition that stops the recursion. It can be implicit (e.g. falling through when the input is empty). Without a reachable base case you get infinite recursion → stack overflow.
+- **Recursive call** — the function calls itself on a **strictly smaller** subproblem, moving closer to the base case. This shrink is the crucial part: if the subproblem doesn't get smaller each time, the recursion never terminates.
+- **Body / work** — the actual computation at each level: whatever this step contributes, combined with the result(s) of the recursive call(s).
 
-### Algorithm / thought process
-Backing is one `Object[]` of fixed length; `size()` reports the capacity, and every slot exists from the start (holding `null` until set). Index `i` is a direct lookup — that's the whole point: O(1) get and O(1) set, both bounds-checked (negative capacity is also rejected at construction).
+### Complexity
+Time = (number of recursive calls) × (work per call); a recurrence like `T(n) = a·T(n/b) + f(n)` captures it, and the Master Theorem solves the common divide-and-conquer shapes. Space is O(maximum recursion depth) for the call stack — every pending call holds a frame until it returns, so space can be significant even when total work is small. Deep or unbounded recursion risks stack overflow; a tail-recursive or iterative rewrite (or an explicit stack) reduces the stack cost — though Java has no tail-call optimization, so even a tail-recursive form keeps its frames.
 
-`contains`/`indexOf` scan all `capacity` slots with `Objects.equals`, so `null` is a searchable value and `indexOf` returns the first match or −1.
+### Applications
+Divide and conquer (merge sort, quicksort, binary search), tree and graph traversal (DFS), backtracking, memoized recursion / dynamic programming, generating permutations and combinations, and problems defined recursively by nature (factorial, Fibonacci, GCD). The four `Recursive_*` exercises below practice the pattern; merge sort and DFS (see `Algorithms_notes.md`) are where it graduates into real algorithms.
 
-No resizing logic at all — capacity is set once at construction. If you need growth or element shifting, that's the dynamic array.
 
 ---
 
-## Dynamic_array<E>
+## Recursive_multiplication
 
-Static array that resizes itself. Tracks `size` (used) separately from `capacity` (allocated).
+Multiply two integers using recursion, without the `*` operator.
 
-### Positives
-- Access by index O(1) — same direct-offset trick as static.
-- Append amortized O(1) — most appends are free, the occasional resize averages out.
-- Resizable — no fixed cap; grows on demand (a zero-capacity array bootstraps to 1, then doubles).
+### Idea
+**As implemented, the recursion is on `a` (the first operand), and the workhorse is the doubling form:**
 
-### Negatives
-- Insert/remove in the middle is O(n) — still has to shift.
-- Resize cost is O(n) when it triggers (allocate new array, copy `size` elements over).
-- Over-allocates: capacity is usually larger than size, so wasted memory.
+- Base case: `a == 0 → 0`.
+- Positive `a`: `multiply(a, b) = 2·multiply(a/2, b) + (a odd ? b : 0)` — where the doubling itself is written as `m + m` (an addition, keeping the "no `*`" rule honest). Each call halves `a`, so the depth is `log₂(a)`.
+- Negative `a`: peel toward zero one step at a time — `multiply(a, b) = multiply(a+1, b) − b`. Correct for any sign of `b`, but **linear**: depth is `|a|`.
 
-### Algorithm / thought process
-Two numbers matter: `size` and `capacity`. Append writes at index `size`, then `size++`. When `size == capacity`, double the capacity (0 → 1 → 2 → …), allocate a new array, copy elements, swap it in.
+`b` is never recursed on and never restricted — it just rides along and gets added/subtracted.
 
-Why doubling and not +1? Amortization. Doubling means resizes happen at 1, 2, 4, 8, … — geometrically rare. Total copy work across n appends sums to ~2n, so per-append cost averages to O(1). That's the "amortized" claim, not worst-case.
+### Complexity
+Positive `a`: O(log a) time and stack depth. Negative `a`: O(|a|) time and depth — a large negative first operand overflows the call stack. Returns `long` so `int × int` results don't wrap.
 
-The *intended* shrink policy is hysteresis: halve only when size drops to ~¼ of capacity, so grow and shrink thresholds don't sit next to each other and thrash on add/remove at the boundary.
+### Notes
+- **The asymmetry is the real lesson:** the doubling trick was applied to the positive branch only. The clean fix is to normalize the sign first (recurse on `|a|`, apply the sign at the top) so *both* signs get the O(log) form — or recurse on `min(|a|, |b|)` if you also want protection against a huge second operand in a linear form.
+- Doubling works because of binary decomposition: `a·b = (a/2)·b + (a/2)·b + (a odd ? b : 0)` is just reading `a`'s bits high-to-low.
+- The runner cross-checks against real `*` over a grid of signed values, which is what pinned down the negative-branch behavior.
 
-**Code flag (B2):** the implemented condition is inverted — `remove` resizes to `2·size` whenever `size*4 > capacity`, i.e. when the array is *more* than quarter-full. In practice: a remove can *grow* capacity (10 → 16 at size 8), most removes trigger a resize, and a below-¼-full array never shrinks. Also, `remove(int)` nulls `arr[size]` rather than the vacated `arr[size-1]`, leaving a loitering reference at the old last slot.
-
-`add(int index, …)` shifts right from the end to open the slot (accepts `index == size` as an append); `remove(int)` shifts left and returns the removed value; `remove(E)` is `indexOf` + `remove(int)`. `clear()` resets capacity to the default and zeroes `size`.
 
 ---
 
-## Singly_linked_list<E>
+## Recursive_list_sum
 
-Chain of nodes, each holding a value and a `next` pointer. Head and tail pointers are maintained.
+Iterate an array with recursion instead of a loop — sum all elements, or sum only the odd-valued ones.
 
-### Positives
-- Insert/remove at head O(1) — just repoint head.
-- Append O(1) via the tail pointer.
-- Truly dynamic size, node by node — no resize, no copy.
-- Less memory than doubly (one pointer per node).
+### Idea
+Recurse first, then contribute: `f(arr, i) = f(arr, i+1) + g(arr[i])`, with base case `i == arr.length → 0` (an empty tail contributes nothing). The index `i` is how the problem shrinks — one step toward the end per call; the additions happen on the unwind, so the sum accumulates right-to-left (irrelevant for `+`, worth noticing for non-commutative folds). A public method with no index wraps a private helper that carries `i`, starting at 0.
 
-### Negatives
-- Access/search by index O(n) — must walk from head; no random access.
-- Can't traverse backward — only one direction.
-- Remove tail is O(n) even with a tail pointer — you need the *previous* node to fix its `next`, and there's no back-link to find it. The implementation walks from head until `node.next == tail`.
+The only thing that changes between "sum all" and "sum odds" is `g`: for the total, `g(x) = x`; for odds, skip when `x % 2 == 0`, else add. Same traversal skeleton, different per-element contribution.
 
-### Algorithm / thought process
-Each node points only forward. You hold `head` and `tail`.
+### Complexity
+O(n) time and O(n) stack depth — one frame per element until the base case returns and the additions unwind. Sums accumulate in `long`.
 
-Insert at head: new node's `next` = old head, then head = new node. Constant. Remove head: head = head.next. Constant. `add(int index, …)` walks to the node before `index` and splices; index 0 and index `size` route to `addFirst`/`addLast`.
+### Notes
+- Skipping on `x % 2 == 0` keeps negative odds (`−3 % 2 == −1 ≠ 0`) correctly included.
+- Because depth equals the array length, very large arrays overflow the stack — this pattern is for learning the recursion shape, not production traversal. The two standard shapes are **head recursion** (recurse, then combine — what this code does) and **tail recursion** (pass an accumulator down); Java keeps O(n) frames either way.
 
-Tail is the asymmetry. Appending is cheap with the tail pointer, but *removing* the tail means the new tail is the second-to-last node — found only by walking the whole list, because no node knows its predecessor. That O(n) tail-removal is exactly what the doubly linked list fixes.
-
-`reverse()` is done in place with a three-pointer walk (prev/current/future), then head and tail are swapped — no rebuild, O(n), O(1) extra space.
-
-**Code flag (B3):** `removeFirst` on a single-element list nulls `head` but leaves `tail` pointing at the removed node — a subsequent `getLast()` on the now-empty list returns the stale value instead of throwing. (`addLast` self-heals via its `head == null` branch, which is why the runners pass.)
 
 ---
 
-## Doubly_linked_list<E>
+## Recursive_string_reversal
 
-Linked list where each node has both `next` and `prev`. Maintains head and tail.
+Reverse a string using recursion.
 
-### Positives
-- Traverse in both directions.
-- Remove a known node in O(1) — you have its `prev`, so you can splice it out without walking.
-- O(1) insert/remove at *both* head and tail (tail removal is cheap here, unlike singly).
-
-### Negatives
-- ~2× pointer memory (every node stores `prev` too).
-- More bookkeeping — every insert/remove must fix up to four pointers (the node's prev/next and the neighbors' links), easy to get wrong.
-
-### Algorithm / thought process
-The `prev` pointer buys two things: backward traversal, and O(1) tail removal. Removing the tail just needs `tail = tail.prev; tail.next = null` — no walk, because the back-link is already there.
-
-The cost is discipline. Any splice touches the node and both neighbors. Insert between A and B: `new.prev=A, new.next=B, A.next=new, B.prev=new`. Miss one and the list corrupts silently in one direction.
-
-This is why `toStringReverse` (walk via `prev` from tail) is a useful test — it catches a broken back-link that a forward-only `toString` would never reveal. The runner exercises it after every mutation.
-
-Stack and Queue are both built on this class: head/tail O(1) access in both directions covers LIFO and FIFO cleanly.
-
----
-
-## Stack<E>
-
-LIFO (last in, first out). A thin adapter over `Doubly_linked_list`: push/pop/peek all hit the head.
-
-### Positives
-- push, pop, peek all O(1).
-- Dead simple — one access point (the top).
-- Natural fit for DFS, recursion unrolling, undo, expression/bracket matching.
-
-### Negatives
-- No random access — only the top is reachable in O(1).
-- `contains` exists (delegated to the list) but is an O(n) scan; there's no faster membership test.
-
-### Algorithm / thought process
-LIFO means the only interesting end is the top. Mapping onto the doubly linked list: push = `addFirst`, pop = `removeFirst`, peek = `getFirst` — all O(1) because head ops are O(1). Empty pop/peek throw `NoSuchElementException`.
-
-`toString` uses the list's `toStringReverse`, so the printout reads bottom → top (the top of the stack is the last element shown).
-
-Could equally back it with a dynamic array (push = append, pop = remove last) — also amortized O(1). The linked-list version avoids resize cost; the array version is more cache-friendly. Either satisfies the contract.
-
-Why DFS uses it: you push neighbors and pop the most recent, so you dive deep before going wide — depth-first by construction.
-
----
-
-## Queue<E>
-
-FIFO (first in, first out). A thin adapter over `Doubly_linked_list`: enqueue at tail, dequeue from head.
-
-### Positives
-- enqueue, dequeue, peek all O(1); `peekLast` (the back of the line) also O(1).
-- Simple — two access points (front and back), each fixed.
-- Natural fit for BFS, scheduling, buffering, producer/consumer.
-
-### Negatives
-- No random access — only front and back are O(1).
-- `contains` exists but is an O(n) scan, same as the stack.
-
-### Algorithm / thought process
-FIFO means you add at one end and remove from the other. Mapping onto the doubly linked list: enqueue = `addLast`, dequeue = `removeFirst`. Both O(1). A doubly linked backing makes *both* ends symmetric — though note a singly linked list with a tail pointer would also serve FIFO fine (O(1) `addLast`, O(1) `removeFirst`); it's only tail *removal* that singly can't do cheaply, and a queue never removes at the tail. The doubly backing is used here because it already existed and gives `peekLast` for free.
-
-Why BFS uses it: you enqueue neighbors and dequeue the oldest, so you finish an entire level before descending — breadth-first by construction. Stack→DFS, Queue→BFS is the pairing to remember.
-
----
-
-## Heap<E extends Comparable<E>>
-
-Binary min-heap stored in an array. Complete binary tree: every level full except the last, which fills left to right, no gaps.
-
-### Positives
-- peek min O(1) — it's always at index 0.
-- add and poll O(log n) — only one root-to-leaf path moves.
-- Array-backed: no node objects, no pointers, cache-friendly. Children are computed, not stored. The backing doubles when full.
-- Build from an array (heapify constructor) in O(n), better than n inserts.
-
-### Negatives
-- Arbitrary `contains`/search is O(n) — heap order says nothing about left/right siblings, so you can't binary-search it.
-- Not sorted — only the min is positioned; the rest is partially ordered.
-- Only the extreme is accessible; no efficient access to the k-th element without extracting.
-- Arbitrary `remove(value)` is O(n): a linear scan finds the index, then swap-with-last + sift restores the heap. A value→index map would make the *find* O(1); this implementation doesn't keep one.
-
-### Algorithm / thought process
-Index arithmetic replaces pointers (0-based):
-- parent(i) = (i − 1) / 2  (integer division)
-- left(i)   = 2i + 1
-- right(i)  = 2i + 2
-
-Heap invariant (min-heap): every parent ≤ its children. Says nothing about left vs right — that's why search isn't logarithmic.
-
-**add:** null is rejected; grow if full; put the new value at the end of the array (next open leaf), then **sift up** — while it's smaller than its parent, swap with the parent. One path up, O(log n).
-
-**poll:** the answer is index 0. Move the last element into the root, shrink size by one, then **sift down** from the root — repeatedly swap with the *smaller* of the two children while it's larger than that child (when only a left child exists, it stands in for both). One path down, O(log n).
-
-**Up or down?** After a replacement you only ever need one direction. A freshly inserted leaf only violates upward → sift up. A new root after poll only violates downward → sift down. Picking the smaller child on the way down is what preserves the min property.
-
-**Heapify constructor:** copies the input, then walks the non-leaf nodes from the last parent (`size/2 − 1`) back to index 0, sifting each. Bottom-up sift-down sums to O(n) because most nodes sit near the bottom with short paths.
-**Code flag (C3):** the constructor sifts each node down *and then up*; the sift-up is redundant for bottom-up heapify (correct result, extra work).
-
-**remove(value):** scan for the index (O(n), `Objects.equals`), swap the target with the last element, shrink, then sift the swapped-in stranger both up and down (only one will move it). Returns false for null or absent values. `get(index)` exposes raw slots — used by the priority queue's scans, not part of the heap contract proper.
-
----
-
-## Priority_queue<E>
-
-A heap ordered by an explicit priority instead of the natural ordering of `E`. Wraps `Heap` via an `Entry` wrapper that carries the value plus the comparator used to rank it.
-
-### Positives
-- Order by any priority you define (a `Comparator`), not just `Comparable`; the no-arg constructor defaults to natural order.
-- offer and poll O(log n); peek O(1) — inherits the heap's costs. The array constructor heapifies wrapped entries in O(n).
-- Decouples "what to store" from "how to rank it."
-
-### Negatives
-- Same as the heap underneath: arbitrary search/`contains` O(n), not fully sorted, only the head is cheap.
-- Extra wrapper object per element (the `Entry`) — small memory and indirection overhead.
-- `remove(value)` scans the entries (O(n)) and then calls the heap's own O(n) remove — two passes.
-
-### Algorithm / thought process
-The heap needs a notion of "smaller." A bare `Heap<E>` uses `E`'s `compareTo`. The priority queue instead takes a `Comparator` and ranks by that: each `Entry` holds the value and the comparator, and `Entry.compareTo` delegates to `cmp.compare(this.value, other.value)` — so the untouched heap machinery orders entries exactly as the comparator dictates.
-
-Min vs max is just the comparator's direction — reverse the comparator (or negate priorities) and nothing else changes; sift up/down still picks the "smaller" entry, where "smaller" is whatever the comparator says.
-
-Everything else — offer = add + sift up, poll = swap root with last + sift down — is the underlying heap verbatim.
-
----
-
-## Union_find
-
-Disjoint-set structure over ids 0..n−1. `find` tells which set an element belongs to (its root); `union` merges two sets. This version uses union by rank, no path compression.
-
-### Positives
-- Tracks connected components cheaply; O(log n) union/find with rank.
-- Tiny memory: parent array + rank array + a component count.
-- The backbone of Kruskal's MST and any "are these connected / how many groups" problem.
-
-### Negatives
-- No path compression here, so finds re-walk the tree each time — O(log n) with rank, worse if you skipped rank.
-- Can't un-union (no split). Merges are permanent.
-- `componentSize` is O(n) — it re-finds every element and counts matches (no size array is maintained).
-
-### Algorithm / thought process
-A `parent[]` array. Each element points at its parent; a root points at itself and *is* the representative of its set.
-
-**find(x):** bounds-checked, then follow `parent` links up until you hit a node that points to itself. (The walk starts from `parent[x]`, which is equivalent — a root's parent is itself.)
-
-**union(x, y):** first `connected(x, y)`; if already merged, return false. Otherwise find both roots again and attach one under the other. **Union by rank:** attach the lower-rank root under the higher-rank one; on a rank tie, `y`'s root goes under `x`'s root and `x`'s rank bumps by one. Rank keeps trees shallow → find stays O(log n) instead of degrading to an O(n) chain. (Micro-nit: the `connected` pre-check plus the two explicit finds means four find-walks per union — correct, just redundant work.)
-
-**connected(x, y):** `find(x) == find(y)`. **components:** start at n, decrement on every successful union.
-
-**Negative-size trick (space/bookkeeping optimization — not what this code does):** fold the metadata *into* the parent array. A root stores the **negative of its tree's size** (`parent[root] = -size`) instead of pointing at itself; non-roots store a plain parent index. Then `parent[x] < 0` *is* the root test, `-parent[root]` answers `componentSize` in O(1) after a find (versus the O(n) re-scan this implementation does), and union-by-size falls out naturally: attach the smaller tree under the larger and add the sizes (`parent[bigRoot] += parent[smallRoot]` — negatives add correctly). One array replaces parent + rank + any size array; initialization is all `-1` (each node a root of size 1). Union by size gives the same O(log n) height guarantee as union by rank, and combined with path compression the same α(n). The only subtlety: every "is this a root" check must become `parent[x] < 0` — the `parent[x] == x` idiom no longer holds.
-
-**Why it matters for Kruskal:** sort edges by weight, walk them cheapest-first, and add an edge only if its two endpoints have *different* roots (otherwise it would close a cycle). Each "add" is a union. Union-find is what answers "would this edge close a cycle?" in near-constant time. (MST = minimum-total-weight edge set connecting all vertices; not unique when weights tie.)
-
----
-
-## Union_find_compressed
-
-Same disjoint-set structure, plus **path compression** in `find`. With rank + compression, operations run in amortized α(n) — inverse Ackermann, effectively constant for any real input.
-
-### Positives
-- Amortized α(n) per operation — the fastest practical disjoint-set; α(n) ≤ 4 for any n you'll ever see.
-- Trees flatten over time, so repeated finds on the same elements become O(1).
-- Same tiny memory footprint as the uncompressed version.
-
-### Negatives
-- A `find` now *writes* (rewrites parent pointers), so it's not a pure read.
-- Still no un-union; merges are permanent.
-- The α(n) bound is amortized, not per-call worst-case — a single early find can still walk a longer path before it flattens.
-
-### Algorithm / thought process
-Identical to plain union-find for `union`/`connected`/`componentSize` (including the O(n) `componentSize` — the negative-size trick described in the Union_find note would make it O(1) here too). The change is in `find`.
-
-**find(x), two-pass compression (as implemented):** first walk up from `parent[x]` to locate the root; then walk the same path a second time, repointing each visited node directly at the root. Next time any of them is queried, it's one hop away. (The second walk starts at `parent[x]`, so `x`'s own pointer isn't rewritten — `x` stays one extra hop out; everything above it flattens. Harmless.) The alternative one-liner is the recursive `parent[x] = find(parent[x])`; same flattening, this repo uses the iterative two-pass.
-
-Combined with union by rank, this gives the α(n) amortized guarantee — rank keeps trees shallow on the way up, compression collapses them on the way down. Either alone is good; together they're effectively constant. (One classical footnote: compression makes stored ranks upper bounds on true heights rather than exact — that's expected and fine.)
-
----
-
-## Binary_search_tree<E extends Comparable<E>>
-
-Ordered tree. At every node: all of left subtree < node < all of right subtree (duplicates are meant to be rejected — but see the code flag). Note "BST" ≠ complete tree — it can be any shape.
-
-### Positives
-- Search, insert, delete all O(log n) on average.
-- In-order traversal gives sorted output for free.
-- Dynamic size; supports min, max, height, and all four standard traversals.
-
-### Negatives
-- O(n) worst case — inserting already-sorted data builds a degenerate chain (a linked list).
-- Not self-balancing on its own (AVL fixes this — next sections).
-- Pointer overhead per node, and no random access by index.
-
-### Algorithm / thought process
-Ordering invariant holds at *every* node, not just the root — that's what makes the binary search work at each step.
-
-**Insert (iterative):** null is rejected; an empty tree just takes the root. Otherwise walk down comparing — right when larger, left when smaller — until reaching a node whose relevant child slot is free, then attach there. An equal value found *during the walk* returns false without touching size.
-
-**Code flag (B1):** the descent loop exits when it reaches a leaf (or when the tree is a single node) *before* the equality check runs, so a duplicate of a **leaf** value (or of a lone root) is silently inserted as a left child — violating the ordering invariant and the no-duplicates contract that `remove` relies on. Internal-node duplicates are rejected correctly. (The AVL tree avoids this by running a full `contains` before inserting.)
-
-**Contains (iterative):** the same walk; found on an equal comparison, absent when you fall off.
-
-**min / max:** walk all the way left (min) or all the way right (max); empty tree throws.
-
-**Remove (recursive):** the public method pre-checks `contains` (an extra O(h) pass), then delegates to a helper that finds the node by the same comparison walk and handles it by child count:
-- *Leaf:* return null to the parent.
-- *One child:* splice — return the single child to the parent.
-- *Two children:* don't delete the node — overwrite its value with its in-order **successor** (the leftmost value of the right subtree, via `right_smallest_child`), then recursively remove that successor from the right subtree. The successor has no left child, so its own removal lands in the leaf or one-child case. No orphans, no infinite recursion. (Predecessor — largest in left subtree — works symmetrically.)
-
-The trick that makes remove clean: the recursive helper takes a subtree and **returns the new subtree root**, and the caller reassigns its child pointer. That return-and-reassign handles all the relinking, so you never manually null out parent pointers.
-
-**Traversals** (same recursion skeleton, only the visit position moves):
-- **in-order** (left, node, right) → sorted output; the defining BST traversal.
-- **pre-order** (node, left, right) → serialize / copy a tree.
-- **post-order** (left, right, node) → process children before parent (safe deletion).
-- **level order** → breadth-first: a queue seeded with the root; dequeue a node, record it, enqueue its children. Produces the tree top-down, left-to-right per level.
-
-`height()` is computed recursively (empty tree = −1, leaf = 0).
-
-### Interview hooks
-- Validate a BST → in-order must be strictly increasing.
-- Kth smallest → in-order, stop at k.
-- Lowest common ancestor in a BST → walk down comparing both targets to the current node.
-
----
-
-## Hash tables (`Hash_table_chaining` and `Hash_table_double_hashing`)
-
-Key→value stores backed by an array, with a hash function mapping keys to slots. `H(x)==H(y)` is necessary but not sufficient — `x` *might* equal `y` (collision), but `H(x)!=H(y)` guarantees `x != y`. So after hashing to a slot you must still confirm with `equals`. Keys must be immutable — a key whose hashCode changes after insertion is lost. Both classes hash with `(key.hashCode() & 0x7fffffff) % capacity` (the mask keeps the index non-negative) and reject null keys and null values.
-
-### Positives
-- Average O(1) put / get / remove / containsKey.
-- Any immutable, hashable key; ideal for frequency counts, dedup, memoization, set membership.
-
-### Negatives
-- Worst case O(n) — a degenerate hash or adversarial keys collapse everything into one chain/probe run.
-- No ordering: no sorted iteration, no range/min/max queries (that's a tree's job).
-- **Chaining (this repo): capacity is fixed** — there is no resize, so chains grow without bound as load rises and operations degrade toward O(chain length). Only the double-hashing table resizes.
-- Resize (double hashing) is O(n) — a periodic latency spike.
-- Wasted space: open addressing keeps load ≤ 0.5 (half the slots empty); chaining adds a pointer per entry.
-
-### Algorithm / thought process
-
-**Separate chaining (`Hash_table_chaining`).** Each bucket holds the head of a singly linked `Entry{key, value, next}` chain. `put` walks the chain: an existing key gets its value replaced (old value returned); otherwise the new entry is appended at the chain's tail and size bumps. `get`/`containsKey` walk and compare with `equals`. `remove` pre-checks `containsKey`, then unlinks — a head match repoints the bucket, otherwise the walk repairs `prev.next`. Capacity is whatever the constructor got (default 16) forever.
-
-**Open addressing with double hashing (`Hash_table_double_hashing`).** Entries sit directly in the array; each slot is `null` (never used), a shared `TOMBSTONE` marker (deleted), or an `Entry`.
-
-- **Probe sequence:** `position(k, x) = (H1(k) + x·step) mod capacity`, where `step = P − (H1'(k) mod P)` and `P` is the largest prime **below** the capacity (recomputed after every resize; tiny tables fall back to step 1 = linear probing). Because `step ∈ [1, P]`, it can never be 0 — no explicit zero-guard needed. Using a second hash for the step spreads probes and breaks up the primary clustering linear probing suffers from.
-- **Coprimality caveat (code flag C6):** a probe sequence covers all slots only when gcd(step, capacity) = 1. Capacity starts prime (11) but *doubles* on resize (22, 44, …), so an even step shares a factor 2 with the capacity and its cycle covers only half the table. The ≤ 0.5 load factor makes a stuck insert unlikely, but the "keep step and size coprime after growth" rule is not actually upheld — keeping capacity prime across resizes would fix it.
-- **Deletion → tombstones:** you can't just empty a slot — that severs the probe chain and a later search would stop early and wrongly report "not found." `remove` therefore stamps the slot `TOMBSTONE`. Searches skip tombstones and keep probing; `put` may reuse one; resize purges them all.
-- **Relocation-on-probe optimization:** `put`, `get`, and `containsKey` all remember the *first* tombstone met along the probe; when the key then turns up further along, the entry is copied back into that tombstone slot and the original slot is stamped `TOMBSTONE` — shortening future probes for that key. `remove` leans on this: it calls `containsKey` first (which relocates the entry to the earliest tombstone on its probe path), then re-probes knowing the prefix holds only live entries.
-  **Code flag (B8):** in `put`'s insert-into-null case, the same swap converts a chain-terminating **null** slot into a `TOMBSTONE` — the entry should simply be placed in the remembered tombstone slot and the null left alone; as written, empty slots erode into tombstones and everyone's probes lengthen until a resize. Separately, `toString` only checks slots against `null`, so it casts a `TOMBSTONE` to `Entry` and throws `ClassCastException` whenever any remove has happened.
-- **Resize / rehash:** when `size/capacity ≥ 0.5`, capacity doubles, `P` is recomputed, and every live entry (tombstones skipped) is re-`put` into the fresh table — indices depend on capacity, so they all move.
-
----
-
-## Fenwick_tree (Binary Indexed Tree)
-
-Array structure for prefix/range sums over a mutable array of `long`s. A plain prefix-sum array gives O(1) queries but O(n) updates; a Fenwick tree balances both at O(log n). Fixed size — you can't add or remove indices after construction.
-
-Each cell is responsible for a block of elements determined by its **least significant bit**, `LSB(i) = i & (−i)`. Cell `i` covers `LSB(i)` elements, the range `(i − LSB(i), i]`:
-- `12 = 1100`, LSB = 4 → responsible for 4 cells (indices 9–12).
-- `10 = 1010`, LSB = 2 → responsible for 2 cells (9–10).
-- `11 = 1011`, LSB = 1 → responsible for itself only (11).
-
-See ![Fenwick walk](./Images/Fenwick.png) for the 0–7 range walk.
-
-### Positives
-- Prefix sum, range sum, point update (`update` adds a delta; `set` overwrites by computing the delta from a self-range-sum) all O(log n); construction from values O(n).
-- Tiny and simple: a single `long[]`, no nodes or pointers — much lower constant factor than a segment tree for sum-type queries.
-
-### Negatives
-- Fixed size — indices can't be added or removed after construction.
-- Range query works by subtracting prefixes, so it needs an **invertible** operation (sum, XOR). It can't do range min/max — that's segment-tree territory.
-- Less flexible than a segment tree overall (no arbitrary range operations; basic form has no lazy propagation).
-- 1-indexed internally; the public API is 0-based and shifts by +1, so the off-by-one lives in exactly one place.
-
-### Algorithm / thought process
-Core primitive: `LSB(i) = i & (−i)` — isolates the lowest set bit. Everything below is bit walking (internal 1-based indices).
-
-**Prefix sum `prefixSum(i)`** — walk *down*. `sum = 0; while i > 0: sum += tree[i]; i −= LSB(i)`. Stripping the lowest set bit jumps to the cell covering the block just before this one, so you accumulate a logarithmic number of disjoint blocks — one step per set bit, O(log n).
-
-**Range sum `rangeSum(l, r) = prefixSum(r) − prefixSum(l−1)`** (with `l == 0` short-circuiting to a plain prefix) — this subtraction is exactly why the operation must be invertible. `l > r` throws.
-
-**Point update `update(i, delta)`** — walk *up*. `while i ≤ n: tree[i] += delta; i += LSB(i)`. Adding the LSB moves to the next cell whose responsibility range contains `i`, fixing every cell that includes this index. Also O(log n).
-
-**O(n) construction** — load the raw values into `tree` (shifted to 1-based), then for each `i` push its accumulated value into its parent at `i + LSB(i)` (if the parent is in range). One pass; each cell contributes to exactly one parent, so the whole tree is built in linear time instead of n separate O(log n) updates.
-
-**1-indexing** — the tree must be 1-based: `LSB(0) = 0`, so index 0 would never move and the loops would stall. The constructor allocates `n+1` slots and leaves `tree[0]` unused.
-
-**Variants** (this implementation is the basic point-update + prefix-query form):
-- range-update + point-query → store deltas using the difference-array trick on one BIT.
-- range-update + range-query → maintain two BITs.
-
----
-
-## Suffix_array (+ LCP array)
-
-A **suffix** is a non-empty trailing part of a string; an n-character string has n suffixes. The **suffix array** is those suffixes sorted lexicographically, stored as their start indices. The **LCP array** rides alongside: `lcp[i]` is how many leading characters the sorted suffixes at ranks `i` and `i−1` share; `lcp[0] = 0`. Together they turn many naively-quadratic string problems into arithmetic over two arrays.
-
-### Positives
-- Simple and transparent: the whole build is "list the suffixes, sort them, compare neighbors" — easy to trust and to debug, which is the point at this stage.
-- Unlocks the classic applications directly: distinct-substring counts, longest repeated substring, longest common substring, and pattern search by binary-searching the sorted suffixes.
-- Exposes `suffixAt(rank)` for O(1) recovery of any sorted suffix (the strings are retained).
-
-### Negatives
-- **This is the naive construction** — it materializes all n suffix strings (O(n²) characters of memory!) and sorts them with the default string comparator: O(n² log n) time, since each comparison can scan O(n) characters. Fine for study-sized inputs; the efficient builds are the upgrade path.
-- The LCP array is built by directly comparing each adjacent sorted pair character-by-character — O(n²) worst case (e.g. `"aaaa…"`), not Kasai's O(n).
-- Static: built for one fixed string. Any edit means rebuilding.
-
-### Algorithm / thought process
-**Build (as implemented):** generate `text.substring(i)` for every `i`, sort the list lexicographically, and recover each rank's start index with `text.lastIndexOf(suffix)` — correct because a suffix's **last** occurrence in the text is the suffix itself (any later match would have to be a longer trailing block, impossible; earlier matches of the same characters are not at the end). `lcp[i]` then comes from a helper that walks the two adjacent sorted suffixes until they diverge, with a first-character fast-path returning 0.
-
-**The upgrade path (not implemented):** **prefix doubling** sorts suffixes by their first 1, 2, 4, …, 2^k characters, reusing the previous round's ranks as sort keys — O(n log n) or O(n log² n) with O(n) integer storage. **Kasai's** builds the LCP in O(n) by walking suffixes in original string order and using the fact that the carried LCP drops by at most 1 per step. Linear-time SA builds (SA-IS, DC3) exist but are intricate. When the notes for `Unique_substrings` and friends quote complexities, they now quote the naive bounds this class actually has.
-
-**Using it:**
-- **Distinct substrings** — every substring is a prefix of exactly one suffix. There are `n(n+1)/2` prefixes in total, and adjacent sorted suffixes share `lcp[i]` leading characters counted twice, so `distinct = n(n+1)/2 − sum(lcp)`.
-- **Longest repeated substring** — a repeat is a common prefix of two distinct suffixes, so the answer's length is `max(lcp)`.
-- **Pattern search** — binary-search the sorted suffixes for the pattern.
-
----
-
-## Balanced binary search trees
-
-Self-adjusting BSTs that keep the height at O(log n) so every operation stays O(log n). A plain BST can degrade into a long chain (sorted-order inserts), collapsing to O(n). A balanced tree carries a **tree invariant** — a structural rule — and whenever an operation violates it, one or more **rotations** restore it. Different balanced trees differ only in their invariant and when they rotate (AVL: strict height balance; red-black: color rules).
-
-### Positives
-- Guaranteed O(log n) search/insert/delete regardless of insertion order — no degeneration to a chain.
-- Keeps everything a plain BST offers: in-order traversal is sorted, plus min/max and range-style queries.
-
-### Negatives
-- Rotations and their maintenance add constant-factor overhead and real implementation complexity over a plain BST.
-- Extra per-node metadata (height, or color/balance) and an update pass on the way back up every operation.
-- Pointer-chasing structure; not as cache-friendly as a flat array.
-
-### Algorithm / thought process
-A **rotation** is a local, O(1) restructuring that changes a subtree's height while preserving BST ordering. Take two nodes where `B` is a child of `A`:
-
-- **Right rotation** (lift the left child): `B = A.left; A.left = B.right; B.right = A; return B`.
-- **Left rotation** is the mirror: lift the right child.
-
-Returning the new subtree root (`B`) is the return-and-reassign pattern — the caller rewires its own child pointer to the returned node, so no parent-pointer bookkeeping is needed (same trick as recursive BST remove). Ordering is preserved because a right rotation only moves `B.right` (all keys between `B` and `A`) from `B`'s right to `A`'s left, which is exactly where they belong.
-
----
-
-## AVL tree
-
-A balanced BST with a strict per-node balance rule. Each node tracks a **balance factor** `BF = Height(right) − Height(left)`, which must stay in `{−1, 0, 1}`. Height is the number of edges from the node to its furthest leaf (null subtree = −1, leaf = 0). Any insert or delete that pushes a `BF` to ±2 triggers a rebalancing rotation.
-
-### Positives
-- Strictly balanced, so it has the tightest height bound of the common balanced trees (height ≤ ~1.44 log n) — the fastest lookups of the balanced family.
-- Deterministic O(log n) worst case for search, insert, and delete.
-
-### Negatives
-- Rebalances aggressively to stay strictly balanced, so it does more rotations per insert/delete than a red-black tree — write-heavy workloads pay for it.
-- Height/BF metadata on every node, plus an `update` + `balance` pass on every node along the path back up.
-- Duplicate rejection here is a full `contains` pre-pass before every insert (an extra O(log n) walk — the safe-but-double-work approach; it's also what saves this class from the plain BST's leaf-duplicate bug).
-
-### Algorithm / thought process
-**Height and BF:** null height = −1, leaf height = 0. `update(node)` recomputes `node.height = 1 + max(height(left), height(right))` and the BF. (Implementation quirk: the `height` helper also *writes* the height it computes into the child it reads — a recompute-on-read; harmless, slightly redundant.)
-
-**The four cases** (using `BF = right − left`), decided by the node's BF and the offending child's BF:
-- `BF = −2`, left child `BF ≤ 0` → **left-left** → single **right** rotation on the node.
-- `BF = −2`, left child `BF > 0` → **left-right** → **left** rotate the left child, then **right** rotate the node.
-- `BF = +2`, right child `BF ≥ 0` → **right-right** → single **left** rotation on the node.
-- `BF = +2`, right child `BF < 0` → **right-left** → **right** rotate the right child, then **left** rotate the node.
-
-Read the child's BF to tell the "straight" case from the "bent" one. The `≤ 0` / `≥ 0` (rather than strict) matters for **deletion**: there the offending child can have `BF = 0`, and treating that as the straight case (single rotation) keeps the tree valid. During insertion the child is never balanced in a violating case, so the boundary is only exercised by deletes.
-
-**Insert:** `contains` pre-check rejects duplicates, then recurse left/right and place the new node at a leaf. On the way back up, `update` then `balance` at each node. Each rotation is O(1); after rotating, the moved nodes are re-`update`d — the lower node first, then the new subtree root — so their heights are correct before the next level up looks at them.
-
-**Delete:** identical to BST deletion (leaf / one-child splice / two-child successor-swap via `right_smallest_child`), then `update` + `balance` on every node along the path back up — the same machinery as insert. A single delete can cascade rotations up multiple levels, unlike insert which needs at most one rebalance.
-
----
-
-## Indexed_priority_queue
-
-A min-priority queue that also supports fast **update** and **delete** of an arbitrary key's priority — the operations a plain binary heap can't do without an O(n) scan. The trick is a bidirectional mapping: every key gets a stable **key index** `ki` in `[0, N)`, and two inverse maps translate between "which key" and "where it sits in the heap." Priorities are stored keyed by `ki` and never move; only heap *positions* move during swim/sink.
-
-### Positives
-- O(log n) insert, delete, and change-priority; O(1) `contains`, `valueOf`, and peek-min.
-- Can reprioritize or remove an existing item in O(log n) — exactly what Dijkstra, Prim, and schedulers need (decrease-key on a known node).
-
-### Negatives
-- Keys must come from a fixed index domain `[0, N)` set at construction; arbitrary keys need an extra `key → ki` map layer.
-- Three parallel arrays to keep in sync (`values`, `pm`, `im`) — more memory and bookkeeping than a plain heap, and easy to desync if a swap doesn't update every map.
-- Inserting an already-present `ki` throws (`update` is the reprioritize path); null values are rejected.
-
-### Algorithm / thought process
-**The three arrays** (min-heap):
-- `values[ki]` — the priority of key `ki`. Keyed by `ki`, so it **never moves**.
-- `pm[ki]` (position map) — the heap position where key `ki` currently sits, −1 if absent.
-- `im[pos]` (inverse map) — the key index living at heap position `pos`, −1 if empty. The heap itself is really `im`: a heap of key indices, ordered by their `values`.
-- Invariant: `pm[im[pos]] == pos` and `im[pm[ki]] == ki` — `pm` and `im` are inverses.
-
-**swap(i, j)** — the reason values don't move. A heap swap only exchanges *positions*: swap `im[i]` with `im[j]` (through a temp), then fix `pm` for both keys so the maps stay inverse. `values` is untouched.
-
-**swim(i)** (move up) — while position `i`'s priority (`values[im[i]]`) is smaller than its parent's at `(i−1)/2`, swap and climb. Used after an insert or when a priority decreases.
-
-**sink(i)** (move down) — pick the smaller-valued child of `2i+1`, `2i+2` (the left child stands alone when the right doesn't exist); while that child is smaller, swap and descend. Used after a delete or when a priority increases.
-
-**insert(ki, value)** — set `values[ki] = value`; place `ki` at the end (`pm[ki] = sz; im[sz] = ki`); `swim` that slot; then bump `sz`. (Swimming before the size bump is fine — swim only looks upward and never consults `sz`.)
-
-**update(ki, value)** — overwrite `values[ki]`, take `i = pm[ki]`, then call **both** `sink(i)` and `swim(i)`. Only one will actually move it, but the new priority could violate the heap in either direction, so you attempt both.
-
-**delete(ki)** — take `i = pm[ki]`, shrink (`sz−−`), swap position `i` with the (new) last position `sz`, then `sink(i)` + `swim(i)` to settle the stranger that landed at `i`; finally clear the removed key's slots (`values[ki] = null`, `pm[ki] = −1`, `im[sz] = −1`). Edge case worth knowing: deleting the last position self-swaps, and the subsequent swim can't drag the dead slot back in — the element there was already ≥ its parent by the heap invariant. Deleting the min is just `delete(im[0])`.
-
-**contains(ki)** — `pm[ki] != −1`. **valueOf(ki)** — `values[ki]`. **peek-min** — the key at `im[0]`.
-
----
-
-## Sparse_table
-
-Efficient range queries on a **static** array (data never changes). The idea: precompute the answer for every interval whose length is a power of two, then combine a couple of them to answer any query. This implementation is generic over `T` with a pluggable `BinaryOperator<T>` combine function, and additionally maintains an **index table** so min-queries can return the *position* of the minimum, not just its value (that argmin is what the LCA algorithm consumes).
-
-Two properties of the combining function `F` matter:
-- **Associative** — `F(F(A,B),C) == F(A,F(B,C))`. Required for a sparse table at all. (Commutativity is a different property; associativity is the one you need.)
-- **Idempotent / overlap-friendly** — `F(x,x) == x`, so combining two *overlapping* ranges doesn't double-count. This is what gives **O(1)** queries. `min`, `max`, `gcd`, bitwise and/or have it. `sum`, `product`, `xor` are associative but **not** idempotent — for those, use the disjoint-block query at O(log n) (or just a prefix-sum array for plain sums).
-
-### Positives
-- O(1) range queries for idempotent ops after an O(n log n) build; O(log n) disjoint-block queries (`queryDisjoint`) for non-idempotent ops — both are implemented.
-- Simple, flat, cache-friendly tables; no pointers, no rebalancing.
-- The argmin variant (`queryOverlap_index_min_operation_only`) returns the index of the range minimum with leftmost-wins tie-breaking.
-
-### Negatives
-- **Static only.** Any element update invalidates the table; there is no cheap point update — you rebuild in O(n log n). If you need updates, use a segment tree.
-- O(n log n) memory — heavier than a prefix-sum array for the ops a prefix sum can already handle.
-- The index table is populated only when the stored values are `Integer`s and its comparisons hard-code min semantics (`≤`) — pass a different `T` or a non-min operator and the argmin method is meaningless. A quirk worth cleaning up eventually (e.g. a dedicated min-table subclass).
-
-### Algorithm / thought process
-**The table.** Let `P = floor(log2(N))` (computed via `Math.log` — fine at these sizes, though an integer bit-trick avoids any float worry). Build `P+1` rows × `N` columns where `table[i][j]` = `F` over the block `[j, j + 2^i)`. Cells whose block would run off the end are simply never filled or read.
-
-**Construction by doubling.** A block of length `2^i` is two halves of length `2^(i−1)`:
+### Idea
+**As implemented, each call peels *both* ends:** take the last character, the first character, and reverse the middle between them —
 
 ```
-table[0][j] = arr[j]                                   // row 0 is the array itself
-table[i][j] = F(table[i-1][j], table[i-1][j + 2^(i-1)])
+reverse(s) = s[last] + reverse(s[1 .. last-1]) + s[0]
 ```
 
-Alongside it, `index_table[i][j]` records *where* the winning value came from: copy the left half's index when `left ≤ right`, else the right half's — that `≤` is the leftmost-wins tie-break, and it's filled only for `Integer` values (see negatives).
+Base case: a string of length 0 or 1 is its own reverse. Each call shrinks the string by **two** characters, so the depth is ⌈n/2⌉ — half the frames of the classic peel-one-character forms (`reverse(s[1:]) + s[0]` or `s[last] + reverse(s[:last])`), same idea.
 
-**The log array.** `log[1] = 0`, `log[i] = log[i/2] + 1` up to N gives `floor(log2(len))` in O(1) per query — no `Math.log` at query time.
+### Complexity
+O(n) depth-wise? No — **O(n²) time and memory**, because Java strings are immutable: every `substring` and every `+` copies a fresh string at each of the n/2 levels. Stack depth is ⌈n/2⌉. To make it O(n): recurse over a `char[]` with two indices, swap the ends, recurse inward (`reverse(arr, lo+1, hi−1)`, base `lo >= hi`) — O(1) work per level, no copying. That two-pointer form is the array twin of exactly the both-ends peel this code already does.
 
-**Query `[l, r]` inclusive (`queryOverlap`).** Let `p = log[r − l + 1]`, `k = 2^p`. Cover the range with two length-`k` blocks — one starting at `l`, one ending at `r` (starting at `r − k + 1`). For idempotent `F` their overlap is harmless:
-
-```
-answer = F(table[p][l], table[p][r - k + 1])
-```
-
-Two lookups and one combine — O(1). The argmin query does the same two lookups and returns the corresponding `index_table` entry (left block on ties).
-
-**Query `[l, r]` for non-idempotent ops (`queryDisjoint`).** Greedily peel power-of-two blocks from the left: for `p` from largest down to 0, if a `2^p` block fits in what remains, combine it and advance `l`. O(log n) combines, no overlaps, so sums/products/xor are safe here.
-
-**The `<<` operator.** `1 << p` is the idiomatic `2^p` (all block sizes here are powers of two), so `r − (1 << p) + 1` is the start of the right-aligned block — faster and exact compared to `Math.pow`.
-
----
-
-## Graph_adjacency_matrix
-
-A graph stored as a `V × V` grid: cell `(u, v)` records whether edge `u → v` exists and, if weighted, its weight. Implements the common `Graph` interface so algorithms don't care which representation they're handed.
-
-### Positives
-- **O(1) edge and weight lookup** — single array reads.
-- Simple and cache-friendly; O(1) to add or update an edge.
-- Best for **dense** graphs (edges near `V²`), where the matrix is mostly full anyway.
-
-### Negatives
-- **O(V²) memory** regardless of how few edges exist.
-- **Listing a vertex's neighbors is O(V)** — a full row scan even for one neighbor.
-- Iterating all edges is O(V²). At `V = 10⁵` the matrix alone is `10¹⁰` cells — infeasible.
-
-### Algorithm / thought process
-Two `n × n` arrays: a boolean `present[u][v]` and an int weight matrix. Splitting presence from weight avoids the "is a 0 cell a weight-0 edge or no edge?" ambiguity.
-
-- **addEdge(u, v[, w]):** bounds-check; bump the edge count **only if the cell was empty** (re-adding overwrites the weight without double-counting); set presence + weight; if **undirected**, mirror into `[v][u]` — both directions, every time, so mirrors can't desync.
-- **hasEdge / weight:** direct reads; `weight` throws `NoSuchElementException` when absent. The unweighted `addEdge` stores weight 1.
-- **neighbors(v):** scan row `v`, collect present columns — O(V), naturally ascending (this backend genuinely satisfies the interface's ascending-order contract).
-- **edgeCount:** maintained on add; undirected edges count once.
-
-The whole trade: memory and neighbor-iteration cost tied to `V`, in exchange for constant-time edge lookup.
+### Notes
+- The quadratic `substring`+`+` cost is the same immutability trap that makes string concatenation in a loop slow — fine for learning, call it out.
+- Double-reversing any string returns the original — a cheap invariant the runner tests.
 
 
 ---
 
-## Graph_adjacency_list
+## Recursive_max_2d
 
-A graph stored as, per vertex, a list of its outgoing edges (each a small `Edge{to, weight}`). Implements the common `Graph` interface; the default representation for most graph work.
+Find the maximum value in a 2D array along with its `(row, col)` position, recursively — the "bundle multiple returns into a result object" idea extended to a grid.
 
-### Positives
-- **O(V + E) memory** — exactly the edges that exist. Ideal for **sparse** graphs.
-- **Neighbor iteration is O(degree)** — exactly what DFS/BFS/Dijkstra hammer on.
-- Scales to graphs where a `V × V` matrix wouldn't fit.
+### Idea
+**As implemented:** recurse with an explicit `(i, j)` pair that advances in row-major order — bump the column; when it hits `grid[0].length`, wrap to column 0 of the next row. Each call computes the best `Result` of the **suffix** (all cells after `(i, j)`), then compares the current cell against it:
 
-### Negatives
-- **Edge/weight lookup is O(degree)** — a scan of `u`'s list (a matrix does it in O(1)).
-- Slightly more object overhead per edge than a flat matrix cell.
-- Neighbor order is whatever insertion produced — see the code flag.
+- Base case: `i` past the last row → return a sentinel `Result(Integer.MIN_VALUE, −1, −1)` (an empty suffix can't win against any real cell).
+- Combine: keep the current cell when `suffixBest.value <= grid[i][j]` — the `<=` means the **current (earlier) cell wins ties**, so the earliest cell in row-major order is reported: lowest row first, then lowest column. That's the same answer a `>`-based nested-loop brute force produces, which is what the runner cross-checks.
 
-### Algorithm / thought process
-A list-of-lists: `adj.get(u)` is the edges leaving `u`.
+This is one frame per cell — neither the flattened single-index form (`k → (k/C, k%C)`) nor the two-level row/column recursion, though it's closest in spirit to the flattened one with the decode replaced by explicit carry logic.
 
-- **addEdge(u, v[, w]):** scan `u`'s list for an existing edge to `v` — if found, the weighted overload updates that edge's weight in place and returns (no duplicate, no recount); the unweighted overload just returns. Otherwise append, bump the edge count once, and for **undirected** graphs also append the `v → u` mirror.
-- **hasEdge / weight:** the same O(degree) scan; `weight` throws when absent.
-- **neighbors(v):** map `v`'s edge list to destinations, **in insertion order**.
-- **edgeCount:** incremented once per genuinely new edge (not once per stored direction).
+### Complexity
+O(R·C) time — every cell visited once. Stack depth is O(R·C) (one frame per cell), so big grids will exhaust the stack; the two-level row/column form would cut depth to O(R + C). One small `Result` allocation per level.
 
-**Code flags (C4):** two contract gaps. (1) The `Graph` interface promises `neighbors` in **ascending order**, but this backend returns insertion order — traversal determinism in the runners currently holds only because tests add edges in ascending order; either sort here or soften the interface comment. (2) The weighted re-add on an **undirected** graph updates only `u`'s copy and returns before touching the `v → u` mirror — the two directions can end up with different weights.
+### Notes
+- **Rectangular grids only:** the column wrap uses `grid[0].length`, so a jagged array with rows shorter than row 0 indexes out of bounds (and longer rows are only partially scanned). The validation rejects empty grids and null rows but not jaggedness — a two-level recursion would handle jagged rows naturally.
+- **Fix the tie-break policy explicitly** (first vs last, in which scan order) and test it — here it's earliest-in-row-major, enforced by that single `<=`.
 
-The trade is the mirror image of the matrix: cheap memory and neighbor iteration, at the cost of O(degree) edge lookups. Traversals iterate neighbors far more than they test single edges, so this is the right default for all but the densest graphs.
+
+---
+
+## Three_way_min
+
+Find the minimum of an array with a **three-way** divide-and-conquer split — the k-way-split exercise from the divide-and-conquer primer (see `Algorithms_notes.md`).
+
+### Idea
+Split `[l, r]` into three roughly equal segments at `m1 = l + len/3` and `m2 = l + 2·len/3`, recurse into each, and combine by returning the smallest of the three sub-minimums (a chain of `≤` comparisons that also happens to favor the leftmost segment on ties — irrelevant for a value-only min, but the kind of thing that matters the moment you also return an index).
+
+Base cases: one element returns itself; two elements return the smaller — needed because a 3-way split of a 2-element range would produce an empty middle segment.
+
+### Complexity
+`T(n) = 3T(n/3) + O(1)` → **O(n)** time (all n leaves are visited — no split count avoids that for min). Stack depth O(log₃ n).
+
+### Notes
+- The point of the exercise is the recurrence shape, not speed — a loop is obviously simpler and faster in constants.
+- **Code flag (C8):** the right recursion starts at `m2 − 1`, so the middle and right segments overlap by one element. Harmless for min (overlap can't change a minimum, and no element is *skipped*), but the split isn't a clean partition — `min(m2, r)` is the intended boundary.
+- Null throws; an empty array is rejected with `IllegalArgumentException` — min of nothing has no answer.
+
+
+---
+
+## Dynamic programming
+
+A technique for problems that break into **overlapping** subproblems: solve each distinct subproblem once, store its answer, and reuse it instead of recomputing. It applies when a problem has *optimal substructure* (the answer is built from answers to smaller instances) and *overlapping subproblems* (the same smaller instances recur many times). That overlap is what separates DP from divide-and-conquer — D&C subproblems are independent, so caching buys nothing; DP subproblems repeat, so caching is the whole point.
+
+### Idea
+Four things to pin down:
+- **State** — the parameters that uniquely identify a subproblem (e.g. "index `i`, remaining capacity `w`").
+- **Transition / recurrence** — how a state's answer is built from smaller states.
+- **Base cases** — the smallest states, answered directly.
+- **Evaluation order** — either **top-down** (write the natural recursion, add a memo table so each state computes once — how Mountain_scenes, Narrow_art_gallery, and Domino_tromino_tiling are written here) or **bottom-up** (tabulation in dependency order — how the tilings, knapsacks, Magical_cows, and TSP are written here).
+
+### Complexity
+Roughly (number of distinct states) × (work per transition). Memory is the table size, but it can often shrink: if a state only depends on the previous row/day, keep just that (a **rolling array**) and drop the full table.
+
+### Applications
+Fibonacci, 0/1 knapsack, longest common subsequence, edit distance, coin change, matrix-chain multiplication, and DP-flavored graph algorithms (Bellman-Ford, Floyd-Warshall, Held-Karp TSP).
+
+
+---
+
+## Magical_cows
+
+**Problem.** Farms hold cows, up to a capacity `C`. Every night a farm with `v` cows doubles to `2v`; if `2v <= C` it becomes one farm of `2v`, otherwise it splits into two farms of `v` cows each. Given the initial farms and a list of query days, report the total number of farms after each queried number of nights.
+
+### Idea
+Simulating individual farms explodes — farms can double every night, so after `D` nights you may have up to `N·2^D` of them. The unlock: **individual farms don't matter, only how many cows each holds**, and cow counts only ever range over `1..C`. So track `cnt[v]` = number of farms currently holding `v` cows, and advance the whole distribution one night at a time:
+
+- for each `v` with `2v <= C`: those farms grow — `next[2v] += cnt[v]` (one farm each, now at `2v`).
+- for each `v` with `2v > C`: those farms split — `next[v] += 2 * cnt[v]` (two farms each, still at `v`).
+
+That's an O(C) step regardless of how many farms exist.
+
+**As implemented:** the code builds the **full table** `farm_count[day][v]` for every day from 0 up to the largest query day (day 0 seeded from the initial farms, each next row derived from the previous by the two rules above). A query is then answered by **summing that day's row** — O(C) per query, a plain table lookup of the distribution rather than a precomputed total.
+
+### Complexity
+O(C · D_max) to build the table (D_max = largest query day), then **O(C) per query** (row sum). Space is **O(C · D_max)** for the full table. Both are easy to tighten if you ever care: keep only two rolling rows (O(C) space) and record the running total per day as you go (O(1) per query) — the note-worthy optimizations, not what the code currently does. Farm totals grow up to ~`N·2^D`; counts are `long` (fits comfortably for the usual constraints `D ≤ 50`, `N, C ≤ 1000`).
+
+### Notes
+- The two transition cases are the crux: `2v <= C` → one farm at `2v`; `2v > C` → **two** farms at `v` (the split doubles that bucket's count).
+- Day 0 is just the initial distribution — a query of 0 nights reads row 0 directly, which the table layout handles for free.
+- Validation: capacity ≥ 1, no negative query days, every initial herd in `[1, C]`.
+- Overflow is the lurking bug — the table and sums are `long`, not `int`.
+
+
+---
+
+## Tiling
+
+**Problem.** Count the number of ways to completely fill a 1×n strip of slots using tiles of length 1 and length 2.
+
+### Idea
+Look at how the **last slot** gets covered — there are exactly two disjoint, exhaustive possibilities:
+- a size-1 tile sits in the last slot, leaving `n − 1` slots to fill → `ways(n − 1)` ways, or
+- a size-2 tile covers the last two slots, leaving `n − 2` slots → `ways(n − 2)` ways.
+
+Since those cases don't overlap and cover everything, `ways(n) = ways(n − 1) + ways(n − 2)`. Base cases: `ways(0) = 1` (the empty strip has exactly one tiling — place nothing) and `ways(1) = 1`. That's the Fibonacci recurrence; in fact `ways(n) = Fib(n + 1)`.
+
+The subproblems overlap heavily — plain recursion recomputes `ways(n−2)`, `ways(n−3)`, … exponentially many times. **As implemented:** bottom-up tabulation in a `long[n+3]` table (padded so tiny n never under-allocates), seeded with `ways(0)=1, ways(1)=1, ways(2)=2`, filled left to right.
+
+### Complexity
+O(n) time, O(n) space for the table as written. Since each value depends only on the previous two, two rolling variables would make it O(1) space — the table is kept for clarity. Values grow like Fibonacci (≈ φⁿ), overflowing `long` around n = 91 — `BigInteger` beyond that.
+
+### Notes
+- **`ways(0) = 1` is the load-bearing base case.** An empty strip has one tiling (do nothing); setting it to 0 makes every larger answer wrong — the empty-product/empty-sum convention again.
+- **It's Fibonacci in disguise.** Recognizing that unlocks fast-doubling or matrix exponentiation for O(log n) if inputs get huge.
+- **Generalizes.** Tiles of sizes `{1..k}` give `ways(n) = ways(n−1) + … + ways(n−k)` — which is exactly `Tiling_general` with unit color counts.
+
+
+---
+
+## Tiling_general
+
+**Problem.** Count the ways to fill a 1×n strip using tiles of various lengths, where a given length may come in several colors. Tiles arrive as parallel arrays: `lengths[i]` is an available length, `colors[i]` how many distinct colors it comes in. A tiling is a left-to-right sequence of colored tiles that exactly fills n.
+
+### Idea
+Same last-piece reasoning as basic tiling, generalized. Look at the **last tile** placed: it has some length `L` and some color, and it covers the final `L` slots, leaving `n − L` before it. Sum over every way to choose that last tile:
+
+```
+ways(0) = 1
+ways(m) = sum over i of  colors[i] * ways(m - lengths[i])   for lengths[i] <= m
+```
+
+Two dimensions of choice fall out naturally:
+- **Different lengths** → separate terms in the sum, each reaching back a different distance.
+- **Different colors of the same length** → the `colors[i]` multiplier: each color is a distinct way to place that tile.
+
+The basic 1-and-2 tiling is the special case `lengths = {1, 2}`, `colors = {1, 1}` (Fibonacci). A single length-1 tile with `k` colors gives `k^n`. Unit-color `{1, 2, 3}` gives Tribonacci.
+
+**As implemented:** bottom-up over a `long[n+3]` table, inner loop over tile types with the `lengths[i] <= m` guard; inputs validated (equal-length arrays, lengths and color counts ≥ 1, n ≥ 0).
+
+### Complexity
+O(n · t) time, `t` = number of tile types. O(n) space for the table (a rolling window of `maxLength` entries would suffice — the recurrence never reaches further back — but the full table is clearer).
+
+### Notes
+- **`ways(0) = 1`** is still the anchor — one way to tile nothing.
+- **The color count is a multiplier, not a new term.** Two colors of length 1 turn `+ ways(m−1)` into `+ 2·ways(m−1)`.
+- **Skip out-of-range tiles.** A tile longer than the remaining strip can't be the last piece — the `lengths[i] <= m` guard.
+- **Watch overflow.** Up to `k^n` growth; sums are `long`, `BigInteger` if the numbers can exceed it.
+- Representing colors as counts (rather than listing each colored tile separately) keeps the sum compact — listing them would be arithmetically identical, just wasteful.
+
+
+---
+
+## Domino_tiling_3xn
+
+**Problem.** Count the ways to completely tile a 3×n board with 1×2 dominoes (horizontal or vertical).
+
+### Idea
+**As implemented, this is a broken-profile (bitmask) column DP with 8 states** — the general technique, not the height-3 shortcut.
+
+Fill the board column by column. The only thing the future needs to know about the past is the **profile**: which of the 3 cells at the current column boundary are already covered by dominoes sticking out of the previous column. Three cells → a 3-bit mask → 8 states. `dp[i][s]` = number of ways to tile everything left of column `i` such that column `i` has exactly the cells in mask `s` pre-filled... read at the answer end as: `dp[i][7]` = ways to tile the first `i` columns flush (all 3 bits set = column fully covered, nothing protruding).
+
+Transitions (hand-enumerated in the code, one line per legal way to complete a column):
+- **Complement pairs** — a cell left open in the previous column's profile must be covered by a horizontal domino poking into this column, so state `s` at column `i` draws from state `7−s` at column `i−1`: `0←7, 1←6, 2←5, 3←4, 4←3, 5←2, 6←1, 7←0`.
+- **Vertical placements** — within a column, a vertical domino can cover two adjacent cells, adding the extra transitions: `3←7` and `6←7` (a flush previous column plus one vertical pair in this column, bottom-pair or top-pair) and `7←3, 7←6` (a protruding pair completed by a vertical domino on the remaining two... i.e. the mask gains two adjacent bits at once). The middle-plus-edge combinations that would need a "vertical" over non-adjacent cells simply have no transition — that's how illegal placements are excluded.
+
+Base: `dp[0][7] = 1` (zero columns, flush boundary — one way: do nothing). Answer: `dp[n][7]`.
+
+### Complexity
+O(n · 8) time and, as written, O(n · 8) space (a full table; two rolling rows would be O(1)). Values grow ~`(2+√3)^(n/2)` — `long` overflows eventually; `BigInteger` for large n.
+
+### Notes
+- **Parity is automatic.** A 3×n board has `3n` cells, so odd n → 0; the mask DP produces those zeros on its own (no flush completion exists), no special-casing needed. The answer sequence runs `1, 0, 3, 0, 11, 0, 41, …`.
+- **Equivalent formulations** worth knowing: the two-state coupled form `f(n) = f(n−2) + 2g(n−1)`, `g(n) = f(n−1) + g(n−2)` (f = flush, g = one-cell bump, the `2` = mirror-image bumps), and the even-n closed form `f(n) = 4f(n−2) − f(n−4)` with `f(0)=1, f(2)=3`. The 8-state mask version implemented here is the one that generalizes to any board height — the profile just grows to `2^height` states.
+- Independent check: exhaustive backtracking confirms small n — kept in the runner, since hand-coded transition tables are easy to mis-transcribe.
+
+
+---
+
+## Domino_tromino_tiling
+
+**Problem.** Count the ways to fully tile a 2×n board using 2×1 dominoes and L-shaped trominoes (a 2×2 square minus one corner, any of 4 orientations). LeetCode 790; answers mod 1e9+7.
+
+### Idea
+Trominoes let a column boundary be *ragged* — one cell of a column filled while the other still waits on a piece from the next column. **As implemented: top-down memoized recursion over the state `(column i, top cell free?, bottom cell free?)`** — the profile DP directly, with a `dp[n][4]` memo (−1 = uncomputed) and the two booleans encoding the current column's raggedness:
+
+- Both cells free (state "full choice"): place a vertical domino (→ next column untouched), two horizontal dominoes (→ next column both cells taken... expressed as recursing with the next column's flags), or one of two mirror-image trominoes (→ next column has one cell taken, top or bottom).
+- Exactly one cell free (two mirror states): finish with a horizontal domino into the next column, or a tromino that also bites one cell of the next column.
+- No cells free: this column is done — advance with the next column fully free.
+
+Base case: `i == n` with a clean boundary → 1 tiling. Each branch is guarded so nothing pokes past column n−1. Results are stored mod 1e9+7; each state's sum is at most a handful of sub-results, so `long` never overflows before the mod.
+
+### Complexity
+O(n) states × O(1) transitions → O(n) time, O(n) memo space (the closed form below runs in O(1) space, kept as a cross-check).
+
+### Notes
+- **The closed recurrence `f(n) = 2f(n−1) + f(n−3)`** with `f(0)=1, f(1)=1, f(2)=2` (sequence `1, 1, 2, 5, 11, 24, 53, 117, …`) is what the state recursion collapses to — useful for verifying, and what you'd hand-roll once you trust it. It is *not* what the code runs; the state form is the one that transfers to wider boards and other tile sets.
+- **No parity shortcut here.** Unlike 3×n dominoes, a 2×n board with trominoes is tileable for every n ≥ 0.
+- **Mod discipline:** mod on store; all terms non-negative, so no wrap-around fix needed.
+- Independent check: exhaustive backtracking that lays each piece covering the first empty cell confirms small n — the branch set and its guards are easy to mis-enumerate.
+
+
+---
+
+## Mountain_scenes
+
+**Problem** (Kattis "scenes", NAIPC 2016). A ribbon of length `n` is cut into `w` columns, each filled bottom-up to an integer height in `[0, h]`. Total ribbon used (sum of heights) must be ≤ `n` — she needn't use it all. A **mountain** scene must be *uneven*: all-equal columns make a "plain," not a mountain. Count distinct mountain scenes, mod 1e9+7.
+
+### Idea
+Count everything, then subtract the non-mountains — cleaner than counting mountains directly.
+
+**Total scenes** = height assignments `(c_1, …, c_w)`, each `c_i ∈ [0, h]`, with `sum ≤ n`. **As implemented: top-down memoized recursion** `count(column, ribbonLeft)` — at each column try every height `0..h`, recursing with the ribbon reduced; base cases: negative ribbon → 0, past the last column → 1. Memo table `dp[w+1][n+1]`, −1 sentinel, mod on every addition.
+
+**Flat scenes** (the ones to remove): every column equal to some height `k`, using `w·k` ribbon, valid while `w·k ≤ n` — there are `min(h, ⌊n/w⌋) + 1` of them (computed in the code as `min(w·h, n)/w + 1`, same value).
+
+**Answer** = `(total − flats + MOD) mod 1e9+7` — the `+ MOD` before the final mod keeps the subtraction non-negative after wrapping.
+
+### Complexity
+**O(w · n · h)** time as written — `w·n` states, each summing over `h+1` heights — and **O(w · n)** memo space. Two standard tightenings, noted but not implemented: cap the ribbon dimension at `min(n, w·h)` (the frame can't hold more, so larger `n` only bloats the table), and replace the inner height loop with a prefix sum over the previous column's row (each column reads a contiguous window), dropping the time to O(w · min(n, w·h)).
+
+### Notes
+- **"Uneven" means subtract *all* flats, not just the empty scene** — every constant-height configuration, including all-zero and completely-full. The samples pin this down: `25 5 5 → 6^5 − 6 = 7770`.
+- **`w = 1` is always 0** — a single column is trivially uniform. Good sanity check.
+- Sample checks (all in the runner): `25 5 5 → 7770`, `15 5 5 → 6050`, `10 10 1 → 1022`, `4 2 2 → 6`.
+- Implementation notes: state lives in static fields (memo, W/H/N) — fine solo, not reentrant; validation requires `w, h ≥ 1`, `n ≥ 0`.
+
+
+---
+
+## Narrow_art_gallery
+
+**Problem** (Kattis "narrowartgallery", 2014 NAQ). A gallery has N rows of 2 rooms (left, right), each with a value. Exactly `k` rooms must be closed. To keep the gallery walkable top-to-bottom you may **not** close two rooms in the same row, nor two diagonally-touching rooms in adjacent rows (left in one row and right in the next, or vice versa). Choose closures leaving the **maximum total value open**.
+
+### Idea
+**As implemented: minimize the value *closed*, then complement** — `answer = totalValue − minLost`. (Maximizing open value directly is the equivalent framing; the complement is what this code — like Fiset's — does, and it makes the recursion's contribution per step a single room value instead of a row sum.)
+
+Top-down recursion `minLost(row, closuresLeft, prevSide)` where `prevSide ∈ {left-closed, free, right-closed}` — the only fact about the past the no-diagonal rule cares about. Per row, three moves:
+- **Close nothing** → lose 0 here, `k` unchanged, next side = free. Allowed after anything.
+- **Close left** → lose `rooms[row][0]`, spend a closure, next side = left. Allowed only when prevSide is free or left (left-after-right is the forbidden diagonal).
+- **Close right** → symmetric, allowed when prevSide is free or right.
+
+Base cases: `closuresLeft == 0` → 0 (the remaining rows all stay open — this is what makes it *exactly* k, since the count can't go below zero); rows exhausted with closures still owed → an infeasibility sentinel so that branch never wins. Memo `dp[row][k][side]` with −1 sentinel.
+
+### Complexity
+O(N · k · 3) states, O(1) work each → **O(N·k)** time and memo space. Values are small ints.
+
+### Notes
+- **"At most one per row" + "no diagonal" is the whole constraint** — both fall out of the three-way side state; you never look back more than one row.
+- **Feasibility:** any `0 ≤ k ≤ N` is achievable (close the same side in k rows), so a valid answer always exists in range — enforced by the `k ≤ rooms.length` validation.
+- **Code flag (C7):** the infeasibility sentinel is the literal **10000**. A legitimate closed-sum above 10000 (e.g. 200 rows of ~100-value rooms) would lose to the "infeasible" branch and inflate the answer. Use a large sentinel (`Integer.MAX_VALUE/2`) — the fix is one constant.
+- Sample checks (verified against an independent subset brute force in the runner): `17`, `17`, `102`.
+
+
+---
+
+## Knapsack_01
+
+**Problem.** Given `n` items, each with a weight and a value, and a knapsack of capacity `W`, pick a subset with total weight ≤ `W` and maximal total value. Each item is taken **at most once** (0/1 — no fractions, no duplicates).
+
+### Idea
+The decision for each item is binary: take it or leave it. Process items one at a time and track, for every capacity budget, the best value achievable so far.
+
+`dp[i][w]` = best value using the first `i` items with budget `w`. For item `i` (1-indexed, so `weights[i-1]`):
+```
+dp[0][w] = 0                                     (no items -> no value)
+dp[i][w] = dp[i-1][w]                            if weights[i-1] > w   (can't fit -> must skip)
+         = max( dp[i-1][w],                      skip item i
+                values[i-1] + dp[i-1][w - weights[i-1]] )   take item i
+```
+Answer: `dp[n][W]`. **As implemented:** the full 2D table, filled row by row with `w` ascending — safe with two rows in play, because "take" always reads the *previous* row. Inputs are validated (equal-length arrays, non-negative weights/values/capacity); zero items short-circuits to 0.
+
+### Complexity
+O(n·W) time and O(n·W) space as written. The classic space squeeze — one rolling row, **capacity loop descending** — gets O(W); descending is what keeps each item single-use (`dp[w − weight]` still means the previous item's row), while ascending on one row would silently become *unbounded* knapsack. Worth internalizing even though this file keeps the 2D table (its sibling needs the table anyway for reconstruction).
+
+Note this is "pseudo-polynomial": `W` is a value, not an input length, so the cost is exponential in `W`'s bit-length. Knapsack is NP-hard; the DP is efficient only when `W` is modest.
+
+### Notes
+- **The one-line 0/1-vs-unbounded switch** (rolling-row loop direction) is the interview classic riding on this problem.
+- **Fractional knapsack is a different problem** — greedy by value/weight ratio is optimal there; for 0/1, greedy fails and you need the DP.
+- Sample checks (independently verified): `w{1,3,4,5} v{1,4,5,7} cap7 → 9`, `w{2,3,4,5} v{3,4,5,6} cap5 → 7`.
+
+
+---
+
+## Knapsack_01_items
+
+**Problem.** Same as 0/1 knapsack, but return **both** the maximum value and *which items* achieve it.
+
+### Idea
+Build the identical full 2D table, then walk it backward to recover the choices:
+
+```
+w = W
+for i from n down to 1:
+    if dp[i][w] != dp[i-1][w]:      # value changed => item i-1 was taken
+        record index i-1
+        w -= weights[i-1]           # give back its weight
+    # else: skipped, budget unchanged
+```
+
+`dp[i][w]` differs from `dp[i-1][w]` exactly when including item `i−1` beat excluding it — the optimum at this cell *used* the item. **As implemented:** indices are collected during the walk (descending) and then `Arrays.sort`ed ascending — same result as the push-front/reverse approach. Value and items are returned together in a small immutable `Result` (with `equals`/`hashCode`, so runners can compare directly).
+
+### Complexity
+O(n·W) time and O(n·W) space — the table is now mandatory (the O(W) rolling row forgets the per-item history the walk needs). The backward walk adds O(n), the sort O(n log n) — noise.
+
+### Notes
+- **The "equal ⇒ skipped" rule is a tie-break.** When taking and skipping tie, this convention skips — producing one specific optimal set. The item set isn't unique in general, only the value is; so the runner validates the returned set (distinct indices, fits capacity, sums to the optimal value) rather than demanding one exact answer, except where the optimum is provably unique.
+- **Value-only vs items:** `Knapsack_01.maxValue` and this method must agree on the value for every input — a cheap consistency check the runner performs.
+
+
+---
+
+## Job_sequencing_deadlines
+
+*(Skeleton stage — written for the intended algorithm; reconcile against the code once implemented.)*
+
+**Problem.** n jobs, each taking exactly 1 time unit, each with a deadline `d[i] >= 1` and profit `p[i]`. One machine, one job per slot `1, 2, 3, …`; a job pays only if scheduled in a slot ≤ its deadline. Maximize total profit (the Abdul Bari greedy classic).
+
+### Idea
+Two greedy decisions, both provable by exchange arguments:
+- **Order: profit descending.** If an optimal schedule skips a higher-profit job in favor of a lower-profit one competing for the same slots, swapping them can't decrease profit.
+- **Placement: the LATEST free slot ≤ the deadline.** Placing a job as late as legally possible keeps early slots open for jobs with tighter deadlines. The `d{4,1,1,1} p{50,10,40,30}` case is the demonstration: put 50 in slot 4 (not slot 1) and slot 1 stays free for 40 → 90; greedily grabbing slot 1 for the 50 strands every deadline-1 job → 60.
+
+A job finding no free slot ≤ its deadline is simply dropped (it can never pay).
+
+Feasibility fact worth knowing (it powers the brute-force verifier): a *set* of unit jobs is schedulable iff, after sorting its deadlines ascending, the i-th deadline (1-based) is ≥ i — Hall's condition specialized to intervals `[1, d]`.
+
+### Complexity
+O(n log n) sort + O(n · maxD) slot probing with a plain free-slot array (each job scans backward from its deadline). The classic upgrade: a **union-find over slots** where `find(d)` returns the latest free slot ≤ d and placing unions it with slot−1 — O(n log n + n·α) total, and a nice reuse of the repo's `Union_find_compressed`. Cap slot bookkeeping at `min(maxDeadline, n)` — no schedule ever uses more than n slots (deadlines can be huge; the runner's million-deadline case guards this).
+
+### Notes
+- **Contrast with 0/1 knapsack:** near-identical flavor ("pick items for profit under a constraint") but here greedy is *optimal* while knapsack's greedy fails and needs DP. The difference is the matroid structure of the schedulable sets — the interview-grade observation.
+- The maximum **profit** is unique; the chosen job *set* is not (equal profits swap freely) — assert profit, and assert counts only where they're forced (all-deadline-1 → exactly one job runs).
+- Weighted variants with unequal job lengths lose the matroid structure and go NP-hard — this problem lives right on the tractability boundary.
+
+---
+
+## Grid_shortest_path
+
+**Problem.** Given a rectangular grid where `0` is open and `1` is a wall, find the fewest 4-directional moves from a start cell to a target cell, stepping only on open cells. Return the move count, or `-1` if unreachable. (Lives in `Problems/` — it's a named problem built on the BFS idea.)
+
+### Idea
+The grid *is* a graph, just implicit: each open cell is a vertex, each pair of orthogonally adjacent open cells an edge. Every move costs 1, so this is unweighted shortest path → **BFS**, generating neighbors on the fly from coordinates instead of building a graph.
+
+**As implemented** — the same mark-on-dequeue style as the graph BFS (see `Breadth_first_search` in `Algorithms_notes.md`), with a `dist` grid instead of parents:
+
+```
+if start or target is a wall: return -1
+dist[*][*] = -1;  dist[start] = 0;  enqueue start
+while queue not empty:
+    (r, c) = dequeue                       # two parallel Queues carry r and c
+    if not visited[r][c]:
+        mark visited
+        for each of the 4 directions:
+            (nr, nc) = neighbor
+            if in bounds, open:
+                if dist[nr][nc] == -1: dist[nr][nc] = dist[r][c] + 1   # first sight wins
+                enqueue (nr, nc)
+return dist[tr][tc]        # still -1 if never reached
+```
+
+`dist` is set at **first discovery** (guarded by `== -1`), which preserves shortest distances for the same reason the graph BFS's first-parent-wins does. The `-1` initialization doubles as the unreachable sentinel, so the final read needs no special case. There is no early exit on reaching the target — the BFS runs to completion and the answer is read out of the table (an `if (r,c)==target return` on dequeue is a valid optimization, just not taken).
+
+### Complexity
+O(R·C) time and space — each cell expands once, ≤ 4 neighbors each; the duplicate-tolerant queue holds at most O(R·C) redundant entries (constant-degree grid, so no blowup).
+
+### Notes
+- **Reject wall endpoints up front** — the code returns −1 immediately if start or target is a wall (the BFS would conclude the same, the explicit check is clearer), after validating bounds and rectangularity.
+- **Bounds check every neighbor** before indexing — edge cells are where the out-of-bounds access hides.
+- **Coordinates travel as two parallel queues** (`r_index`, `c_index`) dequeued in lockstep — the third option next to encoding `r*C + c` or a small cell object.
+- **Variants** slot in cleanly: 8-directional movement (extend the direction arrays), multiple sources (enqueue all at distance 0), weighted terrain (breaks the unit-cost assumption → Dijkstra / 0-1 BFS). Path reconstruction would add a parent grid exactly like the graph BFS.
+
+
+---
+
+## Traveling_salesman
+
+**Problem.** Given `n` cities and an `n × n` cost matrix, find the cheapest tour that starts at a city, visits every city exactly once, and returns to the start (minimum-cost Hamiltonian cycle). Works for asymmetric costs (`dist[i][j]` may differ from `dist[j][i]`).
+
+### Idea
+Brute force tries all `(n−1)!` orderings — hopeless past ~12 cities. **Held-Karp** memoizes over *sets* of visited cities: the cost of finishing depends only on which cities are visited and where you stand, not the order behind you.
+
+State: `memo[i][mask]` = minimum cost of a path that starts at city 0, has visited exactly the bitmask `mask` (bit `i` set), and currently stands at `i`.
+
+**As implemented — bottom-up by subset size:**
+```
+base:  memo[i][ {0, i} ] = dist[0][i]   for each i != 0
+for r = 3..n:                            # subset sizes
+    for each mask with bitCount r containing city 0:
+        for each next in mask (not 0):
+            memo[next][mask] = min over end in mask\{0,next} of
+                               memo[end][mask ^ (1<<next)] + dist[end][next]
+answer: min over end != 0 of memo[end][fullMask] + dist[end][0]
+```
+Iterating masks in increasing subset size guarantees every predecessor state is finished before it's read. `notIN(i, mask)` is the bit-test helper; `fullMask = (1<<n) − 1`; INF = `Integer.MAX_VALUE/2` so `INF + dist` can't overflow.
+
+### Complexity
+O(2ⁿ · n²) time, O(2ⁿ · n) space — practical to n ≈ 18–20. Still exponential (TSP is NP-hard); just vastly better than factorial.
+
+### Notes
+- **Fix the start at city 0.** A tour's cost is rotation-invariant; pinning the start removes the n-fold symmetry and anchors the base case. `n = 1` short-circuits to 0; `n = 2` falls out as `dist[0][1] + dist[1][0]`.
+- **Sentinel discipline:** halved MAX_VALUE keeps `INF + dist` finite; unvisited memo cells default to 0 but are never read thanks to the subset-size ordering and the in-mask guards.
+- The table size is allocated via `(int) Math.pow(2, n)` — works, but `1 << n` is the exact, idiomatic form.
+- **Code flag (B10):** after computing the cost, the method also runs a **tour reconstruction** loop — whose comparison is inverted (it replaces the candidate when the incumbent is strictly *better*, building a worst tour) — and then **discards the result** (the `tour` array is never returned). Dead code hiding a bug no test can reach: either fix the comparison and return the tour, or delete the loop.
+- Sample checks (independently verified): symmetric 4-city → `80`, asymmetric 3-city → `3`.
+
+
+---
+
+## N_queens
+
+*(Skeleton stage — written for the intended algorithm; reconcile against the code once implemented.)*
+
+**Problem.** Place n queens on an n×n board with no two sharing a row, column, or diagonal. Count all distinct placements, and produce one.
+
+### Idea
+**Backtracking** — the exhaustive search that prunes instead of enumerating. One queen per row is forced, so search row by row: at row r, try each column c that is unattacked, place, recurse to r+1, **undo**, try the next c. Reaching row n is one complete solution. The undo is the essence: state must be bit-identical before and after each attempt, or "solutions" leak between branches.
+
+O(1) attack tests via three occupancy sets — the observation that makes the search fast:
+- `cols[c]` — columns are just c;
+- `diag1[r + c]` — every "/" anti-diagonal has constant r+c (2n−1 of them);
+- `diag2[r − c + n − 1]` — every "\" diagonal has constant r−c, shifted non-negative.
+
+Place = set three booleans; undo = clear them. Without these, each attack check is an O(n) rescan of placed queens.
+
+For `oneSolution`, the same recursion short-circuits on the first success (return/flag up the stack); n = 2 and n = 3 are the only unsolvable sizes ≥ 1 — return empty, and keep `countSolutions == 0 ⇔ oneSolution empty` as a consistency invariant (the runner checks it).
+
+### Complexity
+Worst-case O(n!) branching (row r has ≤ n−r viable columns), heavily pruned in practice; counting n = 9 (352) is instant, n ≈ 15 is where it starts to breathe hard. Space O(n) for the sets + recursion.
+
+### Notes
+- **Counting convention:** rotations/reflections count separately (n = 8 → 92 total, vs 12 "fundamental" solutions). The count sequence 1, 0, 0, 2, 10, 4, 40, 92, 352 is OEIS A000170 — the runner's independently established constants.
+- The classic halving optimization: first-row symmetry (mirror pairs) lets you search half the columns and double — worth doing only after the plain version is trusted.
+- Backtracking vs DP: subproblems here (partial boards) don't repeat, so there's nothing to memoize — this is exhaustive search with pruning, the third technique next to D&C and DP, and the template for Sudoku, subset-sum search, and graph coloring. Bitmask sets (`int` instead of `boolean[]`) are the constant-factor upgrade.
+
+---
+
+# Bipartite Matching via Max Flow — Notes
+
+Two problems that look unrelated but share one shape: model them as a bipartite graph, add a super-source and super-sink, and the maximum flow *is* the maximum matching. The pattern: `source → left nodes (cap 1) → right nodes (edge where allowed) → sink (cap 1 or a limit)`.
+
+## Mice_and_owls
+
+**Problem.** Mice are scattered on a plane; owls will strike. Each mouse can run at most a fixed distance and must reach a hole to survive. Each hole has a capacity. Maximize mice saved (equivalently, minimize eaten).
+
+### Idea
+Bipartite max flow with capacities on the right side. **As implemented:** one capacity matrix of size `mice + holes + 2`, with mice at indices `0..m−1`, holes at `m..m+h−1`, source at `m+h`, sink at `m+h+1`:
+- **Source → each mouse**, capacity 1 (each mouse is one unit to route).
+- **Mouse → hole**, capacity 1, whenever `distance(mouse, hole) <= maxDistance` (the `canReach` predicate — Euclidean, and `<=` so a mouse exactly at its limit still makes it).
+- **Hole → sink**, capacity = the hole's capacity.
+
+Max flow (computed with the repo's `Ford_fulkerson`) = mice simultaneously routable to holes without exceeding any hole = **mice saved**. Mice eaten = total − flow.
+
+### Why it works
+Each flow unit is one mouse traveling source → mouse → hole → sink. Unit capacity on `source → mouse` uses each mouse once; the hole's limit sits on its sink edge; integer capacities guarantee an integral max flow, i.e. an actual assignment. This is the classic reduction of capacity-constrained matching to max flow.
+
+### Notes
+- **Hole capacity lives on the hole → sink edge, not the mouse → hole edges** — that's what caps a hole's intake no matter how many mice can reach it.
+- Comparing squared distances would avoid the `sqrt` for exact integer inputs; doubles are fine here.
+- Any max-flow routine works; the networks are small, so the DFS Ford-Fulkerson is plenty.
+
+## Elementary Math (variant — notes only, no implementation)
+
+**Problem.** Given `N` expressions, each a pair `(a, b)`, choose one operation per pair — `a + b`, `a − b`, or `a × b` — so that all `N` results are **distinct**. Decide feasibility (and, in the full problem, output the choices).
+
+### Idea
+This is **pure bipartite matching**, not a capacity problem:
+- **Left nodes = the N expressions.** **Right nodes = the candidate result values** — each expression contributes at most 3, so ≤ 3N distinct values; dedupe them.
+- **Edge expression → value** for each result that expression can produce.
+- **Source → expression** cap 1; **value → sink** cap 1 (each result value usable by at most one expression).
+
+A **perfect matching** — max flow = N — means every expression gets a distinct result; flow < N means impossible. The matched edges name the operations for constructive output.
+
+### Why it's the same family as Mice and Owls
+Both are "assign each left item to a right slot, each slot used a limited number of times, respecting an allowed-pairs relation." Mice/holes has capacities > 1 on the sink edges; Elementary Math is capacity 1 everywhere (a pure matching). Same source→left→right→sink skeleton; only the meaning of the right nodes and the sink capacities differ.
+
+### Notes
+- **Distinctness = unit capacity on the value → sink edge.** That single-use constraint *is* "all results distinct."
+- The value set is small (≤ 3N): enumerate each expression's three results, dedupe, map each distinct value to an index. Watch `a − b` signs and `a × b` magnitudes when hashing — negative and large products are legitimately distinct values (use `long`).

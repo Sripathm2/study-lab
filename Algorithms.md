@@ -5,8 +5,9 @@ Idea, complexity, and notes for each algorithm in the `Algorithms/` package, rec
 ## Contents
 **Primers:** [Time complexity](#time-complexity--growth-rates-worth-recognizing) · [Hamiltonian cycles & NP-hardness](#hamiltonian-cycles--np-hardness)
 **Strings (suffix array):** [Unique_substrings](#unique_substrings) · [Longest_repeated_substring](#longest_repeated_substring) · [Longest_common_substring](#longest_common_substring)
-**Divide & conquer:** [Divide and conquer](#divide-and-conquer) · [Merge_sort](#merge_sort)
-**Graphs:** [Overview](#graphs--overview) · [Depth_first_search](#depth_first_search) · [Breadth_first_search](#breadth_first_search) · [Root_tree](#root_tree) · [Leaf_node_sum](#leaf_node_sum) · [Tree_center](#tree_center) · [Tree_isomorphism](#tree_isomorphism) · [Lowest_common_ancestor](#lowest_common_ancestor) · [Topological_sort_dfs](#topological_sort_dfs) · [Topological_sort_kahn](#topological_sort_kahn) · [Dag_shortest_longest_path](#dag_shortest_longest_path) · [Dijkstra](#dijkstra) · [Bellman_ford](#bellman_ford) · [Floyd_warshall](#floyd_warshall) · [Tarjan_scc](#tarjan_scc) · [Eulerian_path](#eulerian_path) · [Prim_minimum_spanning_tree](#prim_minimum_spanning_tree)
+**Divide & conquer:** [Divide and conquer](#divide-and-conquer) · [Merge_sort](#merge_sort) · [Strassen_matrix_multiplication](#strassen_matrix_multiplication)
+**Greedy:** [Huffman_encoding](#huffman_encoding)
+**Graphs:** [Overview](#graphs--overview) · [Depth_first_search](#depth_first_search) · [Breadth_first_search](#breadth_first_search) · [Root_tree](#root_tree) · [Leaf_node_sum](#leaf_node_sum) · [Tree_center](#tree_center) · [Tree_isomorphism](#tree_isomorphism) · [Lowest_common_ancestor](#lowest_common_ancestor) · [Topological_sort_dfs](#topological_sort_dfs) · [Topological_sort_kahn](#topological_sort_kahn) · [Dag_shortest_longest_path](#dag_shortest_longest_path) · [Dijkstra](#dijkstra) · [Bellman_ford](#bellman_ford) · [Floyd_warshall](#floyd_warshall) · [Tarjan_scc](#tarjan_scc) · [Articulation_points](#articulation_points) · [Eulerian_path](#eulerian_path) · [Prim_minimum_spanning_tree](#prim_minimum_spanning_tree)
 **Max flow:** [Ford_fulkerson](#ford_fulkerson) · [Edmonds_karp](#edmonds_karp) · [Capacity_scaling](#capacity_scaling) · [Dinics](#dinics)
 
 The graph representation notes (`Graph_adjacency_matrix`, `Graph_adjacency_list`) live in `Data_structures_notes.md` — those classes belong to the `Data_structures/` package. The recursion exercises, DP problems, `Grid_shortest_path`, `Traveling_salesman`, and the bipartite-matching flow problems are in `Problems_notes.md`.
@@ -147,6 +148,61 @@ The recursion tree has `log n` levels, and each level does O(n) total merging wo
 - **Non-destructive contract here:** the input array is provably unchanged after sorting (the runner verifies), because every level works on copies. Empty input returns a new empty array; null throws.
 - **Generic version.** Swap `int[]` for `T[]` with `T extends Comparable<T>` (or a `Comparator`) and compare via `compareTo` — the structure is identical.
 
+
+---
+
+## Strassen_matrix_multiplication
+
+*(Skeleton stage — written for the intended algorithm; reconcile against the code once implemented.)*
+
+Multiply two n×n matrices in sub-cubic time — the classic "a cleverer combine step beats the naive bound" divide-and-conquer result.
+
+### Idea
+Split each matrix into four n/2 × n/2 quadrants. The naive block recursion computes the four result quadrants from **8** sub-multiplications — `T(n) = 8T(n/2) + O(n²)` → O(n³), no better than three loops. Strassen's insight: **7 carefully chosen products of quadrant sums/differences suffice**:
+
+```
+M1 = (A11 + A22)(B11 + B22)      M5 = (A11 + A12) B22
+M2 = (A21 + A22) B11             M6 = (A21 − A11)(B11 + B12)
+M3 = A11 (B12 − B22)             M7 = (A12 − A22)(B21 + B22)
+M4 = A22 (B21 − B11)
+
+C11 = M1 + M4 − M5 + M7          C12 = M3 + M5
+C21 = M2 + M4                    C22 = M1 − M2 + M3 + M6
+```
+
+Trading one multiplication for a pile of O(n²) additions changes the recurrence to `T(n) = 7T(n/2) + O(n²)` → **O(n^log₂7) ≈ O(n^2.81)** — the same move as Karatsuba (3 products instead of 4 for integer multiplication). Non-power-of-two sizes: zero-pad up to the next power of two, multiply, crop — padding can't change the product, and at most doubles n (a constant factor).
+
+### Complexity
+O(n^2.81) time, O(n²) memory per recursion level for the temporaries (O(n² ) total, geometric series). In practice the constant factor is large: real implementations recurse only down to a **cutoff** (~64–128) and switch to the naive kernel below it — the skeleton's base-case hint.
+
+### Notes
+- **Verify against the naive multiplier, always** — the seven formulas are the easiest thing in this repo to mis-transcribe, and a single sign error still produces plausible-looking numbers. The runner cross-checks fixed constants *and* random matrices against an inline O(n³) reference.
+- Sub-cubic ≠ numerically identical: with floats, Strassen's extra additions cost accuracy; with `long`s (this skeleton) results are exact but intermediate sums grow — entries up to ~√(MAX/n) are safe.
+- Asymptotically better algorithms exist (Coppersmith–Winograd line, ω < 2.372) but are galactic — Strassen is the one that's actually used, and the pedagogical point: the Master Theorem's `a` (subproblem count) is a knob you can sometimes turn down.
+
+---
+
+## Huffman_encoding
+
+*(Skeleton stage — written for the intended algorithm; reconcile against the code once implemented.)*
+
+Build an optimal **prefix-free** binary code for a text: frequent characters get short codes, rare ones long — the flagship greedy algorithm.
+
+### Idea
+A prefix-free code (no codeword is a prefix of another) is exactly a **binary tree with characters at the leaves**: left = 0, right = 1, code = root-to-leaf path; prefix-freeness is "no character sits on the path to another." The cost to minimize is the weighted path length `Σ freq(c) · depth(c)` — the encoded bit total.
+
+**Huffman's greedy:** put every character in a min-heap keyed by frequency; repeatedly pop the two lightest nodes, hang them under a fresh internal node weighing their sum, push it back. Last node = root. The exchange argument for optimality: the two rarest symbols can always be assumed to be sibling leaves at maximum depth (swapping them down never increases cost), and after merging them the problem recurses on one fewer symbol.
+
+Encoding = concatenate codes; decoding = walk bits through the tree (or greedily match the code table — prefix-freeness makes the match unambiguous, no separators needed).
+
+### Complexity
+O(k log k) for k distinct characters (k−1 heap merges) after an O(n) frequency count; encode/decode O(output length). The repo's `Priority_queue` (comparator-ordered) is the natural heap here.
+
+### Notes
+- **The codes are not unique — the total length is.** Tie-breaks among equal weights flip siblings and reorder merges, producing different but equally optimal tables. Tests must therefore assert the *total encoded length* (unique, = the sum of the two popped weights over all merges), round-trip identity, and prefix-freeness — never specific bit strings.
+- **Single-distinct-character edge case:** the tree is one leaf, path length 0 → an empty code encodes to nothing and can't be decoded. Convention: assign `"0"`.
+- Huffman is optimal among per-symbol prefix codes given the frequencies; arithmetic coding beats it by encoding fractional bits, and adaptive Huffman drops the two-pass requirement — the upgrade paths, not this exercise.
+- Greedy contrast worth internalizing: Huffman and Job_sequencing (in `Problems_notes.md`) both *prove* their greedy via exchange arguments — the difference between "greedy that works" and "greedy that feels right" (0/1 knapsack) is exactly whether that argument exists.
 
 ---
 
@@ -611,6 +667,33 @@ O(V + E) — one DFS, optimal, single pass (unlike Kosaraju's two). O(V) for the
 - A DAG has V singleton SCCs; a single directed cycle is one SCC of size V. Runner-verified: `{0,1,2},{3,4},{5}` for the linked-cycles graph; DAG → singletons; ring → one component.
 - Uses the repo's own `Stack`; state is static (C9); deep graphs recurse deep.
 
+
+---
+
+## Articulation_points
+
+*(Skeleton stage — written for the intended algorithm; reconcile against the code once implemented.)*
+
+Find the **cut vertices** of an undirected graph — vertices whose removal increases the number of connected components — in one low-link DFS.
+
+### Idea
+Same instrument family as Tarjan SCC (discovery indices + low values), different tune — and here the detail Tarjan's SCC variant blurs comes back with teeth. For undirected graphs define `low[v]` = the smallest discovery index reachable from v's DFS subtree using tree edges plus **at most one back edge**. Then:
+
+- **Non-root v is an articulation point iff some DFS child c has `low[c] >= ids[v]`** — c's subtree cannot climb strictly above v, so every path from that subtree to the rest of the graph passes through v.
+- **The DFS root is a special case:** it's an articulation point **iff it has ≥ 2 DFS children** (its low-link test is vacuous — everything is below it). Note: DFS children, not degree — a root inside a triangle has degree 2 but one DFS child, and is not a cut vertex.
+
+Updates during the DFS: tree edge → `low[v] = min(low[v], low[child])` after recursing; back edge to visited w (≠ the parent you arrived from) → `low[v] = min(low[v], ids[w])` — **`ids[w]`, not `low[w]`**. Using `low` on back edges lets reachability "teleport" through vertices more than once and silently erases cut vertices; this is exactly the tree-vs-back-edge distinction the SCC note said would return with teeth.
+
+Disconnected graphs: launch a DFS per component, each launch its own root with its own root rule. The bridge analogue differs by one character — `low[c] > ids[v]` (strict) marks edge (v, c) a **bridge**.
+
+### Complexity
+O(V + E), one DFS pass, O(V) arrays + recursion depth.
+
+### Notes
+- **The `>=` vs `>` pair is the exam question:** `>=` for cut vertices (the child may climb back *to* v — v is still the bottleneck), `>` for bridges (climbing back to v means the edge itself is bypassable).
+- **Parent handling:** skip only the edge you arrived by. In a simple graph, skipping the parent's id suffices; with parallel edges you'd skip by edge id instead.
+- Independent verification is cheap and worth it: v is a cut vertex iff deleting it raises the component count — the runner cross-checks every case (and random graphs) against that O(V·(V+E)) brute force.
+- Applications: network single-points-of-failure, biconnected-component decomposition (the regions between cut vertices), and robustness analysis before adding redundancy.
 
 ---
 
