@@ -175,6 +175,8 @@ clean:
 	    $(foreach e,$(ML_KEEP),-not -name '*.$(e)') \
 	    -print -delete | sed 's/^/  cleaned: /'; \
 	fi
+	rm -rf ./Machine_learning/logs
+	rm -rf ./Machine_learning/lightning_logs
 
 # clean-all: clean + strip every notebook's output cells (small, diff-friendly commits).
 clean-all: clean

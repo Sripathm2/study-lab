@@ -14,3 +14,5 @@ dependencies:
   - pip
   - pip:
       - ISLP        # the ISL Python-edition package: datasets + lab helpers
+      - l0bnb
+      - torchinfo
