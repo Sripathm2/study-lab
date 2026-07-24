@@ -1,6 +1,7 @@
 package Algorithms;
 import Data_structures.Graph;
 import java.util.List;
+import java.util.Stack;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -12,6 +13,7 @@ public class Topological_sort_dfs {
 
     private static ArrayList<Integer> order;
     private static boolean[] visited;
+    private static boolean[] onstack;
 
     // Return a topological ordering of g's vertices.
     // Throw NullPointerException if g is null.
@@ -23,6 +25,7 @@ public class Topological_sort_dfs {
 
         order = new ArrayList<Integer>();
         visited = new boolean[g.vertexCount()];
+        onstack = new boolean[g.vertexCount()];
 
         for(int i=0; i<g.vertexCount(); i++){
             if(!visited[i]){
@@ -39,6 +42,7 @@ public class Topological_sort_dfs {
 
         order = new ArrayList<Integer>();
         visited = new boolean[g.vertexCount()];
+        onstack = new boolean[g.vertexCount()];
 
         dfs(g,start,start);
 
@@ -51,7 +55,7 @@ public class Topological_sort_dfs {
     }
 
     public static void dfs(Graph g, int current, int start) {
-        if(start == current && visited[current] == true){
+        if(onstack[current]){
             throw new IllegalArgumentException();
         }
         if(visited[current]){
@@ -59,10 +63,12 @@ public class Topological_sort_dfs {
         }
         
         visited[current] = true;
+        onstack[current] = true;
         for(int neigh: g.neighbors(current)){
             dfs(g, neigh, start);
         }
         order.add(0, current);
+        onstack[current] = false;
     }
 
 }
@@ -145,10 +151,39 @@ class Topological_sort_dfs_Main {
         // No edges: any permutation is valid
         checkTrue("edgeless valid topo", validTopo(new DiGraph(4), Topological_sort_dfs.sort(new DiGraph(4))));
 
+        // Forward/cross edge in a genuine DAG: 0->1, 0->2, 1->2.
+        // Vertex 2 is revisited but has already FINISHED — must not be
+        // mistaken for a back edge. Guards against over-eager detection.
+        DiGraph cross = new DiGraph(3);
+        cross.addEdge(0,1); cross.addEdge(0,2); cross.addEdge(1,2);
+        checkTrue("forward edge is not a cycle", validTopo(cross, Topological_sort_dfs.sort(cross)));
+
+        // sort_with_start_node has its own array allocations — exercise both paths.
+        DiGraph g4 = new DiGraph(5);
+        g4.addEdge(0,1); g4.addEdge(0,2); g4.addEdge(1,3); g4.addEdge(2,3); g4.addEdge(3,4);
+        checkTrue("start-node overload valid topo", validTopo(g4, Topological_sort_dfs.sort_with_start_node(g4, 0)));
+        DiGraph g5 = new DiGraph(4);
+        g5.addEdge(2,3); g5.addEdge(0,1);
+        checkTrue("start-node mid-graph valid topo", validTopo(g5, Topological_sort_dfs.sort_with_start_node(g5, 2)));
+
         // --- Cycle detection ---
         DiGraph cyc = new DiGraph(3);
         cyc.addEdge(0,1); cyc.addEdge(1,2); cyc.addEdge(2,0);
         checkThrows("3-cycle throws", IllegalArgumentException.class, () -> Topological_sort_dfs.sort(cyc));
+        // Cycle that does NOT pass through the DFS launch vertex: 0->1, 1->2, 2->1.
+        // The old start-vertex check missed this and silently returned [0,1,2].
+        DiGraph downstream = new DiGraph(3);
+        downstream.addEdge(0,1); downstream.addEdge(1,2); downstream.addEdge(2,1);
+        checkThrows("downstream cycle throws", IllegalArgumentException.class,
+                () -> Topological_sort_dfs.sort(downstream));
+
+        // Cycle in a component only reached by a LATER outer-loop relaunch:
+        // 0->1 finishes first, then 2->3, 3->4, 4->3 must still be caught.
+        DiGraph laterComp = new DiGraph(5);
+        laterComp.addEdge(0,1);
+        laterComp.addEdge(2,3); laterComp.addEdge(3,4); laterComp.addEdge(4,3);
+        checkThrows("cycle in later component throws", IllegalArgumentException.class,
+                () -> Topological_sort_dfs.sort(laterComp));
         DiGraph self = new DiGraph(2);
         self.addEdge(0,0);
         checkThrows("self-loop throws", IllegalArgumentException.class, () -> Topological_sort_dfs.sort(self));

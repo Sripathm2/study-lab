@@ -48,13 +48,21 @@ public class Floyd_warshall {
                 }
             }
         }
-        for(int k = 0; k < dp.length; k++){
-            for(int i = 0;i < dp.length; i++){
-                for(int j=0; j < dp.length; j++){
-                    if(dp[i][k] != UNREACHABLE && dp[k][j] != UNREACHABLE && dp[i][k] + dp[k][j] < dp[i][j]){
-                        dp[i][j] = NEGATIVE_INF;
-                        path[i][j] = -1;
-                    }
+
+
+        boolean[] onNegCycle = new boolean[dp.length];
+        for (int k = 0; k < dp.length; k++) {
+            onNegCycle[k] = dp[k][k] < 0? true:false;
+        }
+
+        for (int k = 0; k < dp.length; k++) {
+            if (!onNegCycle[k]) continue;
+            for (int i = 0; i < dp.length; i++) {
+                if (dp[i][k] == UNREACHABLE) continue;
+                for (int j = 0; j < dp.length; j++) {
+                    if (dp[k][j] == UNREACHABLE) continue;
+                    dp[i][j] = NEGATIVE_INF;
+                    path[i][j] = -1;
                 }
             }
         }
@@ -74,7 +82,7 @@ public class Floyd_warshall {
                 if(i==j){
                     dp[i][j] = 0;
                     path[i][j] = j;
-                }if(g.hasEdge(i, j)){
+                }else if(g.hasEdge(i, j)){
                     dp[i][j] = g.weight(i, j);
                     path[i][j] = j;
                 }else{
@@ -111,6 +119,16 @@ public class Floyd_warshall {
 class Floyd_warshall_Main {
     private static int passed = 0;
     private static int failed = 0;
+
+    // hasNegativeCycle must agree with what allPairsShortestPaths reports on the diagonal.
+    private static void checkAgree(String name, Graph g, boolean expected) {
+        long[][] d = Floyd_warshall.allPairsShortestPaths(g);
+        boolean viaMatrix = false;
+        for (int i = 0; i < g.vertexCount(); i++)
+            if (d[i][i] < 0) viaMatrix = true;
+        checkEquals(name + " [hasNegativeCycle]", expected, Floyd_warshall.hasNegativeCycle(g));
+        checkEquals(name + " [matrix diagonal]",  expected, viaMatrix);
+    }
 
     private static void checkEquals(String name, Object expected, Object actual) {
         if (Objects.equals(expected, actual)) { passed++; System.out.println("PASS: " + name); }
@@ -157,6 +175,49 @@ class Floyd_warshall_Main {
         W c = new W(3);
         c.add(0,1,1); c.add(1,2,-3); c.add(2,0,1);
         checkEquals("detects negative cycle", true, Floyd_warshall.hasNegativeCycle(c));
+
+        // --- B9: the two entry points must initialize identically ---
+
+        // Positive cycle 0->1->2->0. The buggy init left the diagonal holding
+        // cycle weights (3) instead of 0 — must still report no negative cycle.
+        W pos = new W(3);
+        pos.add(0,1,1); pos.add(1,2,1); pos.add(2,0,1);
+        checkAgree("positive cycle", pos, false);
+        checkEquals("positive cycle diagonal is 0",
+                Arrays.toString(new long[]{0,1,2}),
+                Arrays.toString(Floyd_warshall.allPairsShortestPaths(pos)[0]));
+
+        // Zero-weight cycle — the boundary. Not negative.
+        W zero = new W(2);
+        zero.add(0,1,2); zero.add(1,0,-2);
+        checkAgree("zero-weight cycle", zero, false);
+
+        // No edges at all: every diagonal entry must be 0, everything else U.
+        W bare = new W(3);
+        checkAgree("edgeless", bare, false);
+        checkEquals("edgeless row 1", Arrays.toString(new long[]{U,0,U}),
+                Arrays.toString(Floyd_warshall.allPairsShortestPaths(bare)[1]));
+
+        // Negative cycle confined to one component, with an unrelated component
+        // and an isolated vertex alongside. 0->1(1); 2<->3 at -1 each; 4 alone.
+        W part = new W(5);
+        part.add(0,1,1); part.add(2,3,-1); part.add(3,2,-1);
+        checkAgree("negative cycle in one component only", part, true);
+        long N = Floyd_warshall.NEGATIVE_INF;
+        checkEquals("clean component untouched", Arrays.toString(new long[]{0,1,U,U,U}),
+                Arrays.toString(Floyd_warshall.allPairsShortestPaths(part)[0]));
+        checkEquals("infected component marked", Arrays.toString(new long[]{U,U,N,N,U}),
+                Arrays.toString(Floyd_warshall.allPairsShortestPaths(part)[2]));
+
+        // Vertex that REACHES a negative cycle but isn't on it: row 0 must go
+        // NEGATIVE_INF for 1 and 2 while dist[0][0] stays 0.
+        W reach = new W(4);
+        reach.add(0,1,1); reach.add(1,2,-2); reach.add(2,1,1);
+        checkAgree("reaches but is not on the cycle", reach, true);
+        checkEquals("reacher row", Arrays.toString(new long[]{0,N,N,U}),
+                Arrays.toString(Floyd_warshall.allPairsShortestPaths(reach)[0]));
+        checkEquals("isolated row survives", Arrays.toString(new long[]{U,U,U,0}),
+                Arrays.toString(Floyd_warshall.allPairsShortestPaths(reach)[3]));
 
         checkThrows("null graph", NullPointerException.class,
                 () -> Floyd_warshall.allPairsShortestPaths(null));

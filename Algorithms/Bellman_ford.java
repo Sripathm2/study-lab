@@ -36,7 +36,7 @@ public class Bellman_ford {
         for(int k = 0;k <g.vertexCount()-1; k++){
             for(int i=0;i<g.vertexCount();i++){
                 for(int neigh: g.neighbors(i)){
-                    if(distance[i] != UNREACHABLE && distance[i]+g.weight(i, neigh) < distance[neigh]){
+                    if(distance[i] != UNREACHABLE && (distance[i]+g.weight(i, neigh) < distance[neigh])){
                         distance[neigh] = distance[i]+g.weight(i, neigh);
                     }
                 }
@@ -45,7 +45,7 @@ public class Bellman_ford {
         for(int k = 0;k <g.vertexCount()-1; k++){
             for(int i=0;i<g.vertexCount();i++){
                 for(int neigh: g.neighbors(i)){
-                    if(distance[i] == NEGATIVE_INF || distance[i]+g.weight(i, neigh) < distance[neigh]){
+                    if(distance[i] != UNREACHABLE && (distance[i] == NEGATIVE_INF || distance[i]+g.weight(i, neigh) < distance[neigh])){
                         distance[neigh] = NEGATIVE_INF;
                     }
                 }
@@ -73,7 +73,7 @@ public class Bellman_ford {
         for(int k = 0;k <g.vertexCount()-1; k++){
             for(int i=0;i<g.vertexCount();i++){
                 for(int neigh: g.neighbors(i)){
-                    if(distance[i]+g.weight(i, neigh) < distance[neigh]){
+                    if(distance[i] != UNREACHABLE && distance[i]+g.weight(i, neigh) < distance[neigh]){
                         distance[neigh] = distance[i]+g.weight(i, neigh);
                     }
                 }
@@ -83,7 +83,7 @@ public class Bellman_ford {
         for(int k = 0;k <g.vertexCount()-1; k++){
             for(int i=0;i<g.vertexCount();i++){
                 for(int neigh: g.neighbors(i)){
-                    if(distance[i] == NEGATIVE_INF ||  distance[i]+g.weight(i, neigh) < distance[neigh]){
+                    if(distance[i] != UNREACHABLE && (distance[i] == NEGATIVE_INF ||  distance[i]+g.weight(i, neigh) < distance[neigh])){
                         distance[neigh] = NEGATIVE_INF;
                         returnv = true;
                     }
@@ -144,6 +144,42 @@ class Bellman_ford_Main {
 
         checkThrows("null graph", NullPointerException.class, () -> Bellman_ford.shortestPaths(null, 0));
         checkThrows("source oob", IndexOutOfBoundsException.class, () -> Bellman_ford.shortestPaths(g, 4));
+
+        // 0 alone. 1->2 off in corner, source cannot reach.
+        // Must stay UNREACHABLE. Must not be NEGATIVE_INF. No cycle here.
+        W lonely = new W(3);
+        lonely.add(1,2,5);
+        long U = Bellman_ford.UNREACHABLE;
+        checkEquals("unreachable edge not marked NEGATIVE_INF",
+                Arrays.toString(new long[]{0, U, U}),
+                Arrays.toString(Bellman_ford.shortestPaths(lonely, 0)));
+        checkEquals("unreachable edge is not a negative cycle",
+                false, Bellman_ford.hasNegativeCycle(lonely, 0));
+
+        // Same, but weight negative. Wrap go other direction.
+        W lonelyNeg = new W(3);
+        lonelyNeg.add(1,2,-5);
+        checkEquals("unreachable negative edge not marked",
+                Arrays.toString(new long[]{0, U, U}),
+                Arrays.toString(Bellman_ford.shortestPaths(lonelyNeg, 0)));
+        checkEquals("unreachable negative edge no cycle",
+                false, Bellman_ford.hasNegativeCycle(lonelyNeg, 0));
+
+        // Chain of unreachable. Paint spread down it.
+        W chain = new W(4);
+        chain.add(1,2,1); chain.add(2,3,1);
+        checkEquals("paint does not spread down unreachable chain",
+                Arrays.toString(new long[]{0, U, U, U}),
+                Arrays.toString(Bellman_ford.shortestPaths(chain, 0)));
+
+        // Real negative cycle, but source cannot reach it. Answer still false.
+        W farCycle = new W(4);
+        farCycle.add(1,2,1); farCycle.add(2,1,-3);
+        checkEquals("unreachable negative cycle does not count",
+                false, Bellman_ford.hasNegativeCycle(farCycle, 0));
+        checkEquals("unreachable negative cycle stays UNREACHABLE",
+                Arrays.toString(new long[]{0, U, U, U}),
+                Arrays.toString(Bellman_ford.shortestPaths(farCycle, 0)));
 
         System.out.println();
         System.out.println("=== " + passed + " passed, " + failed + " failed ===");

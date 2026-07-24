@@ -120,11 +120,8 @@ public class Hash_table_double_hashing<K, V> {
         do{
             current_index = this.get_postition(key, x);
             if(this.table[current_index] == null){
-                this.table[current_index] = new Entry<K,V>(key, value);
-                if(tombstone_position != -1){
-                    this.table[tombstone_position] = this.table[current_index];
-                    this.table[current_index] = TOMBSTONE;
-                }
+                int destination = (tombstone_position != -1) ? tombstone_position : current_index;
+                this.table[destination] = new Entry<K,V>(key, value);
                 this.size += 1;
                 return null;
             } else if(this.table[current_index].equals(TOMBSTONE)){
@@ -245,7 +242,7 @@ public class Hash_table_double_hashing<K, V> {
     public String toString() {
         String output = "{";
         for(int index = 0; index < this.table.length; index++){
-            if(this.table[index] != null){
+            if(this.table[index] != null && this.table[index] != TOMBSTONE){
                 Entry<K, V> temp = (Entry<K,V>) this.table[index];
                 output += temp.key.toString() + "=" + temp.value.toString();
                 output += ", ";

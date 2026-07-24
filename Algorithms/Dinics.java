@@ -14,8 +14,10 @@ public class Dinics {
 
     private static final int INF = Integer.MAX_VALUE/2;
     private static int max_flow;
+    @SuppressWarnings("unused")
     private static int[] visited;
     private static int[] level;
+    @SuppressWarnings("unused")
     private static int visited_count;
     private static int s;
     private static int t;

@@ -66,7 +66,12 @@ public class Eulerian_path {
         }
 
         if(start == -1){
-            start = 0;
+            for(int i=0;i<node_count.length;i++){
+                if(node_count[i][1] > 0){
+                    start = i;
+                    break;
+                }
+            }
         }
 
 
@@ -121,6 +126,7 @@ class Eulerian_path_Main {
         int e = 0; for (List<Integer> row : adj) e += row.size(); return e;
     }
 
+    
     // A returned path is a valid Eulerian trail iff it uses every edge exactly once
     // and each consecutive pair is a real edge.
     private static boolean validEuler(List<List<Integer>> adj, int[] path) {
@@ -159,6 +165,48 @@ class Eulerian_path_Main {
         // 0->1,1->2,2->0,0->3,3->4,4->0  (each vertex balanced -> circuit through all 6 edges)
         List<List<Integer>> br = graph(5, new int[][]{{0,1},{1,2},{2,0},{0,3},{3,4},{4,0}});
         checkTrue("branching circuit valid", validEuler(br, Eulerian_path.eulerianPath(br)));
+
+        // --- B7: circuit start must be a vertex with an out-edge, not vertex 0 ---
+
+        // Direct repro. Vertex 0 isolated, circuit on 1<->2. Was returning [].
+        List<List<Integer>> iso = graph(3, new int[][]{{1,2},{2,1}});
+        int[] pi = Eulerian_path.eulerianPath(iso);
+        checkTrue("isolated 0, circuit elsewhere", validEuler(iso, pi));
+        checkTrue("isolated-0 circuit is closed", pi.length > 0 && pi[0] == pi[pi.length - 1]);
+
+        // Isolated vertices at both ends of the numbering.
+        List<List<Integer>> iso2 = graph(4, new int[][]{{1,2},{2,1}});
+        checkTrue("isolated 0 and 3, circuit in middle", validEuler(iso2, Eulerian_path.eulerianPath(iso2)));
+
+        // Self-loop is a legal one-edge circuit; 0 isolated forces the scan.
+        List<List<Integer>> loop = graph(2, new int[][]{{1,1}});
+        checkTrue("self-loop circuit with 0 isolated", validEuler(loop, Eulerian_path.eulerianPath(loop)));
+
+        // Figure-eight at vertex 1 (out-degree 2), 0 isolated. Forces the
+        // recursion to back up mid-traversal, so it checks the start choice
+        // didn't disturb Hierholzer's stitching.
+        List<List<Integer>> fig8 = graph(4, new int[][]{{1,2},{1,3},{2,1},{3,1}});
+        checkTrue("figure-eight circuit, 0 isolated", validEuler(fig8, Eulerian_path.eulerianPath(fig8)));
+
+        // --- the path branch must NOT have been touched: start stays forced ---
+
+        // 2->0->1. Vertex 2 is the unique start (out == in+1), 1 the unique end.
+        List<List<Integer>> fromTwo = graph(3, new int[][]{{2,0},{0,1}});
+        int[] pf = Eulerian_path.eulerianPath(fromTwo);
+        checkTrue("path with forced start 2", validEuler(fromTwo, pf));
+        checkEquals("forced start honored", Arrays.toString(new int[]{2,0,1}), Arrays.toString(pf));
+
+        // Path ending at 0 (0 has an in-edge, no out-edges).
+        List<List<Integer>> endAt0 = graph(3, new int[][]{{1,2},{2,0}});
+        checkEquals("path ending at 0", Arrays.toString(new int[]{1,2,0}),
+                Arrays.toString(Eulerian_path.eulerianPath(endAt0)));
+
+        // Isolated 0 AND unbalanced: start forced to 1, end forced to 0.
+        List<List<Integer>> mixed = graph(3, new int[][]{{1,0},{1,2},{2,1}});
+        int[] pm = Eulerian_path.eulerianPath(mixed);
+        checkTrue("isolated-ish 0 with forced start", validEuler(mixed, pm));
+        checkTrue("endpoints forced correctly",
+                pm.length > 0 && pm[0] == 1 && pm[pm.length - 1] == 0);
 
         // No path: two disconnected circuits 0<->1 and 2<->3 (locally balanced, but disconnected)
         List<List<Integer>> disc = graph(4, new int[][]{{0,1},{1,0},{2,3},{3,2}});

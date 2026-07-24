@@ -78,6 +78,7 @@ public class Dag_shortest_longest_path {
             if(source == id){
                 dist[id] = 0;
             }
+            if(dist[id] == UNREACHABLE_LONGEST) continue;
             for(int neigh: g.neighbors(id)){
                 long weight = -1 * g.weight(id, neigh);
                 if(dist[id] + weight < dist[neigh] || dist[neigh] == UNREACHABLE_LONGEST){
@@ -179,10 +180,56 @@ class Dag_shortest_longest_path_Main {
                 java.util.Arrays.toString(new long[]{U,U,U,0,1,3,U}),
                 java.util.Arrays.toString(Dag_shortest_longest_path.shortestPaths(g, 3)));
 
+        checkEquals("longest from 3",
+                java.util.Arrays.toString(new long[]{L,L,L,0,1,5,L}),
+                java.util.Arrays.toString(Dag_shortest_longest_path.longestPaths(g, 3)));
+
         // Single vertex
         checkEquals("single vertex",
                 java.util.Arrays.toString(new long[]{0}),
                 java.util.Arrays.toString(Dag_shortest_longest_path.shortestPaths(new WDiGraph(1), 0)));
+
+        // --- B5: unreachable vertices must not relax their out-edges ---
+
+        // Direct repro: source 0, disconnected edge 1->2.
+        // Without the guard, dist[1] is MIN_VALUE and MIN_VALUE + (-5) wraps,
+        // giving vertex 2 a value of -9223372036854775803.
+        WDiGraph iso = new WDiGraph(3);
+        iso.addEdge(1,2,5);
+        checkEquals("longest: isolated edge stays unreachable",
+                java.util.Arrays.toString(new long[]{0,L,L}),
+                java.util.Arrays.toString(Dag_shortest_longest_path.longestPaths(iso, 0)));
+        checkEquals("shortest: isolated edge stays unreachable",   // control
+                java.util.Arrays.toString(new long[]{0,U,U}),
+                java.util.Arrays.toString(Dag_shortest_longest_path.shortestPaths(iso, 0)));
+
+        // Same shape, negative weight — wraps in the other direction, so the
+        // garbage looks different. Both signs need covering.
+        WDiGraph isoNeg = new WDiGraph(3);
+        isoNeg.addEdge(1,2,-3);
+        checkEquals("longest: isolated negative edge stays unreachable",
+                java.util.Arrays.toString(new long[]{0,L,L}),
+                java.util.Arrays.toString(Dag_shortest_longest_path.longestPaths(isoNeg, 0)));
+
+        // Reachable component alongside an unreachable one that has edges:
+        // 0->1(3), 1->2(4) reachable; 3->4(7) not. The real answers must
+        // survive intact while 3 and 4 stay L.
+        WDiGraph mixed = new WDiGraph(5);
+        mixed.addEdge(0,1,3); mixed.addEdge(1,2,4); mixed.addEdge(3,4,7);
+        checkEquals("longest: unreachable component does not poison reachable one",
+                java.util.Arrays.toString(new long[]{0,3,7,L,L}),
+                java.util.Arrays.toString(Dag_shortest_longest_path.longestPaths(mixed, 0)));
+
+        // Nastiest case: an UNREACHABLE vertex with a negative-weight edge INTO
+        // a reachable one. 0->1(2), 2->1(-6), source 0. Vertex 2 sorts ahead of
+        // 1, so without the guard it writes MIN_VALUE+6 into dist[1] — a value
+        // so low the genuine relaxation from 0 can never beat it. Vertex 1 then
+        // reports 9223372036854775802 instead of 2.
+        WDiGraph poison = new WDiGraph(3);
+        poison.addEdge(0,1,2); poison.addEdge(2,1,-6);
+        checkEquals("longest: unreachable predecessor cannot overwrite a real distance",
+                java.util.Arrays.toString(new long[]{0,2,L}),
+                java.util.Arrays.toString(Dag_shortest_longest_path.longestPaths(poison, 0)));
 
         // --- Cycle -> not a DAG ---
         WDiGraph cyc = new WDiGraph(3);

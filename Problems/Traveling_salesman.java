@@ -85,28 +85,6 @@ public class Traveling_salesman {
             }
         }
 
-        ///// path extra we dont use it
-        
-        int lastindex= start;
-        int state = (1<<n)-1;
-        
-        int[] tour = new int[n+1];
-
-        for(int i=n-1; i>=1; i--){
-            int index = -1;
-            for(int j=0;j<n; j++){
-                if(j==start||notIN(j, state))continue;
-                if(index ==-1) index =j;
-                if(memo[index][state] + dist[index][lastindex] < memo[j][state]+dist[j][lastindex]){
-                    index = j;
-                }
-            }
-            tour[i] = index;
-            state = state ^ (1<<index);
-            lastindex = index;
-        }
-        tour[0] = tour[n] = start;
-
         return mintourcost;
     }
 

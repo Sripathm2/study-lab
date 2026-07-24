@@ -130,19 +130,3 @@ The intent is that the learning happens while filling in the skeletons and chasi
 ## License
 
 BSD 2-Clause — see `LICENSE`. Chosen to match the license of the ISLP package this repo's ML labs build on, so my code and the upstream lab code sit under compatible terms. Note that any ISLP lab files copied into `Machine_learning/` remain © their original authors under their own BSD-2-Clause notice — keep upstream headers intact on copied files; this repo's license covers my own code and notes.
-
----
-
-# Bug List — Working Checklist
-
-All confirmed bugs (B) and hazards/cleanups (C) from the reconciliation session, condensed into a fix-me checklist. Each B was reproduced with a small program; full detail and reproduction descriptions are in `01_Mismatch_report.md`. Suggested order: contract-breaking bugs first (B1, B2, B3), sentinel/overflow bugs next (B5, B6), then the rest. Re-run `make run-all` after each fix — everything passes today, so any new failure is the fix itself.
-
-## Confirmed bugs
-
-- [ ] **B4 — `Algorithms/Topological_sort_dfs.java` — cycle detection incomplete.** Only cycles returning to the DFS launch vertex are caught; `0→1→2→1` silently returns `[0,1,2]`. Fix: three-color / on-recursion-stack detection. (`Dag_shortest_longest_path` inherits this — it can "sort" a cyclic graph.)
-- [ ] **B5 — `Algorithms/Dag_shortest_longest_path.java` — `longestPaths` missing the unreachable guard.** No `continue` when `dist[u] == UNREACHABLE_LONGEST`; `Long.MIN_VALUE + weight` wraps and the garbage propagates between unreachable vertices. Repro: source 0, disconnected edge 1→2 → vertex 2 reports −9223372036854775803. (`shortestPaths` has the guard — copy it.)
-- [ ] **B6 — `Algorithms/Bellman_ford.java` — overflow in the unguarded passes.** `shortestPaths` phase 2 has no `UNREACHABLE` guard → a merely-unreachable vertex fed by another unreachable vertex is falsely marked `NEGATIVE_INF`. `hasNegativeCycle` has the mirror problem (phase 1 unguarded), and the two methods disagree on the same graph. Same one-line guard in both places.
-- [ ] **B7 — `Algorithms/Eulerian_path.java` — circuit start hard-coded to vertex 0.** With balanced degrees, `start = 0` even if vertex 0 is isolated; a valid circuit elsewhere (isolated 0, cycle 1→2→1) is rejected as `[]`. Fix: pick any vertex with an out-edge.
-- [ ] **B8 — `Data_structures/Hash_table_double_hashing.java` — two tombstone issues.** (a) `toString` checks slots against `null` only, casts a `TOMBSTONE` to `Entry` → `ClassCastException` after any remove. (b) `put`'s insert-into-null path stamps the previously-*empty* slot as `TOMBSTONE` during the relocation swap — empty slots permanently erode into tombstones, lengthening all probes until resize; place into the remembered tombstone slot and leave the null alone.
-- [ ] **B9 — `Algorithms/Floyd_warshall.java` — `hasNegativeCycle` init missing an `else`.** `if (i==j){dp=0} if (hasEdge){…} else {UNREACHABLE}` overwrites a self-loop-free diagonal's 0 with `UNREACHABLE`. `allPairsShortestPaths` has the correct `else if` chain — make them match.
-- [ ] **B10 — `Problems/Traveling_salesman.java` — dead tour reconstruction with an inverted comparison.** The reconstruction loop replaces the candidate when the incumbent is strictly *better* (builds a worst tour), and the resulting `tour` array is never returned so no test can catch it. Either fix the comparison and return the tour, or delete the loop.
