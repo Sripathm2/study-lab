@@ -1,5 +1,2 @@
 *.log
 .vscode/
-Machine_learning/data/
-*.tensor
-*.tar.gz
