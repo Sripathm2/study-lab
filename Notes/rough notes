@@ -1,11 +1,22 @@
-autograd = automatic gradient 
-back propogation - allows to efficeintly evaluate the gradient with some kind of loss fucntion with respect to the weights. what this tells us is due to given input how much of the output or computed value will change its a line slope.
+learning with decay means the step size decreases as we get to hiugher epochs
+
+character langiuage model whyerew it treste each input as an example, it models the sequence of characters and leanring how to predict the next character
+
+what is broadcasting semantics in this we make copies of a vectoir to match size of a vectro to a matrix then we do element wise opertation like division.,
 
 
-in multiplication gradient becomes thew other value and in addition its 1 differentialtiuon rule example show here 
+log likelyhood is the sum of the log of the propabilites of each event 
 
-then in cnn we have bias which makes the value more or less trigger happy ( activate faster or slower)
+we use negative log likelyghood becuase we want when a loss fucntion is lower that means we are doing better but loh likelyhood is opposite.
 
-the afcatiavtion gets the formula in and its a squashing function that generally reduces or comeines the input to a value like sigmoid or tanh like in tanh we smooth very large values to 1 and very negative values to -1 and for 0 its 0. 
+we can then use normlaized (average ) likelyhood for cleaner version.
 
-reset to 0 as grad is summed before we need to clear them. 
+@ is matrix multiplication operator in pytroch 
+
+log counts  is logits 
+
+the confusing part is my log likelyhood taken as a count and whay logits taken as a alternative to count. this probablity part is softmax 
+'
+foprward pass only is like prediction backpropagation using a loss function is the training part.
+
+ we can do regularization to force a nmodel to have close to 0 weights and control how much regularization should wee use.
