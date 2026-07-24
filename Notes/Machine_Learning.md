@@ -2,7 +2,7 @@
 
 A single running file of statistical-learning and ML concepts, in Definition / Intuition / Notes form. Written to stand alone — no book required to read them. Math is kept light: a one-line formula plus plain English, not derivations.
 
-Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-On Machine Learning* (Géron). Section tags show which pass a topic came from.
+Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-On Machine Learning* (Géron), and Karpathy's *Zero to Hero*. Section tags show which pass a topic came from.
 
 ---
 
@@ -124,12 +124,14 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - [Hinge loss](#hinge-loss)
 - [SVMs with more than two classes](#svms-with-more-than-two-classes)
 
-**Neural Networks and Deep Learning** *(ISL ch. 10; Hands-On ML)*
+**Neural Networks and Deep Learning** *(ISL ch. 10; Hands-On ML; Karpathy)*
 - [Artificial neuron and the perceptron](#artificial-neuron-and-the-perceptron)
 - [Dense (fully connected) layer](#dense-fully-connected-layer)
 - [Perceptron learning rule](#perceptron-learning-rule)
 - [Multi-layer perceptron (MLP) and the XOR problem](#multi-layer-perceptron-mlp-and-the-xor-problem)
 - [Backpropagation](#backpropagation)
+- [Computational graph and autograd](#computational-graph-and-autograd)
+- [Zeroing gradients](#zeroing-gradients)
 - [Weight initialization](#weight-initialization)
 - [Neural networks (feed-forward)](#neural-networks-feed-forward)
 - [Hidden layers and units](#hidden-layers-and-units)
@@ -990,7 +992,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 ---
 
-## Neural Networks and Deep Learning *(ISL ch. 10; Hands-On ML)*
+## Neural Networks and Deep Learning *(ISL ch. 10; Hands-On ML; Karpathy)*
 
 ### Artificial neuron and the perceptron
 
@@ -998,7 +1000,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** A neuron is a little voting machine: weigh the evidence, and fire if the total clears a threshold. Even the binary version can compute logic — one wiring gives identity, another AND, another OR, and with an inhibiting connection you get NOT — and these compose into complex logical expressions.
 
-**Notes.** An extra bias feature (`x_0 = 1`) is normally added, supplied by a *bias neuron* that always outputs 1. A perceptron with several output TLUs is a multi-output classifier (several binary classes at once). *(Hands-On ML)* → Dense layer, Perceptron learning rule, Multi-layer perceptron.
+**Notes.** An extra bias feature (`x_0 = 1`) is normally added, supplied by a *bias neuron* that always outputs 1 — it shifts the activation threshold, making the neuron more or less "trigger happy" (quicker or slower to activate) independently of the inputs. A perceptron with several output TLUs is a multi-output classifier (several binary classes at once). *(Hands-On ML)* → Dense layer, Perceptron learning rule, Multi-layer perceptron.
 
 ### Dense (fully connected) layer
 
@@ -1028,9 +1030,25 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Definition.** The training algorithm for neural nets, run on one mini-batch at a time for multiple *epochs* (full passes over the training set). Each step: (1) *forward pass* — push the batch through the layers to the output, keeping all intermediate results; (2) measure the output error with a loss function; (3) *backward pass* — apply the chain rule to work out how much each connection contributed to the error, layer by layer back to the input; (4) take a gradient-descent step on all weights using those gradients.
 
-**Intuition.** A forward pass is just prediction with the scratch work saved. The backward pass then assigns blame: the chain rule propagates the error gradient backward through the network — hence the name — so every weight learns how much it was responsible and which way to move.
+**Intuition.** A forward pass is just prediction with the scratch work saved. The backward pass then assigns blame: the chain rule propagates the error gradient backward through the network — hence the name — so every weight learns how much it was responsible and which way to move. A gradient is a *slope*: given a nudge to this weight, how much does the loss move?
 
-**Notes.** The automatic gradient computation is *automatic differentiation (autodiff)*; backpropagation uses *reverse-mode autodiff*, which is fast and precise and well suited to functions with many inputs (weights) and few outputs (one loss). *(Hands-On ML)* → Gradient descent, Weight initialization, Stochastic gradient descent.
+**Notes.** The automatic gradient computation is *automatic differentiation (autodiff)*, or *autograd*; backpropagation uses *reverse-mode autodiff*, which is fast and precise and well suited to functions with many inputs (weights) and few outputs (one loss). Each operation only needs its own *local* derivative — two carry most of the load: **addition** passes the gradient straight through unchanged (×1), and **multiplication** hands each input the *other* input's value. *(Hands-On ML; Karpathy)* → Gradient descent, Computational graph and autograd, Zeroing gradients, Weight initialization, Stochastic gradient descent.
+
+### Computational graph and autograd
+
+**Definition.** An *autograd* engine records every operation as a graph: each value stores its data, its running gradient, which values produced it, and the local derivative rule for the operation that made it. Calling `backward()` on the final output sorts the graph topologically, seeds that output's gradient to 1, and walks the nodes in reverse applying each local rule.
+
+**Intuition.** You never derive a formula for the whole network's derivative. You only ever specify the derivative of each small operation; the graph chains them together for you. That's what makes arbitrarily complicated models differentiable "for free."
+
+**Notes.** How coarsely you carve the graph is a free choice — `tanh` can be one fused node or several smaller ones (`exp`, subtract, divide), and the leaf gradients come out identical either way. You only need the local derivative of whatever pieces you define. *(Karpathy)* → Backpropagation, Activation function.
+
+### Zeroing gradients
+
+**Definition.** Gradients *accumulate* — each backward pass adds into the existing `.grad` rather than replacing it — so every parameter's gradient must be reset to zero before each backward pass.
+
+**Intuition.** Accumulation is necessary and correct: if a value feeds into the graph along more than one path, each path contributes and the contributions must sum. (Use a value twice in an addition and its gradient is 1 + 1 = 2, not 1.) The side effect is that stale gradients from the previous iteration linger, so a training loop that forgets to clear them pushes each update with the sum of every gradient so far.
+
+**Notes.** The classic silent bug in a hand-written training loop — the loss still decreases sometimes, just wrongly. *(Karpathy)* → Backpropagation, Gradient descent.
 
 ### Weight initialization
 
@@ -1421,6 +1439,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Confidence interval** — range holding the true parameter with stated probability; `≈ β̂ ± 2·SE`. → [Confidence interval](#confidence-interval).
 - **Confounding** — single- vs multiple-predictor results differ due to correlated predictors. → [Confounding](#confounding).
 - **Confusion matrix** — table of predicted vs actual classes, exposing error types. → [Confusion matrix and error types](#confusion-matrix-and-error-types).
+- **Computational graph / autograd** — recorded op graph that makes derivatives automatic. → [Computational graph and autograd](#computational-graph-and-autograd).
 - **Convolution filter** — small learned matrix slid over image patches to detect local patterns. → [Convolution filter](#convolution-filter).
 - **Convolutional neural network (CNN)** — image network of convolution + pooling layers. → [Convolutional neural network (CNN)](#convolutional-neural-network-cnn).
 - **Cox proportional hazards model** — survival regression scaling a free baseline hazard by `exp(Σ x_j β_j)`. → [Cox proportional hazards model](#cox-proportional-hazards-model).
@@ -1547,4 +1566,5 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Variance** — how much `f̂` shifts across training sets; rises with flexibility. → [Variance](#variance).
 - **Variable selection** — choosing which predictors to include. → [Best subset selection](#best-subset-selection).
 - **Weight initialization** — must be random, to break symmetry between units. → [Weight initialization](#weight-initialization).
-- **Word embeddings** — dense vectors placing similar words nearby (word2vec, GloVe). → [Word embeddings](#word-embeddings).
+- **Weight initialization**  — dense vectors placing similar words nearby (word2vec, GloVe). → [Word embeddings](#word-embeddings).
+- **Zeroing gradients** — clear `.grad` before each backward pass; gradients accumulate. → [Zeroing gradients](#zeroing-gradients).

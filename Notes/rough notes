@@ -1,0 +1,11 @@
+autograd = automatic gradient 
+back propogation - allows to efficeintly evaluate the gradient with some kind of loss fucntion with respect to the weights. what this tells us is due to given input how much of the output or computed value will change its a line slope.
+
+
+in multiplication gradient becomes thew other value and in addition its 1 differentialtiuon rule example show here 
+
+then in cnn we have bias which makes the value more or less trigger happy ( activate faster or slower)
+
+the afcatiavtion gets the formula in and its a squashing function that generally reduces or comeines the input to a value like sigmoid or tanh like in tanh we smooth very large values to 1 and very negative values to -1 and for 0 its 0. 
+
+reset to 0 as grad is summed before we need to clear them. 
