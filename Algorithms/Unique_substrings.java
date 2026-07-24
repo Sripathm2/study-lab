@@ -22,8 +22,8 @@ public class Unique_substrings {
             return 0;
         }
         Suffix_array arr = new Suffix_array(s);
-        int nsum = (s.length()*(s.length()+1))/2;
-        int sumarr = Arrays.stream(arr.lcpArray()).sum();
+        long nsum = (s.length()*(s.length()+1))/2;
+        long sumarr = Arrays.stream(arr.lcpArray()).sum();
         return nsum-sumarr;
     }
 }

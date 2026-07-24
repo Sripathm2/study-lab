@@ -8,12 +8,10 @@ public class Dynamic_array<E> {
     private int size;
     private int capacity;
 
-    // TODO: initialize with DEFAULT_CAPACITY
     public Dynamic_array() {
         this(DEFAULT_CAPACITY);
     }
 
-    // TODO: initialize with given capacity (must be >= 0)
     public Dynamic_array(int capacity) {
         if(capacity < 0){
             capacity = 0;
@@ -23,17 +21,14 @@ public class Dynamic_array<E> {
         this.arr = new Object[this.capacity];
     }
 
-    // TODO: number of elements stored
     public int size() {
         return this.size;
     }
 
-    // TODO: backing array length (exposed so tests can observe resize)
     public int capacity() {
         return this.capacity;
     }
 
-    // TODO: true if size == 0
     public boolean isEmpty() {
         if(this.size == 0){
             return true;
@@ -41,7 +36,6 @@ public class Dynamic_array<E> {
         return false;
     }
 
-    // TODO: bounds check against size (NOT capacity); throw IndexOutOfBoundsException
     @SuppressWarnings("unchecked")
     public E get(int index) {
         if(index < 0 || index >= this.size){
@@ -50,7 +44,6 @@ public class Dynamic_array<E> {
         return (E)this.arr[index];
     }
 
-    // TODO: bounds check against size; replace existing slot
     public void set(int index, E value) {
         if(index < 0 || index >= this.size){
             throw new IndexOutOfBoundsException();
@@ -58,7 +51,6 @@ public class Dynamic_array<E> {
         this.arr[index] = value;
     }
 
-    // TODO: append. If size == capacity, grow first (double; if cap==0, set to 1). Amortized O(1).
     public void add(E value) {
         if(this.size == this.capacity){
             if(this.capacity == 0){
@@ -71,7 +63,6 @@ public class Dynamic_array<E> {
         this.size += 1;
     }
 
-    // TODO: insert at index (valid range 0..size inclusive). Shift right. Grow if needed. O(n).
     public void add(int index, E value) {
         if(index < 0 || index > this.size){
             throw new IndexOutOfBoundsException();
@@ -89,8 +80,6 @@ public class Dynamic_array<E> {
         this.size += 1;
     }
 
-    // TODO: remove and return element at index (0..size-1). Shift left. Null the freed slot.
-    //       Optional shrink: if size < capacity / 4 after removal, halve capacity. O(n).
     @SuppressWarnings("unchecked")
     public E remove(int index) {
         if(index < 0 || index >= this.size){
@@ -103,13 +92,12 @@ public class Dynamic_array<E> {
         }
         this.arr[this.size] = null;
         this.size -= 1;
-        if(this.size*4 > this.capacity){
+        if(this.size*4 < this.capacity){
             this.resize(this.size*2);
         }
         return (E)return_value;
     }
 
-    // TODO: remove first occurrence by value; return true if removed (use indexOf + remove(int))
     public boolean remove(E value) {
         int index = this.indexOf(value);
         if(index >=0){
@@ -119,7 +107,6 @@ public class Dynamic_array<E> {
         return false;
     }
 
-    // TODO: linear search; Objects.equals for null-safety
     @SuppressWarnings("unchecked")
     public boolean contains(E value) {
         for(int array_index = 0; array_index < this.size; array_index++){
@@ -130,7 +117,6 @@ public class Dynamic_array<E> {
         return false;
     }
 
-    // TODO: first index of value or -1
     @SuppressWarnings("unchecked")
     public int indexOf(E value) {
         for(int array_index = 0; array_index < this.size; array_index++){
@@ -141,7 +127,6 @@ public class Dynamic_array<E> {
         return -1;
     }
 
-    // TODO: reset size to 0, null out slots (for GC), reset capacity to DEFAULT_CAPACITY
     public void clear() {
         this.resize(DEFAULT_CAPACITY);
         for(int array_index = 0; array_index < this.size; array_index++){
@@ -150,7 +135,6 @@ public class Dynamic_array<E> {
         this.size = 0;
     }
 
-    // TODO: return "[a, b, c]" using ONLY the first `size` elements, not the full backing array
     @Override
     public String toString() {
         String output = "[";
@@ -169,7 +153,6 @@ public class Dynamic_array<E> {
         return output;
     }
 
-    // TODO (private helper): allocate new Object[newCap], copy first `size` elements, swap
     private void resize(int newCap) {
         int array_index = 0;
         Object[] new_arr = new Object[newCap];

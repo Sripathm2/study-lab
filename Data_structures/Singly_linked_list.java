@@ -124,6 +124,9 @@ public class Singly_linked_list<E> {
             Node<E> return_node = head;
             head = head.next;
             this.size -= 1;
+            if(this.size() == 0){
+                this.tail = null;
+            }
             return (E)return_node.value;
         }
     }

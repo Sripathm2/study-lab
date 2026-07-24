@@ -29,6 +29,9 @@ public class Binary_search_tree<E extends Comparable<E>> {
         } if( this.root == null){
             this.root = new Node<E>(value);
         } else {
+            if(this.contains(value)){
+                return false;
+            }
             Node<E> root_copy = this.root;
             while(root_copy.left != null || root_copy.right != null){
                 if(value.compareTo(root_copy.value)==0){
@@ -313,6 +316,8 @@ class Binary_search_tree_Main {
 
         // --- Insert ---
         checkEquals("insert 5",  true,  t.insert(5));
+        checkEquals("insert 5 duplicate should fail",  false,  t.insert(5));
+        checkEquals("size after inserts", 1, t.size());
         checkEquals("insert 3",  true,  t.insert(3));
         checkEquals("insert 8",  true,  t.insert(8));
         checkEquals("insert 1",  true,  t.insert(1));
