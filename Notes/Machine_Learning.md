@@ -132,22 +132,34 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - [Backpropagation](#backpropagation)
 - [Computational graph and autograd](#computational-graph-and-autograd)
 - [Zeroing gradients](#zeroing-gradients)
+- [Numerical stability](#numerical-stability)
 - [Weight initialization](#weight-initialization)
+- [Activation saturation](#activation-saturation)
+- [Batch normalization](#batch-normalization)
+- [WaveNet / hierarchical context](#wavenet--hierarchical-context)
+- [Train / dev / test split](#train--dev--test-split)
 - [Neural networks (feed-forward)](#neural-networks-feed-forward)
 - [Hidden layers and units](#hidden-layers-and-units)
 - [Activation function](#activation-function)
 - [Output layer and loss](#output-layer-and-loss)
+- [Softmax](#softmax)
+- [Logits](#logits)
+- [One-hot encoding](#one-hot-encoding)
+- [Likelihood and negative log-likelihood](#likelihood-and-negative-log-likelihood)
+- [Language model](#language-model)
+- [Broadcasting](#broadcasting)
 - [Convolutional neural network (CNN)](#convolutional-neural-network-cnn)
 - [Convolution filter](#convolution-filter)
 - [Pooling](#pooling)
 - [Data augmentation](#data-augmentation)
 - [Bag-of-words](#bag-of-words)
 - [Recurrent neural network (RNN)](#recurrent-neural-network-rnn)
-- [Word embeddings](#word-embeddings)
+- [Embedding layer](#embedding-layer)
 - [LSTM](#lstm)
 - [Autoregressive models and autocorrelation](#autoregressive-models-and-autocorrelation)
 - [Gradient descent](#gradient-descent)
 - [Stochastic gradient descent (SGD)](#stochastic-gradient-descent-sgd)
+- [Learning-rate schedule](#learning-rate-schedule)
 - [Dropout](#dropout)
 - [Neural network regularization](#neural-network-regularization)
 - [Max-norm regularization](#max-norm-regularization)
@@ -1032,7 +1044,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** A forward pass is just prediction with the scratch work saved. The backward pass then assigns blame: the chain rule propagates the error gradient backward through the network — hence the name — so every weight learns how much it was responsible and which way to move. A gradient is a *slope*: given a nudge to this weight, how much does the loss move?
 
-**Notes.** The automatic gradient computation is *automatic differentiation (autodiff)*, or *autograd*; backpropagation uses *reverse-mode autodiff*, which is fast and precise and well suited to functions with many inputs (weights) and few outputs (one loss). Each operation only needs its own *local* derivative — two carry most of the load: **addition** passes the gradient straight through unchanged (×1), and **multiplication** hands each input the *other* input's value. *(Hands-On ML; Karpathy)* → Gradient descent, Computational graph and autograd, Zeroing gradients, Weight initialization, Stochastic gradient descent.
+**Notes.** The automatic gradient computation is *automatic differentiation (autodiff)*, or *autograd*; backpropagation uses *reverse-mode autodiff*, which is fast and precise and well suited to functions with many inputs (weights) and few outputs (one loss). Each operation only needs its own *local* derivative, chained with the incoming gradient. A few patterns recur when doing it by hand: a **mean/sum** distributes `1/n` (or 1) to each input; a **broadcast** in the forward pass becomes a **sum** over that axis in the backward; and a value **reused** in several places accumulates the sum of its gradients. A famous simplification: the gradient of softmax + cross-entropy collapses to `softmax(logits)`, minus 1 at the correct class, divided by the batch size — predicted probabilities pulled toward the truth. *(Hands-On ML; Karpathy)* → Gradient descent, Computational graph and autograd, Zeroing gradients, Numerical stability, Weight initialization, Stochastic gradient descent.
 
 ### Computational graph and autograd
 
@@ -1050,13 +1062,53 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Notes.** The classic silent bug in a hand-written training loop — the loss still decreases sometimes, just wrongly. *(Karpathy)* → Backpropagation, Gradient descent.
 
+### Numerical stability
+
+**Definition.** Rearranging a computation so intermediate values don't overflow or underflow floating point. The canonical example is the *log-sum-exp* trick in softmax/cross-entropy: subtract the maximum logit before exponentiating, so the largest exponent is 0.
+
+**Intuition.** `exp` of a large logit overflows to infinity and `log(0)` underflows to negative infinity — both wreck the loss. Subtracting the max makes the biggest term `exp(0)=1` and the rest smaller, which changes nothing mathematically (softmax is shift-invariant) but keeps every number in a safe range. This is one reason to call a library `cross_entropy` (which fuses and stabilizes the steps) rather than composing `exp`, `sum`, `log` by hand.
+
+**Notes.** *(Karpathy)* → Softmax, Likelihood and negative log-likelihood, Output layer and loss.
+
 ### Weight initialization
 
-**Definition.** Hidden-layer connection weights must be initialized *randomly*, not to a constant such as zero.
+**Definition.** Hidden-layer connection weights must be initialized *randomly*, not to a constant such as zero — and at a *scale* that keeps activations well-behaved: divide by `sqrt(fan_in)` (the number of inputs to the unit), times an activation-specific *gain* (`5/3` for tanh). This is *Kaiming* (a.k.a. He) initialization; the Xavier/Glorot variant is similar.
 
-**Intuition.** Initialize everything to zero and every neuron in a layer is identical; backpropagation then updates them identically, so they stay identical forever — a layer of hundreds of neurons behaves like a single neuron. Random values *break the symmetry*, letting backpropagation train a diverse set of units.
+**Intuition.** Two separate points. *Break symmetry:* initialize everything to zero and every neuron in a layer is identical, so backprop updates them identically and they stay identical forever — a layer of hundreds behaves like one neuron. Random values fix this. *Control the scale:* multiplying by a random weight matrix widens the spread of activations, so without the `1/sqrt(fan_in)` factor activations grow (or shrink) layer to layer, pushing a `tanh` into its flat saturated tails where gradients die. Dividing by `sqrt(fan_in)` keeps the spread roughly constant with depth; the gain undoes the squash of the non-linearity.
 
-**Notes.** *(Hands-On ML)* → Backpropagation.
+**Notes.** Also matters at the output layer: scaling the last layer's weights down (so initial logits are near 0) starts training from a near-uniform, low-loss softmax instead of wasting steps un-doing an over-confident random guess. Batch normalization largely removes the sensitivity to all of this. *(Hands-On ML; Karpathy)* → Backpropagation, Activation saturation, Batch normalization, Activation function.
+
+### Activation saturation
+
+**Definition.** When a squashing activation (sigmoid, tanh) is driven far from zero, its output flattens against its asymptote (±1 for tanh) and its derivative goes to ~0 — so gradients through that unit vanish and it stops learning. The ReLU analogue is a *dead neuron* (stuck outputting 0 with zero gradient for all inputs).
+
+**Intuition.** A saturated neuron is pinned to the flat part of its curve: nudging its input barely changes its output, so backprop passes almost no gradient back and the neuron is effectively frozen. A layer full of them learns nothing. Diagnose by histogramming activations — too much mass at ±1 (a "white" saturation map) is the warning sign.
+
+**Notes.** Caused by weights initialized too large or unnormalized pre-activations; fixed by proper Weight initialization or Batch normalization. Leaky ReLU, ELU, and maxout are far less prone to it. Connects to the vanishing-gradient problem in deep nets. *(Karpathy)* → Weight initialization, Batch normalization, Activation function, Vanishing and exploding gradients.
+
+### Batch normalization
+
+**Definition.** A layer, placed right after a linear (or convolutional) layer, that normalizes the pre-activations to zero mean and unit variance *across the current batch*, then re-scales and re-shifts them with two learned parameters, `gamma` (scale) and `beta` (shift). At test time it uses fixed statistics — a running (momentum) average of the batch mean/variance collected during training, or a one-time pass over the training set.
+
+**Intuition.** Instead of hand-tuning initialization so activations stay healthy, just force them healthy at every step: standardize, then let `gamma`/`beta` learn whatever scale and offset are actually useful. This makes deep nets far more forgiving of weight initialization and learning rate. Two knock-on effects: the preceding layer's bias becomes redundant (batchnorm subtracts the mean, cancelling any added constant — `beta` is the effective bias), and because each example is normalized using *its batch's* statistics, its activations jitter slightly depending on which examples share the batch. That coupling is a small random augmentation of the activations, so batchnorm also acts as a mild **regularizer** — at the cost of making predictions subtly batch-dependent (hence the need for running statistics at inference).
+
+**Notes.** Uses the unbiased variance (Bessel's correction, `n−1`) and an `eps` for stability. One of the most impactful training tricks in deep learning; alternatives like layer norm avoid the batch-dependence. *(Hands-On ML; Karpathy)* → Weight initialization, Activation saturation, Neural network regularization, Vanishing and exploding gradients.
+
+### WaveNet / hierarchical context
+
+**Definition.** An architecture that fuses a sequence *progressively* rather than all at once: instead of flattening the whole context into one vector for a single hidden layer, it combines a few elements at a time (e.g. pairs) and repeats, building a tree — characters → bigrams → 4-grams → 8-grams.
+
+**Intuition.** Squashing an entire long context into one layer forces every position to interact immediately, before any local structure is learned. A hierarchy lets early layers learn short-range patterns and later layers combine those into longer-range ones — a smoother, deeper way to grow the context window. (WaveNet uses this, with dilated convolutions, for raw audio.)
+
+**Notes.** In the makemore build this is `FlattenConsecutive(2)` blocks halving the time dimension each step; a longer `block_size` becomes usable. Cousin of the CNN idea of stacking local receptive fields. *(Karpathy)* → Convolutional neural network, Recurrent neural network, Language model.
+
+### Train / dev / test split
+
+**Definition.** Partition the data three ways: a **training** set to fit parameters, a **dev (validation)** set to choose hyperparameters, and a **test** set touched only once at the very end for an honest final estimate.
+
+**Intuition.** The validation set is how you pick model size, learning rate, embedding dimension, and so on — but tuning against it means you slowly overfit *those choices* to it. A held-back test set you never optimize against catches that. Train ≈ dev loss suggests underfitting (grow the model); a big train-dev gap suggests overfitting.
+
+**Notes.** The deep-learning-practice version of ISL's train/validation idea and cross-validation. Common split: 80/10/10. → Validation set approach, k-fold cross-validation, Overfitting.
 
 ### Neural networks (feed-forward)
 
@@ -1088,7 +1140,55 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** A regression net aims to land near the number (squared error); a classification net aims to put high probability on the true class (cross-entropy), exactly like multinomial logistic regression. Softmax turns the final scores into probabilities summing to 1.
 
-**Notes.** Softmax and cross-entropy are the neural-net versions of ideas already in multinomial logistic regression. → Multinomial logistic regression, Maximum likelihood.
+**Notes.** Softmax and cross-entropy are the neural-net versions of ideas already in multinomial logistic regression. → Multinomial logistic regression, Maximum likelihood, Softmax, Likelihood and negative log-likelihood.
+
+### Softmax
+
+**Definition.** The function that turns a vector of real-valued scores (*logits*) into a probability distribution: **exponentiate each, then normalize** by their sum. Output values are positive and sum to 1.
+
+**Intuition.** Exponentiating forces every score positive and blows up the differences (the biggest logit dominates); dividing by the total scales them into probabilities. It's the multi-class stand-in for the logistic function.
+
+**Notes.** Reading exp(logit) as a *count* makes the picture concrete: a count model normalizes raw counts into probabilities, and softmax normalizes exp(logits) the same way — so a logit is a learned log-count. The output layer of a classification net. → Logits, Output layer and loss, Multinomial logistic regression.
+
+### Logits
+
+**Definition.** The raw, un-normalized scores a model outputs before softmax — interpretable as *log-counts*.
+
+**Intuition.** The confusing count↔logit↔probability chain, untangled: a count model has counts `N` → normalize → probabilities. A network outputs logits; `exp(logits)` gives numbers playing the exact role of `N` (positive "counts"); normalizing those is softmax → probabilities. So logits are just the network's learned version of the log of a count table — instead of tallying counts, gradient descent discovers them.
+
+**Notes.** "Log-counts" and "logits" are the same thing in this setting. → Softmax, Output layer and loss.
+
+### One-hot encoding
+
+**Definition.** Representing a categorical value (say index `k` out of `K`) as a length-`K` vector that is 1 in position `k` and 0 everywhere else.
+
+**Intuition.** A raw index is a misleading number — category 5 isn't "half of" category 10, and categories have no order or spacing. One-hot strips out that false arithmetic, giving each category its own independent input slot. Multiplying a one-hot vector by a weight matrix simply selects one row of that matrix.
+
+**Notes.** Standard input encoding for categorical features and for characters/words in language models; dense *embeddings* are the learned, lower-dimensional successor. → Word embeddings, Dummy variables.
+
+### Likelihood and negative log-likelihood
+
+**Definition.** The *likelihood* of the data under a model is the product of the probabilities it assigns to every observed event. The *log-likelihood* is the sum of the logs of those probabilities (`log(a·b·c) = log a + log b + log c`). The *negative log-likelihood (NLL)* is its negation; the *average NLL* divides by the number of events.
+
+**Intuition.** Maximizing likelihood = making the observed data look as probable as possible under the model. Three equivalent moves make it a usable loss: take logs (a stable sum instead of a vanishing product of tiny numbers — and monotonic, so it preserves the ranking), then negate (we want a loss that's *lower when better*, but likelihood runs the other way), then average (a clean, dataset-size-independent number). The best possible average NLL is 0 — perfect confidence, always correct.
+
+**Notes.** Average NLL over a softmax output is exactly *cross-entropy loss*. Minimizing NLL is the loss-function face of maximum likelihood. → Maximum likelihood, Softmax, Output layer and loss.
+
+### Language model
+
+**Definition.** A model of the probability of the next token in a sequence given the previous ones. A *character-level* language model does this over characters, treating each character as a training example and learning to predict the next character. An *n-gram* model conditions on the previous `n − 1` tokens; a *bigram* model (`n = 2`) uses only the single previous token.
+
+**Intuition.** Learn "what usually comes next," then generate by sampling one token at a time and feeding it back in. A bigram model has almost no context — it's the simplest thing that works — while longer context (more history, or an RNN's hidden state) makes for a stronger model.
+
+**Notes.** The count-based bigram model and its neural-network twin compute the same thing: the network's learned weights are the equivalent of the (log) count table. Beyond bigrams, a fixed **context window** of the previous few characters can be embedded and fed through an MLP (the Bengio 2003 design), or fused hierarchically (WaveNet); an RNN instead carries unbounded context in a hidden state. → Logits, One-hot encoding, Embedding layer, WaveNet / hierarchical context, Recurrent neural network.
+
+### Broadcasting
+
+**Definition.** The rule that lets element-wise operations combine tensors of different shapes by *virtually* stretching the smaller one — e.g. dividing a `(27, 27)` matrix by a `(27, 1)` column of row-sums copies that column across all columns, then divides element-wise. No data is actually duplicated.
+
+**Intuition.** A convenience that saves loops, but a notorious source of silent bugs: when normalizing a matrix's rows, the sum must keep shape `(27, 1)` (`keepdims=True`) so it broadcasts *down each row*; a bare `(27,)` broadcasts across the wrong axis and normalizes columns instead — no error, just wrong numbers.
+
+**Notes.** *(Karpathy)* → Feature scaling.
 
 ### Convolutional neural network (CNN)
 
@@ -1138,13 +1238,13 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Notes.** Words are fed as one-hot vectors or, better, embeddings. → Word embeddings, LSTM.
 
-### Word embeddings
+### Embedding layer
 
-**Definition.** Dense, low-dimensional vector representations of words, learned so that similar words sit near each other. Two widely-used pretrained embeddings are *word2vec* and *GloVe*.
+**Definition.** A learned lookup table that maps each item of a discrete vocabulary (word, character, category) to a dense, low-dimensional vector. Stored as a matrix `C` with one row per vocabulary item; "embedding" a batch of indices is just row-indexing, `C[X]`. The vectors are parameters, trained by backprop like any other weights. Pretrained word embeddings include *word2vec* and *GloVe*.
 
-**Intuition.** A one-hot vector treats every word as equally unrelated to every other; an embedding places words in a space where related words cluster. Far richer input for a language model, and reusable across tasks (pretrained).
+**Intuition.** A one-hot vector treats every item as equally unrelated to every other; an embedding places them in a space where similar items sit close together, and the model learns that geometry from the task. Indexing `C[i]` is the efficient equivalent of `one_hot(i) @ C` — it selects one row without building the one-hot. Far richer input than raw indices, and (for pretrained vectors) reusable across tasks.
 
-**Notes.** A common input representation for RNNs on text. → Recurrent neural network.
+**Notes.** In a character-level model the embedding table is small (e.g. 27 characters × 10 dims) and learned from scratch; you can plot a 2-D one and watch related characters cluster. The successor to one-hot input; the input stage of most language models. → One-hot encoding, Recurrent neural network, Language model.
 
 ### LSTM
 
@@ -1176,7 +1276,15 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Estimating the downhill direction from a small sample is noisier but far cheaper per step, so you take many more steps in the same time — usually reaching a good solution faster. Batch GD's problem is exactly this: using every instance for every step makes it very slow on large training sets. Pure stochastic GD sits at the other extreme — barely any data per iteration, so it's fast and can train on huge sets since only one instance need be held at a time; the cost is a noisy, jittery descent path. *(Hands-On ML)*
 
-**Notes.** The standard optimizer for large networks. Key knobs: batch size and number of *epochs* (full passes over the training set). → Gradient descent, Backpropagation.
+**Notes.** The standard optimizer for large networks. Key knobs: batch size and number of *epochs* (full passes over the training set). → Gradient descent, Backpropagation, Learning-rate schedule.
+
+### Learning-rate schedule
+
+**Definition.** Varying the learning rate (step size) over the course of training rather than holding it fixed — most commonly *decay*, where the step size shrinks at higher epochs.
+
+**Intuition.** Big steps early cover ground fast toward the minimum; small steps late stop you from bouncing around it and let you settle in precisely. A constant rate forces a bad compromise between the two.
+
+**Notes.** One of the more impactful training knobs in deep learning. To find a sane range in the first place, sweep the rate exponentially (e.g. 1e-3 up to 1) over steps and watch where the loss falls fastest — too low barely moves, too high diverges. *(Karpathy)* → Gradient descent, Stochastic gradient descent.
 
 ### Dropout
 
@@ -1192,7 +1300,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Deep networks routinely carry tens of thousands to millions of parameters — enough freedom to fit almost any dataset, and therefore enough to memorize noise. (Von Neumann's line: with four parameters he could fit an elephant, with five make its trunk wiggle; with thousands you can fit the whole zoo.) Regularization is what buys back generalization.
 
-**Notes.** L1/L2 on network weights is the same idea as the lasso and ridge penalties for linear models: the penalty is computed each training step and added to the loss. *(Hands-On ML)* → Dropout, Max-norm regularization, Early stopping, Ridge regression, The lasso.
+**Notes.** L1/L2 on network weights is the same idea as the lasso and ridge penalties for linear models: the penalty is computed each training step and added to the loss. In a softmax classifier, an L2 penalty (`+λ·mean(W²)`) pulls the weights toward 0, which pulls the logits toward 0 and the class probabilities toward *uniform* — so weight decay acts as a smoothing pressure, the gradient-based twin of adding fake counts to a count model. `λ` sets how much: too large and every prediction blurs toward uniform. *(Hands-On ML; Karpathy)* → Dropout, Max-norm regularization, Early stopping, Ridge regression, The lasso, Softmax.
 
 ### Max-norm regularization
 
@@ -1417,7 +1525,9 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **AUC** — area under the ROC curve; chance a random positive outscores a random negative. → [ROC curve](#roc-curve).
 - **Autocorrelation / autoregressive (AR) model** — time-series values correlate with their own lags; AR(L) regresses on the previous `L` values. → [Autoregressive models and autocorrelation](#autoregressive-models-and-autocorrelation).
 - **Bag-of-words** — represent a document by which dictionary words it contains. → [Bag-of-words](#bag-of-words).
+- **Activation saturation** — squashing units pinned at ±1 (or dead at 0) with ~0 gradient. → [Activation saturation](#activation-saturation).
 - **Backpropagation** — forward pass, chain-rule backward pass, then a gradient step. → [Backpropagation](#backpropagation).
+- **Broadcasting** — stretch a smaller tensor to match a larger one for element-wise ops; mind `keepdims`. → [Broadcasting](#broadcasting).
 - **Bagging** — averaging trees fit on bootstrap samples to cut variance. → [Bagging](#bagging).
 - **BART** — tree ensemble combining random perturbation with boosting-style residual fitting. → [Bayesian additive regression trees (BART)](#bayesian-additive-regression-trees-bart).
 - **Basis functions** — fixed transformations of `X` fed into a linear model. → [Basis functions](#basis-functions).
@@ -1427,6 +1537,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Benjamini-Hochberg procedure** — controls the FDR via a ranked p-value cutoff. → [Benjamini-Hochberg procedure](#benjamini-hochberg-procedure).
 - **BIC** — like Cp/AIC but with a heavier size penalty, favoring smaller models. → [Cp, AIC, BIC, and adjusted R-squared](#cp-aic-bic-and-adjusted-r-squared).
 - **Bayesian Gaussian mixture** — GMM variant that zeroes out surplus clusters. → [Bayesian Gaussian mixture](#bayesian-gaussian-mixture).
+- **Batch normalization** — normalize pre-activations across the batch; learned scale/shift; mild regularizer. → [Batch normalization](#batch-normalization).
 - **Bias** — error from approximating a complex truth with a simpler model. → [Bias](#bias).
 - **Bias–variance trade-off** — expected test MSE `= Var(f̂) + Bias² + Var(ε)`. → [Bias–variance trade-off](#biasvariance-trade-off).
 - **Bonferroni correction** — reject only p-values below `α/m` to control FWER. → [Bonferroni correction](#bonferroni-correction).
@@ -1458,6 +1569,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **F-statistic** — tests whether all regression coefficients are zero. → [F-statistic](#f-statistic).
 - **False discovery rate (FDR)** — expected fraction of false positives among rejections. → [False discovery rate (FDR)](#false-discovery-rate-fdr).
 - **Family-wise error rate (FWER)** — probability of at least one false positive across many tests. → [Family-wise error rate (FWER)](#family-wise-error-rate-fwer).
+- **Embedding layer** — learned lookup table mapping tokens to dense vectors. → [Embedding layer](#embedding-layer).
 - **Feature scaling** — min-max scaling vs standardization to put attributes on one scale. → [Feature scaling](#feature-scaling).
 - **Feed-forward network** — inputs flow through hidden layers to an output. → [Neural networks (feed-forward)](#neural-networks-feed-forward).
 - **Flexibility vs interpretability** — the spectrum from restrictive/readable to flexible/opaque. → [Flexibility vs interpretability](#flexibility-vs-interpretability).
@@ -1481,14 +1593,18 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Kaplan-Meier estimator** — non-parametric step-curve estimate of the survival function. → [Kaplan-Meier estimator](#kaplan-meier-estimator).
 - **Lasso** — L1-penalized regression that zeros out coefficients (variable selection). → [The lasso](#the-lasso).
 - **Leaky ReLU / ELU / SELU** — ReLU variants; rough ordering SELU > ELU > leaky ReLU > ReLU > tanh > logistic. → [Activation function](#activation-function).
+- **Language model (n-gram / bigram)** — predicts the next token from previous ones. → [Language model](#language-model).
+- **Learning-rate schedule** — vary/decay the step size over training. → [Learning-rate schedule](#learning-rate-schedule).
 - **Learning rate** — the step size in gradient descent. → [Gradient descent](#gradient-descent).
 - **Least squares (RSS)** — fit that minimizes the residual sum of squares. → [Least squares and residuals (RSS)](#least-squares-and-residuals-rss).
 - **Leverage** — a point's unusualness in the predictors; high leverage yanks the fit. → [Potential problems in linear regression](#potential-problems-in-linear-regression).
 - **Linear discriminant analysis (LDA)** — Gaussian generative classifier, shared covariance → linear boundary. → [Linear discriminant analysis (LDA)](#linear-discriminant-analysis-lda).
 - **Linkage** — rule for cluster-to-cluster dissimilarity (complete/average/single/centroid). → [Hierarchical clustering](#hierarchical-clustering).
+- **Likelihood / NLL** — product of assigned probabilities; negate the log for a loss. → [Likelihood and negative log-likelihood](#likelihood-and-negative-log-likelihood).
 - **Loadings** — the predictor weights defining a principal component. → [Principal components analysis (PCA)](#principal-components-analysis-pca).
 - **Local regression** — fit at each point from weighted nearby points; span sets smoothness. → [Local regression](#local-regression).
 - **Logistic regression** — models class probability via the logistic (S-curve) function. → [Logistic regression](#logistic-regression).
+- **Logits** — un-normalized scores (log-counts) fed into softmax. → [Logits](#logits).
 - **Log-odds (logit)** — `log[p/(1−p)]`; linear in `X` for logistic regression. → [Odds and log-odds (logit)](#odds-and-log-odds-logit).
 - **Log-rank test** — compares survival curves between groups. → [Log-rank test](#log-rank-test).
 - **LOOCV** — cross-validation holding out one point at a time. → [Leave-one-out cross-validation (LOOCV)](#leave-one-out-cross-validation-loocv).
@@ -1508,7 +1624,9 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Natural spline** — regression spline forced linear beyond the outer knots. → [Natural splines](#natural-splines).
 - **Neural network** — layered model of derived features; basis of deep learning. → [Neural networks (feed-forward)](#neural-networks-feed-forward).
 - **Neural network regularization** — early stopping, L1/L2, dropout, max-norm. → [Neural network regularization](#neural-network-regularization).
+- **Numerical stability (log-sum-exp)** — subtract the max logit before exp so nothing overflows. → [Numerical stability](#numerical-stability).
 - **Non-parametric methods** — no assumed form for `f`; flexible but data-hungry. → [Non-parametric methods](#non-parametric-methods).
+- **One-hot encoding** — index → length-K vector, 1 in that slot. → [One-hot encoding](#one-hot-encoding).
 - **Odds** — `p/(1−p)`, ranging 0 to ∞. → [Odds and log-odds (logit)](#odds-and-log-odds-logit).
 - **One-standard-error rule** — pick the simplest model within 1 SE of the best. → [One-standard-error rule](#one-standard-error-rule).
 - **Out-of-bag (OOB) error** — free test-error estimate from bagging's unused points. → [Out-of-bag (OOB) error](#out-of-bag-oob-error).
@@ -1544,7 +1662,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Shrinkage / regularization** — penalize coefficient size to reduce variance. → [Ridge regression](#ridge-regression).
 - **Simple linear regression** — straight-line fit from one predictor. → [Simple linear regression](#simple-linear-regression).
 - **Smoothing spline** — curve minimizing RSS + a roughness penalty. → [Smoothing splines](#smoothing-splines).
-- **Softmax** — turns final scores into class probabilities in a net. → [Output layer and loss](#output-layer-and-loss).
+- **Softmax** — exponentiate logits then normalize into class probabilities. → [Softmax](#softmax).
 - **Standard error** — typical sampling wobble of an estimate. → [Standard error of a coefficient](#standard-error-of-a-coefficient).
 - **Statistical learning** — approaches for estimating `f` in `Y = f(X) + ε`. → [Statistical learning](#statistical-learning).
 - **Step functions** — piecewise-constant fit over bins of `X`. → [Step functions](#step-functions).
@@ -1558,6 +1676,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Survival function** — `S(t) = Pr(T > t)`, probability of surviving past `t`. → [Survival function](#survival-function).
 - **t-statistic** — coefficient estimate in units of its standard error. → [Hypothesis test, t-statistic, and p-value](#hypothesis-test-t-statistic-and-p-value).
 - **tanh** — S-shaped activation with output in `(−1, 1)`, centered near 0. → [Activation function](#activation-function).
+- **Train / dev / test split** — fit / tune / final-check partitions. → [Train / dev / test split](#train--dev--test-split).
 - **Test / training MSE** — error on unseen vs fitting data; test is U-shaped in flexibility. → [Training MSE vs test MSE](#training-mse-vs-test-mse).
 - **Type I / Type II error** — false positive (reject true null) vs false negative (miss a real effect). → [Type I and Type II errors](#type-i-and-type-ii-errors).
 - **Unsupervised learning** — finding structure with no response variable. → [Unsupervised learning](#unsupervised-learning).
@@ -1565,6 +1684,8 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Vanishing / exploding gradients** — gradients decaying or blowing up through deep layers. → [Vanishing and exploding gradients](#vanishing-and-exploding-gradients).
 - **Variance** — how much `f̂` shifts across training sets; rises with flexibility. → [Variance](#variance).
 - **Variable selection** — choosing which predictors to include. → [Best subset selection](#best-subset-selection).
+- **WaveNet / hierarchical context** — fuse a sequence progressively in a tree. → [WaveNet / hierarchical context](#wavenet--hierarchical-context).
+- **Weight init (Kaiming / fan-in)** — scale weights by gain/√(fan_in) to keep activations healthy. → [Weight initialization](#weight-initialization).
 - **Weight initialization** — must be random, to break symmetry between units. → [Weight initialization](#weight-initialization).
-- **Weight initialization**  — dense vectors placing similar words nearby (word2vec, GloVe). → [Word embeddings](#word-embeddings).
+- **Word embeddings** — dense vectors placing similar words nearby (word2vec, GloVe). → [Embedding layer](#embedding-layer).
 - **Zeroing gradients** — clear `.grad` before each backward pass; gradients accumulate. → [Zeroing gradients](#zeroing-gradients).
