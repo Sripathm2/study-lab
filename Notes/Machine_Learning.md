@@ -160,6 +160,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - [Gradient descent](#gradient-descent)
 - [Stochastic gradient descent (SGD)](#stochastic-gradient-descent-sgd)
 - [Learning-rate schedule](#learning-rate-schedule)
+- [Adam and AdamW](#adam-and-adamw)
 - [Dropout](#dropout)
 - [Neural network regularization](#neural-network-regularization)
 - [Max-norm regularization](#max-norm-regularization)
@@ -167,6 +168,34 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - [Early stopping](#early-stopping)
 - [Vanishing and exploding gradients](#vanishing-and-exploding-gradients)
 - [Double descent](#double-descent)
+
+**Transformers and Large Language Models** *(Karpathy)*
+- [Tokenization and byte-pair encoding (BPE)](#tokenization-and-byte-pair-encoding-bpe)
+- [Self-attention](#self-attention)
+- [Scaled dot-product attention](#scaled-dot-product-attention)
+- [Causal (masked) self-attention](#causal-masked-self-attention)
+- [Multi-head attention](#multi-head-attention)
+- [Positional encoding](#positional-encoding)
+- [Residual (skip) connections](#residual-skip-connections)
+- [Layer normalization](#layer-normalization)
+- [Transformer feed-forward network](#transformer-feed-forward-network)
+- [Transformer block](#transformer-block)
+- [Encoder, decoder, and cross-attention](#encoder-decoder-and-cross-attention)
+- [Decoder-only transformer (GPT)](#decoder-only-transformer-gpt)
+- [GPT training pipeline](#gpt-training-pipeline)
+- [Pretraining and base models](#pretraining-and-base-models)
+- [Supervised fine-tuning (SFT)](#supervised-fine-tuning-sft)
+- [Reward modeling and RLHF](#reward-modeling-and-rlhf)
+- [Mode collapse](#mode-collapse)
+- [In-context learning (zero/one/few-shot)](#in-context-learning-zeroonefew-shot)
+- [Chain-of-thought prompting](#chain-of-thought-prompting)
+- [Self-consistency and ensembling attempts](#self-consistency-and-ensembling-attempts)
+- [Tree of thoughts](#tree-of-thoughts)
+- [LLM agents (chains, ReAct)](#llm-agents-chains-react)
+- [Retrieval-augmented generation (RAG)](#retrieval-augmented-generation-rag)
+- [Constrained prompting](#constrained-prompting)
+- [Parameter-efficient fine-tuning (LoRA / PEFT)](#parameter-efficient-fine-tuning-lora--peft)
+- [LLM limitations and safe use](#llm-limitations-and-safe-use)
 
 **Survival Analysis and Censored Data** *(ISL ch. 11)*
 - [Survival analysis and censored data](#survival-analysis-and-censored-data)
@@ -1092,7 +1121,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Instead of hand-tuning initialization so activations stay healthy, just force them healthy at every step: standardize, then let `gamma`/`beta` learn whatever scale and offset are actually useful. This makes deep nets far more forgiving of weight initialization and learning rate. Two knock-on effects: the preceding layer's bias becomes redundant (batchnorm subtracts the mean, cancelling any added constant — `beta` is the effective bias), and because each example is normalized using *its batch's* statistics, its activations jitter slightly depending on which examples share the batch. That coupling is a small random augmentation of the activations, so batchnorm also acts as a mild **regularizer** — at the cost of making predictions subtly batch-dependent (hence the need for running statistics at inference).
 
-**Notes.** Uses the unbiased variance (Bessel's correction, `n−1`) and an `eps` for stability. One of the most impactful training tricks in deep learning; alternatives like layer norm avoid the batch-dependence. *(Hands-On ML; Karpathy)* → Weight initialization, Activation saturation, Neural network regularization, Vanishing and exploding gradients.
+**Notes.** Uses the unbiased variance (Bessel's correction, `n−1`) and an `eps` for stability. One of the most impactful training tricks in deep learning; alternatives like layer norm avoid the batch-dependence. *(Hands-On ML; Karpathy)* → Weight initialization, Activation saturation, Neural network regularization, Vanishing and exploding gradients, Layer normalization.
 
 ### WaveNet / hierarchical context
 
@@ -1286,6 +1315,14 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Notes.** One of the more impactful training knobs in deep learning. To find a sane range in the first place, sweep the rate exponentially (e.g. 1e-3 up to 1) over steps and watch where the loss falls fastest — too low barely moves, too high diverges. *(Karpathy)* → Gradient descent, Stochastic gradient descent.
 
+### Adam and AdamW
+
+**Definition.** *Adam* (adaptive moment estimation) is a gradient-descent optimizer that keeps a per-parameter running average of the gradient (first moment, a momentum term) and of its square (second moment), and scales each parameter's step by them — so every parameter gets its own adaptive learning rate. *AdamW* is the variant that applies weight decay (L2 shrinkage) *decoupled* from the gradient update rather than folded into it.
+
+**Intuition.** Plain SGD uses one global step size for every parameter; Adam gives parameters with consistently large gradients smaller steps and rarely-updated ones larger steps, which makes it fast and robust with little tuning — the default optimizer for transformers. AdamW's decoupled weight decay fixes a subtlety where Adam's per-parameter scaling distorts ordinary L2 regularization, so the shrinkage acts as intended.
+
+**Notes.** A common default learning rate is ~3e-4. The GPT build trains with `torch.optim.AdamW(model.parameters(), lr=...)`. *(Karpathy)* → Stochastic gradient descent (SGD), Learning-rate schedule, Neural network regularization.
+
 ### Dropout
 
 **Definition.** A regularization method that randomly removes a fraction `φ` of the units in a layer during each training update (setting their activations to zero), scaling the survivors up by `1/(1−φ)` to compensate.
@@ -1341,6 +1378,218 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 **Intuition.** Classic bias–variance says test error is U-shaped and interpolating the data is bad, and that holds *up to* the interpolation threshold. But push flexibility even further and, in some settings, test error descends a second time — so a model that fits training data perfectly can sometimes beat a slightly less flexible one. Hence "double" descent.
 
 **Notes.** A modern refinement of, not a contradiction to, the bias–variance trade-off — the trade-off governs behavior up to interpolation. Helps explain why huge over-parameterized networks can still generalize. → Bias–variance trade-off, Overfitting.
+
+---
+
+## Transformers and Large Language Models *(Karpathy)*
+
+### Tokenization and byte-pair encoding (BPE)
+
+**Definition.** Turning raw text into a sequence of integer *tokens* (and back) via a fixed vocabulary. A *character-level* tokenizer uses one token per character (tiny vocabulary, long sequences). *Subword* tokenizers sit between characters and words: *byte-pair encoding (BPE)* (OpenAI's `tiktoken`) and *SentencePiece* (Google) build a vocabulary by repeatedly merging the most frequent adjacent token pair.
+
+**Intuition.** A lossless, reversible mapping — `encode` text → ints, `decode` ints → text, with `decode(encode(s)) == s`. The core trade-off is vocabulary size vs sequence length: characters give a small vocab but long sequences (so a fixed context window covers less text); whole words give short sequences but a huge vocab. Subword BPE compromises — common words become a single token, rare words split into pieces.
+
+**Notes.** The character model in the build uses a 65-token vocab (the unique characters of the corpus); real LLMs use BPE with tens of thousands (GPT-3: 50,257; LLaMA: 32,000). → One-hot encoding, Embedding layer, Language model.
+
+### Self-attention
+
+**Definition.** A layer that lets each position in a sequence gather information from other positions with data-dependent weights. Every token emits three vectors from learned linear maps of its embedding: a *query* (what am I looking for), a *key* (what do I contain), and a *value* (what I'll pass on if attended to). The weight from token `i` to token `j` is the (scaled, softmaxed) dot product of `i`'s query with `j`'s key; the output at `i` is the weighted sum of all values: `out = softmax(Q Kᵀ / sqrt(d)) V`.
+
+**Intuition.** A *communication mechanism*: picture tokens as nodes in a directed graph that aggregate information from the nodes pointing to them, via a weighted sum whose weights depend on the data. A token's query "asks" for certain content; tokens whose keys match get high weight, and their values flow into the output. Because it's just dot products over a *set* of vectors, attention has no built-in sense of position — order must be injected separately (→ Positional encoding). Keeping *value* separate from the raw embedding lets a token expose something different from what it *is*.
+
+**Notes.** "Self" means Q, K, V all come from the same sequence `x`; when K and V come from a different source it's *cross-attention*. Each batch example is processed completely independently. → Scaled dot-product attention, Causal (masked) self-attention, Multi-head attention, Encoder, decoder, and cross-attention.
+
+### Scaled dot-product attention
+
+**Definition.** The attention scores are divided by `sqrt(head_size)` before the softmax: `wei = (Q Kᵀ) · head_size^(−1/2)`.
+
+**Intuition.** If Q and K have unit variance, their dot product over `head_size` dimensions has variance ≈ `head_size`, so raw scores grow large as the head widens. Feeding large-magnitude scores into softmax makes it *peaky* — it converges toward a one-hot vector that attends to a single token, starving the other positions of gradient (the same saturation problem squashing activations have). Dividing by `sqrt(head_size)` keeps scores unit-variance, so softmax stays *diffuse* early in training and every token can contribute.
+
+**Notes.** Matters most at initialization, when a saturated softmax would pass almost no gradient. → Activation saturation, Softmax, Self-attention.
+
+### Causal (masked) self-attention
+
+**Definition.** In an autoregressive language model, a token may attend only to itself and earlier positions, never future ones. Implemented by setting the upper-triangular entries of the score matrix to `−inf` before the softmax (a lower-triangular mask), so their weights become 0.
+
+**Intuition.** When predicting the next token, letting a position see the future would leak the answer, so the mask forces position `t`'s output to depend only on positions `≤ t`. Mechanically: build a lower-triangular ones matrix, `masked_fill` the zeros with `−inf`, then softmax — the `−inf` entries exponentiate to 0, giving a valid weighted average over the past only. An early toy form of the same idea is a lower-triangular matrix of *uniform* averaging weights `@ x`; attention just replaces the uniform weights with learned, data-dependent ones.
+
+**Notes.** This triangular masking is what makes a block a *decoder* block; deleting the mask lets all tokens see each other (an *encoder* block). → Self-attention, Encoder, decoder, and cross-attention.
+
+### Multi-head attention
+
+**Definition.** Run several self-attention *heads* in parallel, each with its own smaller Q/K/V projections (`head_size = n_embd / n_heads`), then concatenate their outputs and pass them through a linear *projection* back to the embedding dimension.
+
+**Intuition.** One head can track one kind of relationship; multiple heads let the model attend to several different things at once, each in its own subspace (e.g. one head tracking the previous character, another matching vowels). Concatenating and projecting recombines these independent "communication channels" into one representation. Splitting the embedding across heads keeps total compute the same as one full-width head.
+
+**Notes.** The output projection is what lets the concatenated per-head results be added back into the residual stream. → Self-attention, Transformer block, Residual (skip) connections.
+
+### Positional encoding
+
+**Definition.** Extra information added to token embeddings so the model knows each token's *position*, since attention itself is order-agnostic. In the GPT build this is a learned *positional embedding table* indexed by position `0…T−1`, added to the token embedding: `x = tok_emb + pos_emb`.
+
+**Intuition.** Attention treats its inputs as an unordered set, so "the cat sat" and "sat the cat" would look identical without positional information. Giving each slot its own learned vector lets the model recover word order. (The original transformer used fixed sinusoidal encodings; GPT learns them instead.)
+
+**Notes.** Caps the usable context length at the table size (`block_size`). → Self-attention, Embedding layer.
+
+### Residual (skip) connections
+
+**Definition.** Adding a sub-layer's input back to its output — `x = x + sublayer(x)` — so each block computes a *change* to a running representation rather than replacing it. Used around both the attention and feed-forward sub-blocks.
+
+**Intuition.** The additions create a "residual highway" straight from input to output. During backprop, gradient flows unimpeded down this highway (addition distributes gradient equally to both branches), so even very deep stacks train — sidestepping vanishing gradients. Each block only has to learn a small correction to the residual stream, and at initialization the sub-blocks contribute little, so the network starts near the identity.
+
+**Notes.** Introduced by ResNets; essential for training deep transformers. → Vanishing and exploding gradients, Transformer block, Backpropagation.
+
+### Layer normalization
+
+**Definition.** Normalizes each individual example's activation vector to zero mean and unit variance *across its features* (not across the batch), then applies a learned scale `gamma` and shift `beta`. Same formula as batch norm, but reduced over the feature dimension per token rather than over the batch per feature.
+
+**Intuition.** Batch norm's statistics couple examples in a batch together (an example's output depends on its batch-mates), which is awkward for variable-length sequences and small batches. Layer norm normalizes each token's own feature vector, so there's *no cross-example dependence* and train/test behave identically — no running statistics needed. It keeps activations well-scaled through a deep stack.
+
+**Notes.** In modern (*pre-norm*) transformer blocks, layer norm is applied *before* each sub-block rather than after. Its per-token, batch-independent design is exactly why transformers prefer it over batch norm. → Batch normalization, Transformer block.
+
+### Transformer feed-forward network
+
+**Definition.** A small per-token MLP applied after attention: `Linear(n_embd → 4·n_embd) → ReLU → Linear(4·n_embd → n_embd)`, plus dropout. The 4× hidden expansion follows the original paper.
+
+**Intuition.** Attention is where tokens *communicate* (gather information); the feed-forward network is where each token then *thinks* on what it gathered, independently of the others. Widening to 4× gives the non-linearity room to compute richer features before projecting back down to the residual dimension.
+
+**Notes.** The second linear (`4·n_embd → n_embd`) projects back to the embedding size so the result can be added into the residual stream. Applied identically and independently to every position. → Transformer block, Multi-head attention, Activation function.
+
+### Transformer block
+
+**Definition.** The repeating unit of a transformer: multi-head self-attention followed by a feed-forward network, each wrapped in a residual connection and preceded by layer norm — `x = x + sa(ln1(x)); x = x + ffwd(ln2(x))`. A model stacks many such blocks.
+
+**Intuition.** *Communication followed by computation*: the attention sub-block lets tokens exchange information, then the feed-forward sub-block lets each token process it. Residual connections plus pre-block layer norm are what make a deep stack of these trainable.
+
+**Notes.** GPT interleaves `n_layer` of these, each preserving the `(B, T, n_embd)` shape. The pre-norm placement (LN *before* each sub-block) departs from the original paper's post-norm. → Multi-head attention, Transformer feed-forward network, Residual (skip) connections, Layer normalization.
+
+### Encoder, decoder, and cross-attention
+
+**Definition.** The original transformer has two stacks: an *encoder* (bidirectional self-attention — every token sees every other) and a *decoder* (masked self-attention plus a *cross-attention* sub-layer whose queries come from the decoder but whose keys and values come from the encoder's output). *Cross-attention* is attention where Q is produced from one sequence and K, V from another.
+
+**Intuition.** In a translation model, the encoder reads the whole source sentence into rich vectors; the decoder then generates the target one token at a time, using masked self-attention over what it has produced so far *and* cross-attention to consult the encoded source. Self-attention (K, V, Q from the same place) is a token looking at its own sequence; cross-attention is a token looking at an external, fully-visible source.
+
+**Notes.** *Correction to the highlight:* a **GPT is decoder-only** — an encoder-free stack of masked-self-attention blocks, and therefore has **no cross-attention at all**. The "encoder + decoder + cross-attention" picture is the *original* (Vaswani) encoder-decoder transformer used for tasks like translation, not GPT. GPT's blocks also drop the cross-attention sub-layer that the original decoder block has, leaving just masked self-attention + feed-forward. (Encoder-only models like BERT keep the *unmasked* self-attention and drop the decoder.) → Causal (masked) self-attention, Self-attention, Decoder-only transformer (GPT).
+
+### Decoder-only transformer (GPT)
+
+**Definition.** The full generative model: token embedding + positional embedding → a stack of `n_layer` transformer blocks (masked multi-head attention + feed-forward) → a final layer norm → a linear `lm_head` projecting to vocabulary logits. Trained with cross-entropy on next-token prediction; generates by repeatedly sampling the next token and appending it.
+
+**Intuition.** Every piece assembled: embed tokens and positions, let them communicate causally and compute through many blocks, then read out a distribution over the next token. Generation crops the running context to the last `block_size` tokens, takes the logits at the final position, softmaxes, and samples — autoregressively.
+
+**Notes.** This is the architecture behind GPT-2/3; scaling the *same* design (more layers, wider embeddings, more data) is most of what separates the toy build from GPT-3 (96 layers, ~175B parameters, 50K vocab, 2048 context). → Transformer block, Causal (masked) self-attention, Language model, GPT training pipeline.
+
+### GPT training pipeline
+
+**Definition.** The four-stage recipe that turns raw text into an assistant: *pretraining* (next-token prediction on a huge low-quality corpus → a *base model*), *supervised fine-tuning (SFT)* (train on a small, high-quality set of ideal prompt/response demonstrations → an *SFT model*), *reward modeling (RM)* (train a model to score responses from human preference comparisons → an *RM*), and *reinforcement learning (RLHF)* (optimize the SFT model to produce responses the RM scores highly → the deployed *RL model*).
+
+**Intuition.** Pretraining absorbs essentially all the knowledge (thousands of GPUs, months); the later stages are comparatively cheap alignment steps that shape *how* the model uses that knowledge — turning a document-completer into a helpful assistant. The data flips from "huge quantity, low quality" (pretraining) to "low quantity, high quality" (the fine-tuning stages).
+
+**Notes.** ChatGPT and Claude are RLHF models; base models like GPT/LLaMA/PaLM are pretraining-only. → Pretraining and base models, Supervised fine-tuning (SFT), Reward modeling and RLHF.
+
+### Pretraining and base models
+
+**Definition.** Training a transformer from scratch on trillions of words of internet text by next-token prediction. The result is a *base model* — a powerful next-token predictor, not an assistant.
+
+**Intuition.** A base model only "wants" to complete documents; ask it a question and it may reply with *more questions*, because that's what its training text looks like. It can still be *coerced* into tasks by making the prompt look like a document whose natural continuation is the answer (few-shot examples, or a `Q:`/`A:` format). Pretraining learns broad, general-purpose representations that transfer to many downstream tasks.
+
+**Notes.** Order-of-magnitude cost: thousands of GPUs, months, millions of dollars. Base models are the reusable foundation the alignment stages build on. → GPT training pipeline, In-context learning (zero/one/few-shot), Supervised fine-tuning (SFT).
+
+### Supervised fine-tuning (SFT)
+
+**Definition.** Continue training the base model (same next-token objective) on a small, curated dataset of high-quality prompt → ideal-response pairs written by contractors following detailed labeling instructions.
+
+**Intuition.** Same algorithm as pretraining, different data: by imitating thousands of exemplary assistant responses, the model learns the *format and manner* of a helpful assistant rather than raw document completion. Quality matters far more than quantity here (~10K–100K examples).
+
+**Notes.** SFT alone yields a usable assistant and is achievable without huge resources; RLHF is the research-heavier stage layered on top. → GPT training pipeline, Reward modeling and RLHF.
+
+### Reward modeling and RLHF
+
+**Definition.** *Reward modeling:* collect human *comparisons* ranking several model responses to the same prompt, and train a model to predict a scalar reward (read out at a special token) consistent with those preferences. *RLHF:* use reinforcement learning (PPO) to update the SFT model so its sampled responses score highly under the reward model, weighting each token's update by the reward-derived *advantage*.
+
+**Intuition.** Judging which of two answers is better is far easier and more reliable for humans than writing the ideal answer, so preferences scale better than demonstrations. The reward model turns those preferences into a trainable signal; RL then pushes the policy toward high-reward completions — boosting the probabilities of tokens in good responses and suppressing those in bad ones.
+
+**Notes.** Produces the deployed model (ChatGPT, Claude). RLHF is still research territory relative to SFT. → GPT training pipeline, Mode collapse, Supervised fine-tuning (SFT).
+
+### Mode collapse
+
+**Definition.** The loss of output diversity (entropy) that RLHF tends to cause: the aligned model confidently emits a few near-identical phrasings where the base model had a broad distribution.
+
+**Intuition.** RLHF concentrates probability on the responses the reward model likes, so the model stops exploring alternatives. This is why *base* models can beat RLHF models at tasks needing variety — e.g. "generate 100 different names" — where the goal is diversity, not a single best answer.
+
+**Notes.** A concrete cost of alignment; choose base vs aligned by whether the task wants one good answer or many varied ones. → Reward modeling and RLHF, Pretraining and base models.
+
+### In-context learning (zero/one/few-shot)
+
+**Definition.** Getting a model to perform a task purely from the prompt, with *no gradient updates*: *zero-shot* gives only a task description, *one-shot* adds a single worked example, *few-shot* adds several. "Prompting over fine-tuning."
+
+**Intuition.** A capable base model can infer the pattern from a handful of in-prompt examples and continue it — so you often get task-specific behavior without training anything, just by arranging the context. GPT-2/3 popularized this as an alternative to fine-tuning a separate model per task.
+
+**Notes.** Cheap and immediate, but limited by the context window and generally weaker than true fine-tuning on hard tasks. → Language model, Pretraining and base models, Parameter-efficient fine-tuning (LoRA / PEFT).
+
+### Chain-of-thought prompting
+
+**Definition.** Prompting the model to produce intermediate reasoning steps before its final answer (e.g. appending "Let's think step by step"), rather than answering immediately.
+
+**Intuition.** A transformer spends the *same* small amount of compute per token and has no internal scratchpad, so hard problems need their reasoning *spread out over tokens* — the tokens themselves are the working memory. Writing out the steps gives the model room to compute the answer instead of guessing it in one shot. Few-shot CoT shows worked reasoning examples; zero-shot CoT just adds the trigger phrase.
+
+**Notes.** Large accuracy gains on multi-step (e.g. arithmetic) problems. Related lever: because LLMs imitate a *range* of quality, explicitly asking for competent/expert reasoning ("condition on good performance") tends to help. → Self-consistency and ensembling attempts, In-context learning (zero/one/few-shot).
+
+### Self-consistency and ensembling attempts
+
+**Definition.** Sample several independent chain-of-thought solutions to the same problem and take the *majority* final answer instead of trusting a single pass.
+
+**Intuition.** Sampling can get "unlucky" and commit to a bad reasoning path that the model is then stuck with. Generating multiple diverse paths and marginalizing over them (majority vote on the final answer) recovers accuracy — an ensemble over reasoning traces.
+
+**Notes.** Trades compute for reliability. → Chain-of-thought prompting, Tree of thoughts.
+
+### Tree of thoughts
+
+**Definition.** A deliberate problem-solving strategy that expands a *tree* of intermediate thoughts, evaluates them, and searches — keeping promising branches, pruning bad ones — rather than committing to one linear chain.
+
+**Intuition.** The "System 2" (slow, deliberate) counterpart to a single fast pass: explore several partial solutions, score them, and expand the best — analogous to the lookahead search in AlphaGo. More capable than chain-of-thought or self-consistency on problems that benefit from planning and backtracking.
+
+**Notes.** Part of a broader shift from one-shot Q&A toward search and planning over model outputs. → Chain-of-thought prompting, Self-consistency and ensembling attempts, LLM agents (chains, ReAct).
+
+### LLM agents (chains, ReAct)
+
+**Definition.** Wrapping an LLM in a loop that interleaves reasoning with *actions* (tool calls, searches) and observations, rather than answering in one turn. *ReAct* alternates Thought → Action → Observation steps; *AutoGPT*-style systems add task queues and memory to pursue a goal semi-autonomously.
+
+**Intuition.** Think pipelines, state machines, and agents instead of single Q&A: the model plans, takes an action in the world, reads the result, and continues — letting it use tools and decompose long tasks.
+
+**Notes.** Powerful but brittle; the practical recommendation is copilots (human-in-the-loop) over fully autonomous agents. → Tree of thoughts, Retrieval-augmented generation (RAG).
+
+### Retrieval-augmented generation (RAG)
+
+**Definition.** Fetch task-relevant documents at query time and pack them into the context window so the model can condition on them, rather than relying only on what's baked into its weights.
+
+**Intuition.** The context window is the model's "working memory," and it's near-perfect *within* that window — so loading the right reference text into it sharpens answers and supplies facts the weights lack. Emerging recipe: split documents into chunks, embed the chunks into a vector store, retrieve the chunks most similar to the query, and insert them into the prompt.
+
+**Notes.** Sits on a spectrum between pure retrieval (search engines) and pure parametric memory (the raw LLM). Addresses knowledge cutoffs and hallucination. → LLM agents (chains, ReAct), Embedding layer, LLM limitations and safe use.
+
+### Constrained prompting
+
+**Definition.** "Prompting languages" that interleave free generation with enforced structure — templates where some fields are generated and others are constrained to a fixed option set or pattern (e.g. Microsoft's `guidance`), so the output conforms to a schema such as valid JSON.
+
+**Intuition.** Rather than hoping the model emits well-formed structured output, force the format: let it generate the free-text fields while restricting others to valid options/regex, guaranteeing parseable results.
+
+**Notes.** Useful for reliable JSON/structured output from an otherwise free-form generator. → In-context learning (zero/one/few-shot).
+
+### Parameter-efficient fine-tuning (LoRA / PEFT)
+
+**Definition.** Fine-tuning that updates only a small number of added parameters while freezing most of the pretrained weights. *LoRA* injects low-rank trainable matrices into the layers; *PEFT* is the general family.
+
+**Intuition.** Full fine-tuning of a huge model is expensive; training a small set of adapter parameters (plus tricks like low-precision inference, e.g. bitsandbytes) makes customizing open base models like LLaMA far more accessible, at a fraction of the cost.
+
+**Notes.** SFT-style fine-tuning is now achievable this way; full RLHF remains research-heavy. → In-context learning (zero/one/few-shot), Supervised fine-tuning (SFT).
+
+### LLM limitations and safe use
+
+**Definition.** Known failure modes of LLMs: they may be *biased*, *hallucinate* (fabricate facts), make *reasoning errors*, struggle with some task classes (e.g. spelling, a side effect of tokenization), have *knowledge cutoffs*, and be vulnerable to *prompt injection*, jailbreaks, and data-poisoning attacks.
+
+**Intuition.** An LLM imitates the next token; it doesn't know what it doesn't know, doesn't sanity-check or reflect by default, and spends equal compute per token. This is *System 1* (fast, automatic) thinking — techniques like chain-of-thought, self-consistency, and tree-of-thoughts bolt on a *System 2* (slow, deliberate) layer. Its large fact-based knowledge and near-perfect context-window working memory are the real strengths to lean on.
+
+**Notes.** Practical guidance: use in low-stakes settings with human oversight, treat outputs as inspiration/suggestions, and prefer copilots over autonomous agents. → Chain-of-thought prompting, Retrieval-augmented generation (RAG), Mode collapse.
 
 ---
 
@@ -1519,6 +1768,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 ## Glossary
 
 - **Activation function** — the non-linearity (sigmoid, ReLU) inside a neural-net unit. → [Activation function](#activation-function).
+- **Adam / AdamW** — adaptive per-parameter optimizer; AdamW decouples weight decay. → [Adam and AdamW](#adam-and-adamw).
 - **Additivity assumption** — a predictor's effect on `Y` doesn't depend on other predictors' values. → [Additivity and linearity assumptions](#additivity-and-linearity-assumptions).
 - **Adjusted R-squared** — R² modified to penalize useless predictors; larger = better. → [Cp, AIC, BIC, and adjusted R-squared](#cp-aic-bic-and-adjusted-r-squared).
 - **AIC / Cp** — test-error estimates that tax training RSS by model size; smaller = better. → [Cp, AIC, BIC, and adjusted R-squared](#cp-aic-bic-and-adjusted-r-squared).
@@ -1527,6 +1777,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Bag-of-words** — represent a document by which dictionary words it contains. → [Bag-of-words](#bag-of-words).
 - **Activation saturation** — squashing units pinned at ±1 (or dead at 0) with ~0 gradient. → [Activation saturation](#activation-saturation).
 - **Backpropagation** — forward pass, chain-rule backward pass, then a gradient step. → [Backpropagation](#backpropagation).
+- **Base model** — pretraining-only next-token predictor; not yet an assistant. → [Pretraining and base models](#pretraining-and-base-models).
 - **Broadcasting** — stretch a smaller tensor to match a larger one for element-wise ops; mind `keepdims`. → [Broadcasting](#broadcasting).
 - **Bagging** — averaging trees fit on bootstrap samples to cut variance. → [Bagging](#bagging).
 - **BART** — tree ensemble combining random perturbation with boosting-style residual fitting. → [Bayesian additive regression trees (BART)](#bayesian-additive-regression-trees-bart).
@@ -1543,6 +1794,9 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Bonferroni correction** — reject only p-values below `α/m` to control FWER. → [Bonferroni correction](#bonferroni-correction).
 - **Boosting** — sequential trees each fit to the previous model's residuals. → [Boosting](#boosting).
 - **Bootstrap** — resampling with replacement to quantify an estimate's uncertainty. → [The bootstrap](#the-bootstrap).
+- **Byte-pair encoding (BPE)** — subword tokenization by merging frequent token pairs. → [Tokenization and byte-pair encoding (BPE)](#tokenization-and-byte-pair-encoding-bpe).
+- **Causal (masked) self-attention** — attention restricted to current and past tokens via a triangular mask. → [Causal (masked) self-attention](#causal-masked-self-attention).
+- **Chain-of-thought (CoT)** — prompt the model to reason in steps before answering. → [Chain-of-thought prompting](#chain-of-thought-prompting).
 - **Classification** — predicting a qualitative (label) response. → [Regression vs classification](#regression-vs-classification).
 - **Classification error rate** — fraction misclassified; test rate `= Ave(I(y_0 ≠ ŷ_0))`. → [Classification error rate](#classification-error-rate).
 - **Clustering** — partitioning observations into similar subgroups. → [Clustering](#clustering).
@@ -1551,12 +1805,15 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Confounding** — single- vs multiple-predictor results differ due to correlated predictors. → [Confounding](#confounding).
 - **Confusion matrix** — table of predicted vs actual classes, exposing error types. → [Confusion matrix and error types](#confusion-matrix-and-error-types).
 - **Computational graph / autograd** — recorded op graph that makes derivatives automatic. → [Computational graph and autograd](#computational-graph-and-autograd).
+- **Constrained prompting** — templates forcing structured (e.g. JSON) output. → [Constrained prompting](#constrained-prompting).
 - **Convolution filter** — small learned matrix slid over image patches to detect local patterns. → [Convolution filter](#convolution-filter).
 - **Convolutional neural network (CNN)** — image network of convolution + pooling layers. → [Convolutional neural network (CNN)](#convolutional-neural-network-cnn).
 - **Cox proportional hazards model** — survival regression scaling a free baseline hazard by `exp(Σ x_j β_j)`. → [Cox proportional hazards model](#cox-proportional-hazards-model).
+- **Cross-attention** — Q from one sequence, K/V from another (e.g. encoder → decoder). → [Encoder, decoder, and cross-attention](#encoder-decoder-and-cross-attention).
 - **Cross-entropy** — the classification loss for neural nets (negative log-likelihood). → [Output layer and loss](#output-layer-and-loss).
 - **Cross-validation** — resampling to estimate test error (LOOCV, k-fold). → [k-fold cross-validation](#k-fold-cross-validation).
 - **Data augmentation** — label-preserving random distortions that enlarge training data. → [Data augmentation](#data-augmentation).
+- **Decoder-only transformer (GPT)** — stacked masked-attention blocks; the GPT architecture. → [Decoder-only transformer (GPT)](#decoder-only-transformer-gpt).
 - **Dense (fully connected) layer** — every neuron connected to every neuron of the previous layer; `φ(XW + b)`. → [Dense (fully connected) layer](#dense-fully-connected-layer).
 - **Decision tree** — flowchart of splits carving the predictor space into regions. → [Decision trees](#decision-trees).
 - **Dendrogram** — the nested-cluster tree produced by hierarchical clustering. → [Hierarchical clustering](#hierarchical-clustering).
@@ -1565,6 +1822,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Dropout** — regularize a net by randomly zeroing units during training. → [Dropout](#dropout).
 - **Early stopping** — halt training when validation performance stops improving. → [Early stopping](#early-stopping).
 - **Dummy variable** — 0/1 encoding of a categorical predictor. → [Qualitative predictors and dummy variables](#qualitative-predictors-and-dummy-variables).
+- **Encoder / decoder** — bidirectional vs masked transformer stacks; GPT is decoder-only. → [Encoder, decoder, and cross-attention](#encoder-decoder-and-cross-attention).
 - **Ensemble / weak learner** — combine many mediocre models into a strong one. → [Ensemble methods and weak learners](#ensemble-methods-and-weak-learners).
 - **F-statistic** — tests whether all regression coefficients are zero. → [F-statistic](#f-statistic).
 - **False discovery rate (FDR)** — expected fraction of false positives among rejections. → [False discovery rate (FDR)](#false-discovery-rate-fdr).
@@ -1585,6 +1843,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **High-dimensional data** — `p` large relative to `n`; overfitting danger. → [High-dimensional data](#high-dimensional-data).
 - **Holm's method** — step-down FWER control; rejects more than Bonferroni. → [Holm's method](#holms-method).
 - **Hyperplane** — flat `(p−1)`-dimensional divider; basis of SVMs. → [Hyperplane](#hyperplane).
+- **In-context learning (zero/one/few-shot)** — task behavior from prompt examples, no gradient updates. → [In-context learning (zero/one/few-shot)](#in-context-learning-zeroonefew-shot).
 - **Interaction term** — product predictor capturing predictor synergy. → [Interaction terms](#interaction-terms).
 - **Irreducible error** — `Var(ε)`, the noise floor no model removes. → [Reducible vs irreducible error](#reducible-vs-irreducible-error).
 - **k-fold cross-validation** — average test error over `k` held-out folds. → [k-fold cross-validation](#k-fold-cross-validation).
@@ -1592,6 +1851,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **K-nearest neighbors (KNN)** — majority vote / average of the `K` closest points; `1/K` sets flexibility. → [K-nearest neighbors (KNN)](#k-nearest-neighbors-knn) / [KNN regression](#knn-regression).
 - **Kaplan-Meier estimator** — non-parametric step-curve estimate of the survival function. → [Kaplan-Meier estimator](#kaplan-meier-estimator).
 - **Lasso** — L1-penalized regression that zeros out coefficients (variable selection). → [The lasso](#the-lasso).
+- **Layer normalization** — normalize each token's own features (batch-independent); transformer default. → [Layer normalization](#layer-normalization).
 - **Leaky ReLU / ELU / SELU** — ReLU variants; rough ordering SELU > ELU > leaky ReLU > ReLU > tanh > logistic. → [Activation function](#activation-function).
 - **Language model (n-gram / bigram)** — predicts the next token from previous ones. → [Language model](#language-model).
 - **Learning-rate schedule** — vary/decay the step size over training. → [Learning-rate schedule](#learning-rate-schedule).
@@ -1601,6 +1861,8 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Linear discriminant analysis (LDA)** — Gaussian generative classifier, shared covariance → linear boundary. → [Linear discriminant analysis (LDA)](#linear-discriminant-analysis-lda).
 - **Linkage** — rule for cluster-to-cluster dissimilarity (complete/average/single/centroid). → [Hierarchical clustering](#hierarchical-clustering).
 - **Likelihood / NLL** — product of assigned probabilities; negate the log for a loss. → [Likelihood and negative log-likelihood](#likelihood-and-negative-log-likelihood).
+- **LLM agent (ReAct)** — an LLM in a reason–act–observe loop with tools. → [LLM agents (chains, ReAct)](#llm-agents-chains-react).
+- **LLM limitations** — bias, hallucination, reasoning errors, cutoffs, prompt injection. → [LLM limitations and safe use](#llm-limitations-and-safe-use).
 - **Loadings** — the predictor weights defining a principal component. → [Principal components analysis (PCA)](#principal-components-analysis-pca).
 - **Local regression** — fit at each point from weighted nearby points; span sets smoothness. → [Local regression](#local-regression).
 - **Logistic regression** — models class probability via the logistic (S-curve) function. → [Logistic regression](#logistic-regression).
@@ -1608,6 +1870,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Log-odds (logit)** — `log[p/(1−p)]`; linear in `X` for logistic regression. → [Odds and log-odds (logit)](#odds-and-log-odds-logit).
 - **Log-rank test** — compares survival curves between groups. → [Log-rank test](#log-rank-test).
 - **LOOCV** — cross-validation holding out one point at a time. → [Leave-one-out cross-validation (LOOCV)](#leave-one-out-cross-validation-loocv).
+- **LoRA / PEFT** — parameter-efficient fine-tuning via a few added weights. → [Parameter-efficient fine-tuning (LoRA / PEFT)](#parameter-efficient-fine-tuning-lora--peft).
 - **LSTM** — RNN variant with long- and short-term memory tracks. → [LSTM](#lstm).
 - **Max-norm regularization** — cap each neuron's incoming weight norm at `r`. → [Max-norm regularization](#max-norm-regularization).
 - **MC dropout** — keep dropout on at prediction time and average many passes. → [MC dropout](#mc-dropout).
@@ -1616,7 +1879,9 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Maximal margin classifier** — separating hyperplane with the widest buffer. → [Maximal margin classifier](#maximal-margin-classifier).
 - **Maximum likelihood** — fit by maximizing the probability of the observed data. → [Maximum likelihood](#maximum-likelihood).
 - **Mean squared error (MSE)** — `(1/n) Σ (y_i − f̂(x_i))²`; standard regression fit measure. → [Mean squared error (MSE)](#mean-squared-error-mse).
+- **Mode collapse** — RLHF's loss of output diversity/entropy. → [Mode collapse](#mode-collapse).
 - **Model assessment vs selection** — grading a model vs choosing its flexibility. → [Model assessment vs model selection](#model-assessment-vs-model-selection).
+- **Multi-head attention** — several parallel attention heads concatenated and projected. → [Multi-head attention](#multi-head-attention).
 - **Multiple linear regression** — regression on `p` predictors, each effect "holding others fixed." → [Multiple linear regression](#multiple-linear-regression).
 - **Multinomial logistic regression** — logistic regression for more than two classes (softmax coding). → [Multinomial logistic regression](#multinomial-logistic-regression).
 - **Multi-layer perceptron (MLP)** — stacked perceptron layers; solves XOR. → [Multi-layer perceptron (MLP) and the XOR problem](#multi-layer-perceptron-mlp-and-the-xor-problem).
@@ -1639,13 +1904,18 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Polynomial regression** — linear model with powers of `X` as predictors. → [Polynomial regression](#polynomial-regression).
 - **Pooling** — downsampling (e.g. max pooling) in a CNN for compactness and location invariance. → [Pooling](#pooling).
 - **Population vs least squares line** — true line vs its sample estimate. → [Population regression line vs least squares line](#population-regression-line-vs-least-squares-line).
+- **Positional encoding** — inject token order into order-agnostic attention. → [Positional encoding](#positional-encoding).
 - **Prediction vs inference** — accurate outputs vs understanding the relationship. → [Prediction vs inference](#prediction-vs-inference).
+- **Pretraining** — next-token training on a huge corpus to make a base model. → [Pretraining and base models](#pretraining-and-base-models).
 - **Principal components analysis (PCA)** — unsupervised top-variance directions of the data. → [Principal components analysis (PCA)](#principal-components-analysis-pca).
 - **Principal components regression (PCR)** — regress on top unsupervised variance directions. → [Principal components regression (PCR)](#principal-components-regression-pcr).
 - **p-value** — chance of an association this strong under the null; small → reject. → [Hypothesis test, t-statistic, and p-value](#hypothesis-test-t-statistic-and-p-value).
 - **Pruning (cost-complexity)** — trim a grown tree via an `α·|T|` penalty. → [Tree pruning (cost-complexity)](#tree-pruning-cost-complexity).
 - **QDA** — Gaussian generative classifier with per-class covariance → curved boundary. → [Quadratic discriminant analysis (QDA)](#quadratic-discriminant-analysis-qda).
 - **Qualitative / quantitative variables** — labels vs numbers. → [Quantitative vs qualitative variables](#quantitative-vs-qualitative-variables).
+- **Residual (skip) connection** — `x = x + sublayer(x)`; a gradient highway for deep nets. → [Residual (skip) connections](#residual-skip-connections).
+- **Retrieval-augmented generation (RAG)** — fetch documents into the context window at query time. → [Retrieval-augmented generation (RAG)](#retrieval-augmented-generation-rag).
+- **Reward model (RM) / RLHF** — score responses from human preferences, then RL-optimize against it. → [Reward modeling and RLHF](#reward-modeling-and-rlhf).
 - **R-squared** — proportion of variance explained; `1 − RSS/TSS`. → [R-squared and correlation](#r-squared-and-correlation).
 - **Random forests** — bagging + random feature subsets per split to decorrelate trees. → [Random forests](#random-forests).
 - **Recurrent neural network (RNN)** — sequence network with a running hidden state. → [Recurrent neural network (RNN)](#recurrent-neural-network-rnn).
@@ -1658,6 +1928,9 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Resampling** — refitting on repeated data subsets to estimate error/variability. → [Resampling methods](#resampling-methods).
 - **Ridge regression** — L2-penalized regression that shrinks all coefficients. → [Ridge regression](#ridge-regression).
 - **ROC curve** — error-type trade-offs across all thresholds. → [ROC curve](#roc-curve).
+- **Scaled dot-product attention** — divide scores by √(head size) to keep softmax diffuse. → [Scaled dot-product attention](#scaled-dot-product-attention).
+- **Self-attention** — tokens communicate via query/key/value weighted sums. → [Self-attention](#self-attention).
+- **Self-consistency** — majority-vote over multiple sampled reasoning paths. → [Self-consistency and ensembling attempts](#self-consistency-and-ensembling-attempts).
 - **Semi-supervised learning** — some observations labeled, some not. → [Semi-supervised learning](#semi-supervised-learning).
 - **Shrinkage / regularization** — penalize coefficient size to reduce variance. → [Ridge regression](#ridge-regression).
 - **Simple linear regression** — straight-line fit from one predictor. → [Simple linear regression](#simple-linear-regression).
@@ -1669,11 +1942,15 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Stepwise selection** — greedily add (forward) or drop (backward) predictors. → [Forward and backward stepwise selection](#forward-and-backward-stepwise-selection).
 - **Stochastic gradient descent (SGD)** — gradient steps on random minibatches. → [Stochastic gradient descent (SGD)](#stochastic-gradient-descent-sgd).
 - **Subset selection (best)** — try all `2^p` predictor subsets. → [Best subset selection](#best-subset-selection).
+- **Supervised fine-tuning (SFT)** — imitate high-quality demonstration responses. → [Supervised fine-tuning (SFT)](#supervised-fine-tuning-sft).
 - **Supervised / unsupervised learning** — labeled `(x,y)` vs predictors-only. → [Supervised vs unsupervised learning](#supervised-vs-unsupervised-learning).
 - **Support vector classifier** — soft-margin linear classifier tolerating violations. → [Support vector classifier (soft margin)](#support-vector-classifier-soft-margin).
 - **Support vector machine (SVM)** — kernel-enlarged classifier for non-linear boundaries. → [Support vector machine (kernels)](#support-vector-machine-kernels).
 - **Survival analysis (censored data)** — modeling time-until-event with censored (incomplete) observations. → [Survival analysis and censored data](#survival-analysis-and-censored-data).
 - **Survival function** — `S(t) = Pr(T > t)`, probability of surviving past `t`. → [Survival function](#survival-function).
+- **Tokenization** — reversible text↔integer mapping (char, BPE, SentencePiece). → [Tokenization and byte-pair encoding (BPE)](#tokenization-and-byte-pair-encoding-bpe).
+- **Transformer block** — attention + feed-forward, each with a residual and layer norm. → [Transformer block](#transformer-block).
+- **Tree of thoughts** — search a tree of intermediate reasoning steps. → [Tree of thoughts](#tree-of-thoughts).
 - **t-statistic** — coefficient estimate in units of its standard error. → [Hypothesis test, t-statistic, and p-value](#hypothesis-test-t-statistic-and-p-value).
 - **tanh** — S-shaped activation with output in `(−1, 1)`, centered near 0. → [Activation function](#activation-function).
 - **Train / dev / test split** — fit / tune / final-check partitions. → [Train / dev / test split](#train--dev--test-split).
