@@ -22,7 +22,7 @@ One notes file per package — a class's note is always in the file matching its
 | `Data_structures_notes.md` | Arrays, linked lists, stack/queue, heap & priority queues, union-find, BST & AVL, hash tables, Fenwick tree, suffix array, indexed PQ, sparse table, and both graph representations (adjacency matrix & list) |
 | `Algorithms_notes.md` | Suffix-array string algorithms (unique substrings, LRS, LCS), divide & conquer + merge sort, graphs overview, DFS/BFS, tree algorithms (rooting, leaf sum, center, isomorphism, LCA), topological sorts, DAG paths, Dijkstra, Bellman-Ford, Floyd-Warshall, Tarjan SCC, Eulerian path, Prim, and the four max-flow algorithms |
 | `Problems_notes.md` | Recursion/D&C exercises (multiplication, list sum, string reversal, max-2D, three-way min), DP problems (magical cows, tilings, mountain scenes, narrow art gallery, knapsacks), grid shortest path, Held-Karp TSP, and bipartite matching via max flow (Mice and Owls, Elementary Math) |
-| `ML_notes.md` | The ML/statistics track, built chapter by chapter from book highlights (currently: ISL). Concept notes in Definition / Intuition / Notes format, grouped by topic |
+| `ML_notes.md` | The ML/statistics track, built topic by topic from book/video highlights (ISL, Hands-On ML, Karpathy Zero to Hero, Designing ML Systems). Concept notes in Definition / Intuition / Notes format, grouped by topic |
 
 ## The `Machine_learning/` area (Python)
 
@@ -107,25 +107,35 @@ The intent is that the learning happens while filling in the skeletons and chasi
 
 ## Study resources & curriculum
 
+Listed by title only (links move over time and are easy to find by name). Checked = completed.
+
 ### Coding / DSA spine
-- **NeetCode 150** — https://neetcode.io/practice
-- **Grokking the Coding Interview** (pattern-based prep) — https://www.designgurus.io/course/grokking-the-coding-interview (also on Educative: https://www.educative.io/courses/grokking-coding-interview)
-- **William Fiset — Data Structures** (YouTube) — https://www.youtube.com/playlist?list=PLDV1Zeh2NRsB6SWUrDFW2RmDotAfPbeHu — *completed*
-- **William Fiset — Graph Theory** (YouTube) — https://www.youtube.com/playlist?list=PLDV1Zeh2NRsDGO4--qE8yH72HFL1Km93P — *completed*
-- **William Fiset — Algorithms** (companion Java repo) — https://github.com/williamfiset/Algorithms
-- **Abdul Bari — Algorithms** (YouTube) — https://www.youtube.com/playlist?list=PLAPEtbmG9XgTQqVYWAgAR6MilRB93OeMQ — *up next*
+- [x] **William Fiset — Data Structures** (YouTube)
+- [x] **William Fiset — Graph Theory** (YouTube)
+- [x] **William Fiset — Algorithms** (companion Java repo)
+- [x] **Abdul Bari — Algorithms** (YouTube)
+- [ ] **Grokking the Coding Interview** (pattern-based prep)
+- [ ] **Cracking the Coding Interview**
+- [ ] **NeetCode 150**
 
 ### ML / math track
-- **Introduction to Statistical Learning (ISL / ISLP)** — https://www.statlearning.com — *in progress; labs under `Machine_learning/`, notes in `ML_notes.md`*
-- **Harvard Stat 110 — Probability** (Joe Blitzstein) — https://stat110.hsites.harvard.edu/ · lectures: https://www.youtube.com/playlist?list=PL2SOU6wwxB0uwwH80KTQ6ht66KWxbzTIo · free book: https://probabilitybook.net
-- **Andrej Karpathy — Neural Networks: Zero to Hero** — https://karpathy.ai/zero-to-hero.html · playlist: https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ
-- **Aurélien Géron — Hands-On Machine Learning** (ch. 10–16; code repo) — https://github.com/ageron/handson-ml3
-- **Chip Huyen — Designing Machine Learning Systems** — https://huyenchip.com/books/ · **Stanford CS329S** — https://stanford-cs329s.github.io/
-- **Khang Pham — Machine Learning Interviews** (late-stage drilling) — https://mlengineer.io/
+- [x] **Introduction to Statistical Learning (ISL / ISLP)**
+- [x] **Andrej Karpathy — Neural Networks: Zero to Hero**
+- [x] **Aurélien Géron — Hands-On Machine Learning** (ch. 10–16)
+- [x] **Chip Huyen — Designing Machine Learning Systems** (Stanford CS329S)
+- [ ] **StatQuest** (Josh Starmer) — videos
+- [ ] **Ian Goodfellow et al. — Deep Learning**
+- [ ] **Ron Kohavi et al. — Trustworthy Online Controlled Experiments**
+- [ ] **Harvard Stat 110 — Probability** (Joe Blitzstein) — ch. 1–4 & 6–8
+- [ ] **3Blue1Brown — Essence of Linear Algebra**
+- [ ] **Sebastian Raschka — Build a Large Language Model (From Scratch)** (Manning, 2024)
+- [ ] **Stanford CS336 — Language Modeling from Scratch**
+- [ ] **Sebastian Raschka — Build a Reasoning Model (From Scratch)** (Manning, 2026)
+- [ ] **Khang Pham — Machine Learning Interviews** (late-stage drilling)
 
 ---
 
-*Environment: macOS, zsh. Links above were checked against their sources; the ML-track entries should be re-verified periodically as course pages move.*
+*Environment: macOS, zsh. Resources are listed by title only — no links, since course and book pages move over time; search by title to find the current source.*
 
 ## License
 

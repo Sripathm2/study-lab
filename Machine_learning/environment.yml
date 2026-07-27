@@ -17,3 +17,8 @@ dependencies:
       - l0bnb
       - torchinfo
       - graphviz
+      - regex
+      - tiktoken
+      - sentencepiece
+      - huggingface_hub
+      - transformers

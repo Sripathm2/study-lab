@@ -1,106 +1,17 @@
 # ML Notes
 
-A single running file of statistical-learning and ML concepts, in Definition / Intuition / Notes form. Written to stand alone — no book required to read them. Math is kept light: a one-line formula plus plain English, not derivations.
+A running file of machine-learning concepts, in Definition / Intuition / Notes form. Written to stand alone — no book required to read them. Math is kept light: a one-line formula plus plain English, not derivations.
 
-Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-On Machine Learning* (Géron), and Karpathy's *Zero to Hero*. Section tags show which pass a topic came from.
+Statistics foundations — statistical-learning theory, linear regression, classification, resampling, model selection & regularization, moving beyond linearity, survival analysis, and multiple testing — live in a companion **Stat.md**. Cross-references to those concepts are marked *(stat)*.
+
+Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Machine Learning* (Géron), Karpathy's *Zero to Hero*, and Chip Huyen's *Designing Machine Learning Systems*. Section tags show which pass a topic came from.
 
 ---
 
 ## Contents
 
-**Statistical Learning — Foundations** *(ISL ch. 2)*
-- [Statistical learning](#statistical-learning)
-- [Supervised vs unsupervised learning](#supervised-vs-unsupervised-learning)
-- [Semi-supervised learning](#semi-supervised-learning)
-- [Prediction vs inference](#prediction-vs-inference)
-- [Reducible vs irreducible error](#reducible-vs-irreducible-error)
-- [Quantitative vs qualitative variables](#quantitative-vs-qualitative-variables)
-- [Regression vs classification](#regression-vs-classification)
-
-**Estimating f** *(ISL ch. 2)*
-- [Parametric methods](#parametric-methods)
-- [Non-parametric methods](#non-parametric-methods)
-- [Overfitting](#overfitting)
-- [Flexibility vs interpretability](#flexibility-vs-interpretability)
-
-**Assessing Model Accuracy** *(ISL ch. 2)*
-- [Mean squared error (MSE)](#mean-squared-error-mse)
-- [Training MSE vs test MSE](#training-mse-vs-test-mse)
-- [Bias–variance trade-off](#biasvariance-trade-off)
-- [Bias](#bias)
-- [Variance](#variance)
-- [Classification error rate](#classification-error-rate)
-- [Bayes classifier](#bayes-classifier)
-- [Bayes decision boundary](#bayes-decision-boundary)
-- [Bayes error rate](#bayes-error-rate)
-- [K-nearest neighbors (KNN)](#k-nearest-neighbors-knn)
-
 **Data Preparation** *(Hands-On ML)*
 - [Feature scaling](#feature-scaling)
-
-**Linear Regression** *(ISL ch. 3)*
-- [Simple linear regression](#simple-linear-regression)
-- [Least squares and residuals (RSS)](#least-squares-and-residuals-rss)
-- [Population regression line vs least squares line](#population-regression-line-vs-least-squares-line)
-- [Standard error of a coefficient](#standard-error-of-a-coefficient)
-- [Confidence interval](#confidence-interval)
-- [Hypothesis test, t-statistic, and p-value](#hypothesis-test-t-statistic-and-p-value)
-- [Residual standard error (RSE)](#residual-standard-error-rse)
-- [R-squared and correlation](#r-squared-and-correlation)
-- [Multiple linear regression](#multiple-linear-regression)
-- [F-statistic](#f-statistic)
-- [Qualitative predictors and dummy variables](#qualitative-predictors-and-dummy-variables)
-- [Additivity and linearity assumptions](#additivity-and-linearity-assumptions)
-- [Interaction terms](#interaction-terms)
-- [Potential problems in linear regression](#potential-problems-in-linear-regression)
-- [KNN regression](#knn-regression)
-
-**Classification** *(ISL ch. 4)*
-- [Why not linear regression for classification](#why-not-linear-regression-for-classification)
-- [Logistic regression](#logistic-regression)
-- [Odds and log-odds (logit)](#odds-and-log-odds-logit)
-- [Maximum likelihood](#maximum-likelihood)
-- [Multinomial logistic regression](#multinomial-logistic-regression)
-- [Confounding](#confounding)
-- [Generative classifiers and Bayes' theorem](#generative-classifiers-and-bayes-theorem)
-- [Linear discriminant analysis (LDA)](#linear-discriminant-analysis-lda)
-- [Quadratic discriminant analysis (QDA)](#quadratic-discriminant-analysis-qda)
-- [Naive Bayes](#naive-bayes)
-- [Confusion matrix and error types](#confusion-matrix-and-error-types)
-- [ROC curve](#roc-curve)
-- [Poisson regression](#poisson-regression)
-- [Generalized linear models (GLMs)](#generalized-linear-models-glms)
-
-**Resampling Methods** *(ISL ch. 5)*
-- [Resampling methods](#resampling-methods)
-- [Model assessment vs model selection](#model-assessment-vs-model-selection)
-- [Validation set approach](#validation-set-approach)
-- [Leave-one-out cross-validation (LOOCV)](#leave-one-out-cross-validation-loocv)
-- [k-fold cross-validation](#k-fold-cross-validation)
-- [The bootstrap](#the-bootstrap)
-
-**Linear Model Selection and Regularization** *(ISL ch. 6)*
-- [Why move beyond least squares](#why-move-beyond-least-squares)
-- [Best subset selection](#best-subset-selection)
-- [Forward and backward stepwise selection](#forward-and-backward-stepwise-selection)
-- [Cp, AIC, BIC, and adjusted R-squared](#cp-aic-bic-and-adjusted-r-squared)
-- [One-standard-error rule](#one-standard-error-rule)
-- [Ridge regression](#ridge-regression)
-- [The lasso](#the-lasso)
-- [Ridge vs lasso](#ridge-vs-lasso)
-- [Principal components regression (PCR)](#principal-components-regression-pcr)
-- [Partial least squares (PLS)](#partial-least-squares-pls)
-- [High-dimensional data](#high-dimensional-data)
-
-**Moving Beyond Linearity** *(ISL ch. 7)*
-- [Polynomial regression](#polynomial-regression)
-- [Step functions](#step-functions)
-- [Basis functions](#basis-functions)
-- [Regression splines](#regression-splines)
-- [Natural splines](#natural-splines)
-- [Smoothing splines](#smoothing-splines)
-- [Local regression](#local-regression)
-- [Generalized additive models (GAMs)](#generalized-additive-models-gams)
 
 **Tree-Based Methods** *(ISL ch. 8)*
 - [Decision trees](#decision-trees)
@@ -171,6 +82,11 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Transformers and Large Language Models** *(Karpathy)*
 - [Tokenization and byte-pair encoding (BPE)](#tokenization-and-byte-pair-encoding-bpe)
+- [Regex pre-tokenization](#regex-pre-tokenization)
+- [Special tokens](#special-tokens)
+- [tiktoken vs SentencePiece](#tiktoken-vs-sentencepiece)
+- [Tokenization failure modes](#tokenization-failure-modes)
+- [Adding vocabulary after training](#adding-vocabulary-after-training)
 - [Self-attention](#self-attention)
 - [Scaled dot-product attention](#scaled-dot-product-attention)
 - [Causal (masked) self-attention](#causal-masked-self-attention)
@@ -196,14 +112,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - [Constrained prompting](#constrained-prompting)
 - [Parameter-efficient fine-tuning (LoRA / PEFT)](#parameter-efficient-fine-tuning-lora--peft)
 - [LLM limitations and safe use](#llm-limitations-and-safe-use)
-
-**Survival Analysis and Censored Data** *(ISL ch. 11)*
-- [Survival analysis and censored data](#survival-analysis-and-censored-data)
-- [Survival function](#survival-function)
-- [Kaplan-Meier estimator](#kaplan-meier-estimator)
-- [Log-rank test](#log-rank-test)
-- [Hazard function](#hazard-function)
-- [Cox proportional hazards model](#cox-proportional-hazards-model)
+- [torch.compile](#torchcompile)
 
 **Unsupervised Learning** *(ISL ch. 12)*
 - [Unsupervised learning](#unsupervised-learning)
@@ -215,195 +124,37 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - [Gaussian mixture model (GMM)](#gaussian-mixture-model-gmm)
 - [Bayesian Gaussian mixture](#bayesian-gaussian-mixture)
 
-**Multiple Testing** *(ISL ch. 13)*
-- [Type I and Type II errors](#type-i-and-type-ii-errors)
-- [Family-wise error rate (FWER)](#family-wise-error-rate-fwer)
-- [Bonferroni correction](#bonferroni-correction)
-- [Holm's method](#holms-method)
-- [False discovery rate (FDR)](#false-discovery-rate-fdr)
-- [Benjamini-Hochberg procedure](#benjamini-hochberg-procedure)
+**Machine Learning Systems Design** *(Designing ML Systems)*
+- [When to use machine learning](#when-to-use-machine-learning)
+- [Classification task types (binary, multiclass, multilabel)](#classification-task-types-binary-multiclass-multilabel)
+- [Decoupling objectives (multi-objective optimization)](#decoupling-objectives-multi-objective-optimization)
+- [ETL (extract, transform, load)](#etl-extract-transform-load)
+- [Non-probability sampling](#non-probability-sampling)
+- [Random sampling methods (simple, stratified, weighted, reservoir)](#random-sampling-methods-simple-stratified-weighted-reservoir)
+- [Labeling and weak supervision](#labeling-and-weak-supervision)
+- [Transfer learning](#transfer-learning)
+- [Zero-shot learning](#zero-shot-learning)
+- [Active learning](#active-learning)
+- [Class imbalance](#class-imbalance)
+- [Handling missing data](#handling-missing-data)
+- [Categorical feature encoding (hashing trick)](#categorical-feature-encoding-hashing-trick)
+- [Feature crossing](#feature-crossing)
+- [Data leakage](#data-leakage)
+- [Classification metrics (precision, recall, F1)](#classification-metrics-precision-recall-f1)
+- [Stacking (stacked generalization)](#stacking-stacked-generalization)
+- [Distributed training (data vs model parallelism)](#distributed-training-data-vs-model-parallelism)
+- [Model evaluation tests (perturbation, invariance, slice-based)](#model-evaluation-tests-perturbation-invariance-slice-based)
+- [Batch features vs streaming features](#batch-features-vs-streaming-features)
+- [Batch prediction vs online prediction](#batch-prediction-vs-online-prediction)
+- [Model compression (distillation, pruning, quantization)](#model-compression-distillation-pruning-quantization)
+- [Data distribution shifts (covariate, label, concept)](#data-distribution-shifts-covariate-label-concept)
+- [Degenerate feedback loops](#degenerate-feedback-loops)
+- [Continual learning (stateless vs stateful)](#continual-learning-stateless-vs-stateful)
+- [Deployment strategies (shadow, canary, A/B testing)](#deployment-strategies-shadow-canary-ab-testing)
+- [Bandit algorithms](#bandit-algorithms)
+- [Storage vs compute](#storage-vs-compute)
 
 **[Glossary](#glossary)** — alphabetical index
-
----
-
-## Statistical Learning — Foundations *(ISL ch. 2)*
-
-### Statistical learning
-
-**Definition.** A set of approaches for estimating an unknown function `f` that links inputs `X = (X_1, …, X_p)` to an output `Y`, modeled as `Y = f(X) + ε`, where `ε` is a random error term independent of `X` with mean zero.
-
-**Intuition.** We assume some systematic relationship `f` connects inputs to output, but it's buried in noise. Statistical learning is the toolkit for recovering as much of `f` as the data allows — either to predict new outputs, or to understand how the inputs drive the output.
-
-**Notes.** `ε` is the *irreducible error* (→ Reducible vs irreducible error). If every observation pairs inputs with a known `Y`, the problem is *supervised*; with no `Y`, it's *unsupervised*. Everything downstream — parametric vs non-parametric, the bias–variance trade-off — is about how well we can pin down `f̂`.
-
-### Supervised vs unsupervised learning
-
-**Definition.** Supervised learning fits a model from observations that each pair predictors `x_i` with a response `y_i`, for prediction or inference. Unsupervised learning has predictors `x_i` but no response `y_i`, so the goal is to find structure among observations rather than predict a labeled output.
-
-**Intuition.** Supervised = learning with an answer key: every example tells you the right output, so you can measure and correct error. Unsupervised = working blind: no answer key, so you look for patterns, groupings, or structure in the inputs themselves.
-
-**Notes.** Supervised methods here: linear regression, logistic regression, LDA/QDA, trees, GAMs, boosting, SVMs, most neural nets. Unsupervised can't fit a regression model — there's no response to supervise it. Almost all model-accuracy machinery presumes a response to compare against. → Unsupervised learning (ch. 12), Semi-supervised learning.
-
-### Semi-supervised learning
-
-**Definition.** A setting with `n` observations where `m < n` have both predictors and a response, and the remaining `n − m` have predictors only; the aim is a method that uses both.
-
-**Intuition.** Common when predictors are cheap to measure but responses are expensive to collect. You don't want to discard the unlabeled majority, so you use them to sharpen an estimate anchored by the labeled few.
-
-**Notes.** Sits between supervised and unsupervised. *(beyond ISL ch. 2 — named but not developed there.)*
-
-### Prediction vs inference
-
-**Definition.** In prediction, the goal is an accurate `f̂` giving good output estimates `Ŷ = f̂(X)` for new inputs, and `f̂` may be a black box. In inference, the goal is to understand the relationship between `X` and `Y` — which predictors matter, in what direction, how — so `f̂` must be interpretable.
-
-**Intuition.** Prediction only cares that the answer is right; you needn't know why. Inference cares about the "why," and will trade some predictive accuracy for a model you can read.
-
-**Notes.** This goal drives model choice: prediction can justify flexible black boxes; inference favors restrictive, interpretable models like linear regression. → Flexibility vs interpretability.
-
-### Reducible vs irreducible error
-
-**Definition.** For `Ŷ = f̂(X)`, expected squared prediction error splits as `E[(Y − Ŷ)²] = [f(X) − f̂(X)]² + Var(ε)`. The first term is *reducible error* (shrinks as `f̂` improves); `Var(ε)` is the *irreducible error*, a floor no model can remove.
-
-**Intuition.** Some error is your model's fault (a wrong or imprecise `f̂`) — you can chip away at it with better methods and more data. The rest is baked into the problem: unmeasured variables, inherent randomness. Even the true `f` wouldn't predict perfectly.
-
-**Notes.** *Emphasized:* you can only ever attack the reducible part. `Var(ε)` reappears as the noise floor in the Bias–variance trade-off, and it's why test error bottoms out above zero. Its classification analogue is the Bayes error rate.
-
-### Quantitative vs qualitative variables
-
-**Definition.** Quantitative variables take numerical values (e.g. salary, age). Qualitative (categorical) variables take values in one of `K` classes or categories (e.g. brand, disease status).
-
-**Intuition.** Numbers you can average vs labels you can only count. The type of the *response* decides what kind of problem you have.
-
-**Notes.** Quantitative response → regression; qualitative response → classification. → Regression vs classification.
-
-### Regression vs classification
-
-**Definition.** Problems with a quantitative response are *regression* problems; problems with a qualitative response are *classification* problems.
-
-**Intuition.** Predicting "how much / how many" (a number) is regression; predicting "which class" (a label) is classification.
-
-**Notes.** The line isn't crisp. Logistic regression is a classification method but estimates class probabilities, so it has a regression flavor. Some methods — KNN, boosting — handle either response type. Two classification methods for qualitative responses covered later: Logistic regression (models the log-odds directly) and Linear discriminant analysis (models each class's distribution, then applies Bayes' rule) — distinct methods, both detailed in the Classification section.
-
----
-
-## Estimating f *(ISL ch. 2)*
-
-### Parametric methods
-
-**Definition.** A two-step, model-based approach to estimating `f`: (1) assume a functional form for `f` (e.g. linear, `f(X) = β_0 + β_1 X_1 + … + β_p X_p`); (2) use training data to fit/train the model — i.e. estimate its parameters (for the linear form, the `p + 1` coefficients).
-
-**Intuition.** Rather than searching all possible functions, commit to a shape and tune its dials. Assuming linearity collapses an arbitrary `p`-dimensional function into just `p + 1` numbers to estimate — far easier, and less data-hungry.
-
-**Notes.** The risk: if the assumed form is wrong, `f̂` stays biased no matter how much data you have. Advantages: easy to fit, few coefficients, interpretable, easy significance tests. The linear form is typically fit by least squares. Contrast Non-parametric methods.
-
-### Non-parametric methods
-
-**Definition.** Methods that make no explicit assumption about the functional form of `f`; they seek an `f̂` that gets as close to the data as possible without being too rough or wiggly.
-
-**Intuition.** You don't pre-commit to a shape — you let the data draw `f`. This can capture relationships a linear model would miss.
-
-**Notes.** Cost: with no small parameter set to pin down, you need far more observations to estimate `f` accurately. You trade freedom from a possibly-wrong assumption for data-hunger and overfitting risk. KNN is the flagship example. Contrast Parametric methods.
-
-### Overfitting
-
-**Definition.** When a model follows the training data's noise too closely, producing a small training error but a large test error.
-
-**Intuition.** The model memorizes quirks of the training sample — noise that won't recur — instead of the underlying signal. Great on data it has seen, poor on data it hasn't.
-
-**Notes.** More flexible methods are more prone to it. It's why the test-error curve is U-shaped: past a point, added flexibility buys noise-fitting, not signal. In bias–variance terms, overfitting = low bias but high variance. (A modern wrinkle: past the *interpolation* point test error can fall again — see Double descent.) → Bias–variance trade-off, Training MSE vs test MSE.
-
-### Flexibility vs interpretability
-
-**Definition.** Methods trade off along a spectrum from inflexible/interpretable to flexible/opaque. Least squares linear regression is inflexible but highly interpretable; the lasso is similar; GAMs are more flexible while staying fairly interpretable; bagging, boosting, SVMs with non-linear kernels, and neural nets are highly flexible but hard to interpret.
-
-**Intuition.** Flexibility = how many shapes a method can bend to. More flexibility can fit complex truths but makes the model harder to read and easier to overfit. Want to explain the `X`–`Y` relationship (inference)? Reach for a restrictive, readable model.
-
-**Notes.** *Emphasized:* more flexible ≠ more accurate. Because of overfitting, a less flexible method often predicts better on test data. Choosing the right level of flexibility is the central practical problem, in both regression and classification. → Prediction vs inference, Bias–variance trade-off, Neural networks.
-
----
-
-## Assessing Model Accuracy *(ISL ch. 2)*
-
-### Mean squared error (MSE)
-
-**Definition.** In regression, the standard measure of fit quality: `MSE = (1/n) Σ (y_i − f̂(x_i))²` — the average squared gap between observed responses and predictions.
-
-**Intuition.** How far off predictions are on average, with big misses penalized disproportionately (squaring). Small MSE = predictions land close to the truth.
-
-**Notes.** On the fitting data it's *training MSE*; what matters is *test MSE* on unseen data. → Training MSE vs test MSE.
-
-### Training MSE vs test MSE
-
-**Definition.** Training MSE is computed on the data used to fit the model; test MSE on previously unseen data. The objective is to minimize test MSE.
-
-**Intuition.** Acing questions you studied (training) doesn't prove you'll ace the exam (test). Only fresh data measures real predictive skill.
-
-**Notes.** *Emphasized:* no guarantee the lowest-training-MSE method has the lowest test MSE — often it's the reverse. As flexibility rises, training MSE falls *monotonically* while test MSE traces a *U-shape* (falls, then rises as overfitting sets in). A widening gap is the signature of overfitting. When no test set exists, resampling estimates test error → Cross-validation (Resampling Methods).
-
-### Bias–variance trade-off
-
-**Definition.** Expected test MSE at a point `x_0` decomposes as `E[(y_0 − f̂(x_0))²] = Var(f̂(x_0)) + [Bias(f̂(x_0))]² + Var(ε)`. Minimizing expected test error requires *simultaneously* low variance and low bias; as flexibility changes, the two typically move in opposite directions.
-
-**Intuition.** Expected test error has three ingredients: how much the fit jumps around across different training sets (*variance*), how much the model's simplifying assumptions distort the truth (*bias²*), and the irreducible noise floor (`Var(ε)`). You can't zero out both bias and variance at once — tighten one and the other usually loosens — so you aim for the sweet spot that minimizes their sum. As flexibility rises, bias falls but variance rises. The U-shaped test-MSE curve *is* this trade-off made visible.
-
-**Notes.** `Var(ε)` is the irreducible error; expected test MSE can never drop below it. Underfitting = high bias; overfitting = high variance. This trade-off touches nearly every method here. *Modern caveat (ch. 10):* it describes behavior up to the point of interpolation; push flexibility further and test error can descend a second time — see Double descent. → Bias, Variance, Overfitting.
-
-### Bias
-
-**Definition.** The error introduced by approximating a complicated real-world relationship with a much simpler model. As methods get more flexible, bias generally decreases.
-
-**Intuition.** Force a straight line through a curvy truth and you're systematically wrong in a way more data won't fix — that's bias. Simpler, more restrictive models carry more of it.
-
-**Notes.** Low bias is one of the two things low test error needs; the other is low Variance. High bias = underfitting. Trades off against Variance.
-
-### Variance
-
-**Definition.** The amount by which `f̂` would change if estimated on a different training set. More flexible methods generally have higher variance.
-
-**Intuition.** Refit on a fresh sample from the same population — does the fit barely move, or swing wildly? Wild swings = high variance. Flexible methods bend to each sample's noise, so they're less stable.
-
-**Notes.** *Emphasized:* small changes in training data producing large changes in `f̂` is the hallmark of high variance. High variance = overfitting. Trades off against Bias. Bagging exists specifically to reduce variance.
-
-### Classification error rate
-
-**Definition.** In classification, fit quality is measured by the error rate — the fraction of misclassified observations. The *test error rate* on test observations `(x_0, y_0)` is `Ave(I(y_0 ≠ ŷ_0))`, the average of the indicator that the predicted label differs from the true one; the *training error rate* is the same on training data.
-
-**Intuition.** The classification analogue of MSE — instead of averaging squared numeric misses, you count how often you named the wrong class.
-
-**Notes.** `I(·)` is the indicator function (1 if true, else 0). As with MSE, training error falls with flexibility while test error is U-shaped. A good classifier has a small *test* error rate; its theoretical floor is the Bayes error rate.
-
-### Bayes classifier
-
-**Definition.** The classifier that assigns each observation with predictors `x_0` to the most probable class given those predictors — the class `j` maximizing `Pr(Y = j | X = x_0)`. Two-class: predict class 1 if `Pr(Y = 1 | X = x_0) > 0.5`, else class 2.
-
-**Intuition.** If you knew the true class probabilities at every point, your best bet is always the most likely class. That's the Bayes classifier — the gold standard every real classifier tries to approximate.
-
-**Notes.** In practice we don't know the true conditional distribution and must estimate it — KNN estimates it locally; LDA/QDA/naive Bayes estimate it via Bayes' theorem. Produces the lowest possible test error rate (→ Bayes error rate) and defines the Bayes decision boundary.
-
-### Bayes decision boundary
-
-**Definition.** The set of points where the Bayes classifier is indifferent between classes — two-class: where `Pr(Y = 1 | X = x_0) = 0.5`. It partitions the predictor space into per-class regions.
-
-**Intuition.** The dividing line the perfect classifier would draw. One side, one class wins; the other side, the other.
-
-**Notes.** Real classifiers try to approximate it. A too-flexible fit (KNN with `K = 1`) yields a jagged boundary that chases noise instead of tracking the true boundary.
-
-### Bayes error rate
-
-**Definition.** The lowest possible test error rate, achieved by the Bayes classifier. Overall it equals `1 − E[max_j Pr(Y = j | X)]` (expectation over `X`); at a single point `x_0` it is `1 − max_j Pr(Y = j | X = x_0)`.
-
-**Intuition.** Even the perfect classifier is wrong sometimes, because classes overlap — at some `x`, more than one class carries real probability. The Bayes error rate is that unavoidable minimum.
-
-**Notes.** The classification analogue of irreducible error — a floor no classifier beats.
-
-### K-nearest neighbors (KNN)
-
-**Definition.** A non-parametric classifier. Given `K` and a test point `x_0`, KNN finds the `K` closest training points (`N_0`), estimates each class's probability as the fraction of `N_0` in that class, and assigns `x_0` to the most probable class.
-
-**Intuition.** Ask the `K` nearest neighbors to vote; go with the majority. It approximates the Bayes classifier by estimating the true probabilities locally from whoever's nearby.
-
-**Notes.** *Emphasized:* the choice of `K` matters a lot, and `1/K` acts as the flexibility knob. `K = 1` is maximally flexible — jagged, low-bias/high-variance, chasing noise; large `K` is smoother, higher-bias/lower-variance. Choosing `K` well *is* the bias–variance trade-off in action. KNN also does regression → KNN regression. → Non-parametric methods, Bayes classifier.
 
 ---
 
@@ -415,467 +166,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Algorithms that measure distances or penalize coefficient size treat a variable measured in thousands as inherently "bigger" than one measured in units — scaling removes that accident of measurement. Min-max gives a bounded range; standardization doesn't bound the output but is far less disturbed by outliers, since one extreme value doesn't squash everything else into a sliver of `[0, 1]`.
 
-**Notes.** Already required by several methods in this file: ridge and the lasso (the penalty scales with coefficient size), PCA (sensitive to units), KNN and radial-kernel SVMs (distance-based), hierarchical clustering, and neural networks. Scikit-learn provides `MinMaxScaler` (with a `feature_range` option) and `StandardScaler`. Fit the scaler on the training set only, then apply it to the test set. → Ridge regression, Principal components analysis (PCA), K-nearest neighbors (KNN), Hierarchical clustering.
-
----
-
-## Linear Regression *(ISL ch. 3)*
-
-### Simple linear regression
-
-**Definition.** Predicting a quantitative response `Y` from a single predictor `X` by assuming a straight-line relationship: `Y ≈ β_0 + β_1 X`, where `β_0` is the intercept and `β_1` the slope. Fitting this is "regressing `Y` on `X`."
-
-**Intuition.** Draw the best straight line through a scatter of points. `β_1` says how much `Y` moves per one-unit rise in `X`; `β_0` is where the line crosses when `X = 0`.
-
-**Notes.** The simplest parametric model. Extends to many predictors → Multiple linear regression. Coefficients are estimated by least squares.
-
-### Least squares and residuals (RSS)
-
-**Definition.** The `i`-th *residual* is `e_i = y_i − ŷ_i`, the gap between the observed and predicted response. The *residual sum of squares* is `RSS = e_1² + … + e_n²`. The *least squares* fit chooses `β̂_0, β̂_1` to minimize RSS.
-
-**Intuition.** Each residual is a miss; squaring makes big misses count more and keeps signs from cancelling. Least squares picks the line that makes the total squared miss as small as possible — the line that "splits the difference" best.
-
-**Notes.** For simple regression there are closed-form solutions for `β̂_0` and `β̂_1` in terms of the sample means and the spread of `X`. RSS also drives R², the F-statistic, and tree splitting. → R-squared and correlation.
-
-### Population regression line vs least squares line
-
-**Definition.** The *population regression line* is the true best-fit line `Y = β_0 + β_1 X + ε` for the whole population (unobserved). The *least squares line* is the estimate `ŷ = β̂_0 + β̂_1 x` computed from one sample.
-
-**Intuition.** Same idea as estimating a population mean from a sample mean: on one sample your line sits a little high, on another a little low, but averaged over many samples it lands on the truth. The least squares line is an *unbiased* estimate of the population line.
-
-**Notes.** The gap between the two is why we need standard errors and confidence intervals — to say how far our sample line might be from the truth.
-
-### Standard error of a coefficient
-
-**Definition.** The standard error `SE(β̂)` measures how much an estimated coefficient would vary across different samples. For the sample mean, `SE(μ̂)² = σ²/n`, where `σ` is the standard deviation of each observation; analogous formulas give `SE(β̂_0)` and `SE(β̂_1)`, with `σ² = Var(ε)`.
-
-**Intuition.** It's the typical wobble in an estimate. More data (larger `n`) and predictors spread over a wider range both shrink the wobble, giving you a more precise coefficient.
-
-**Notes.** Standard errors feed confidence intervals and hypothesis tests. Small `SE(β̂_1)` means even a modest `β̂_1` is convincing evidence of a real relationship. → Confidence interval, Hypothesis test.
-
-### Confidence interval
-
-**Definition.** A range that contains the true parameter with a stated probability. The 95% CI for `β_1` is approximately `β̂_1 ± 2·SE(β̂_1)`.
-
-**Intuition.** "We're 95% confident the truth lies in here." More precisely: if you repeated the sampling many times, about 95% of the intervals you'd build this way would contain the true value.
-
-**Notes.** Width scales with the standard error, so more data → tighter interval. The `± 2` is an approximation (holds when observations are uncorrelated). → Standard error of a coefficient.
-
-### Hypothesis test, t-statistic, and p-value
-
-**Definition.** To test whether `X` is related to `Y`, test the *null hypothesis* `H_0: β_1 = 0` (no relationship) against the *alternative* `H_a: β_1 ≠ 0`. Compute the *t-statistic* `t = (β̂_1 − 0) / SE(β̂_1)`, compare it to a t-distribution, and read off the *p-value*.
-
-**Intuition.** The t-statistic asks: how many standard errors is our estimate away from zero? Far from zero → unlikely to be a fluke. The p-value is the probability of seeing an association this strong purely by chance if there were really no relationship. Small p-value → reject the null and declare a real relationship.
-
-**Notes.** Small `SE(β̂_1)` makes even small `β̂_1` significant; large SE demands a big `β̂_1`. In classification (logistic regression) the analogue is the z-statistic. "Significant" ≠ "large effect." (The four-step logic — hypotheses → test statistic → p-value → decide — generalizes to any hypothesis test; you never "accept" `H_0`, only "fail to reject" it.) → Type I and Type II errors.
-
-### Residual standard error (RSE)
-
-**Definition.** An estimate of the standard deviation of the noise `ε` — roughly, the average amount the response deviates from the true regression line: `RSE = sqrt(RSS / (n − 2))` for simple regression.
-
-**Intuition.** Even a perfect model can't predict exactly, because of `ε`. RSE says how big those inherent misses are, in the units of `Y`. Smaller RSE = tighter fit.
-
-**Notes.** An *absolute* measure of lack of fit — but being in `Y`'s units, "good" is context-dependent, which is why R² (a unit-free proportion) is often reported alongside. → R-squared and correlation.
-
-### R-squared and correlation
-
-**Definition.** `R² = 1 − RSS/TSS`, where `TSS = Σ(y_i − ȳ)²` is the total sum of squares. It's the *proportion of variance in `Y` explained* by the regression, always between 0 and 1. Correlation `Cor(X, Y)` also measures the linear relationship; in *simple* linear regression, `R² = r²`.
-
-**Intuition.** TSS is how much `Y` varies on its own; RSS is how much variation is left after the model. Their ratio is the fraction the model mopped up. R² near 1 = the model explains most of the variability; near 0 = it explains little (wrong model, high noise, or both).
-
-**Notes.** Unit-free, unlike RSE, so easier to interpret across problems. The `R² = r²` identity only holds for a single predictor; with multiple predictors R² generalizes but correlation doesn't directly. Adding predictors never decreases R² → motivates adjusted R². → Adjusted R-squared.
-
-### Multiple linear regression
-
-**Definition.** Extends simple regression to `p` predictors: `Y = β_0 + β_1 X_1 + … + β_p X_p + ε`. Each `β_j` is the *average effect on `Y` of a one-unit increase in `X_j`, holding all other predictors fixed*. Coefficients are again estimated by least squares (minimizing RSS).
-
-**Intuition.** Instead of one slope you have one per predictor, each isolating that predictor's effect while the others are held constant. That "holding fixed" is crucial — a predictor's solo effect can differ sharply from its effect alongside correlated others (→ Confounding).
-
-**Notes.** To ask whether *any* predictor matters, use the F-statistic, not `p` individual t-tests. Which predictors to include is Variable selection (→ Best subset selection, Forward and backward stepwise selection).
-
-### F-statistic
-
-**Definition.** Tests whether *all* coefficients are zero: `H_0: β_1 = … = β_p = 0` vs `H_a:` at least one is non-zero. `F = [(TSS − RSS)/p] / [RSS/(n − p − 1)]`. Under `H_0`, `F` is around 1; if some predictor matters, `F > 1`.
-
-**Intuition.** It compares variance the model explains against variance it leaves behind. If the predictors do nothing, both are just noise and the ratio hovers near 1; if they help, the numerator swells and F climbs.
-
-**Notes.** Why not just look at individual t-tests? With many predictors, some will look significant by chance; the F-test gives one honest overall verdict. → Multiple linear regression.
-
-### Qualitative predictors and dummy variables
-
-**Definition.** To use a categorical predictor (e.g. student: yes/no) in a regression, encode it as a *dummy variable* (e.g. 1 if student, 0 otherwise) and include it like any numeric predictor. A `K`-level category needs `K − 1` dummies.
-
-**Intuition.** A dummy lets the model shift the intercept for one group versus a baseline — "students carry, on average, this much more balance than non-students." Quantitative and qualitative predictors mix freely in one model.
-
-**Notes.** Different coding schemes give different coefficients but equivalent fits; interpretation depends on the chosen baseline. Interactions between a dummy and a numeric predictor let the *slope* differ by group, not just the intercept. → Interaction terms.
-
-### Additivity and linearity assumptions
-
-**Definition.** Standard linear regression assumes (1) *additivity* — the effect of `X_j` on `Y` doesn't depend on the other predictors' values; and (2) *linearity* — the change in `Y` per one-unit change in `X_j` is constant regardless of `X_j`.
-
-**Intuition.** Additivity says predictors don't team up (no "this drug only works with that one"). Linearity says the effect is a straight line, never bending. Both are convenient approximations that reality often violates.
-
-**Notes.** Relax additivity with Interaction terms; relax linearity with Polynomial regression and the methods in Moving Beyond Linearity.
-
-### Interaction terms
-
-**Definition.** A product predictor `X_1 · X_2` (with coefficient `β_3`) added to a model to capture a *synergy* / *interaction effect* — where the effect of one predictor depends on another. Its presence makes the effective slope on `X_1` a function of `X_2`.
-
-**Intuition.** Rewriting shows the `X_1` slope becomes `(β_1 + β_3 X_2)` — so changing `X_2` changes how strongly `X_1` acts on `Y`. That's exactly "these two work together." Radio ad spend might boost the payoff of TV ad spend, and vice versa.
-
-**Notes.** *Hierarchical principle:* if you include an interaction, include both main effects too, even if their own p-values look insignificant. Interactions apply to qualitative predictors as well (a quant×qual interaction lets a group have its own slope). → Additivity and linearity assumptions.
-
-### Potential problems in linear regression
-
-**Definition.** Six common ways a linear fit can go wrong, each with a diagnostic:
-- **Non-linearity** — the true relationship isn't a straight line. Diagnose with a *residual plot* (residuals vs fitted values); a clear pattern signals trouble. Fix with transformations or Polynomial regression.
-- **Correlated error terms** — errors that track each other (common in *time series*), which makes standard errors too small and confidence falsely tight.
-- **Heteroscedasticity** — non-constant error variance, often a *funnel shape* in the residual plot. Fix by transforming `Y` (e.g. `log Y` or `√Y`) or by *weighted least squares* (weight each point by the inverse of its variance).
-- **Outliers** — points with an unusually large residual. Spot them with *studentized residuals* (residual ÷ its estimated SE); a rule of thumb flags values beyond about ±3.
-- **High-leverage points** — points with unusual *predictor* values that yank the fitted line. Quantify with the *leverage statistic* `h_i` (always between `1/n` and 1); high leverage + large residual is especially dangerous.
-- **Collinearity** — two or more predictors closely related, inflating coefficient standard errors so effects can't be separated. Spot pairwise collinearity in the correlation matrix; spot *multicollinearity* (three-plus variables jointly related, invisible pairwise) with the *variance inflation factor* (VIF). VIF ≥ 1, and a VIF above ~5–10 flags a problem. Fix by dropping one variable or combining the collinear ones.
-
-**Intuition.** The residual plot is your first stop for most of these — a good fit leaves residuals looking like structureless static. Outliers hurt your error estimates; high-leverage points hurt the line itself; collinearity doesn't bias the fit but makes it impossible to say *which* correlated predictor is responsible.
-
-**Notes.** An outlier may signal a data error (safe to remove) or a missing predictor (don't just delete it). VIF for `X_j` is `1/(1 − R²)` from regressing `X_j` on the other predictors — high shared variance → high VIF. Correlated errors connect to time-series methods (→ Autoregressive models and autocorrelation).
-
-### KNN regression
-
-**Definition.** The regression version of KNN: for a prediction point `x_0`, find the `K` nearest training points `N_0` and predict the *average* of their responses, `f̂(x_0) = (1/K) Σ_{i ∈ N_0} y_i`.
-
-**Intuition.** "What did the `K` most similar cases do? Average them." No functional form assumed — the fit follows the data. Small `K` = wiggly and flexible; large `K` = smooth.
-
-**Notes.** Parametric (least squares) vs non-parametric (KNN) trade-off: KNN wins when the true `f` is far from linear; least squares wins when the assumed form is close to true, *and* when there are few observations per predictor. KNN degrades badly as `p` grows (the *curse of dimensionality* — neighbors stop being near) *(beyond ISL ch. 3)*. → K-nearest neighbors (classifier version).
-
----
-
-## Classification *(ISL ch. 4)*
-
-### Why not linear regression for classification
-
-**Definition.** Two reasons linear regression is unsuitable for a qualitative response: (a) it can't handle a response with more than two classes (any numeric coding imposes a fake ordering and spacing); (b) even with two classes it can produce probability estimates outside `[0, 1]`, which are meaningless.
-
-**Intuition.** Coding classes as 1, 2, 3 tells the model "class 3 is three times class 1 and sits between 2 and beyond," which is nonsense for unordered labels. And a straight line, extended far enough, predicts probabilities below 0 or above 1.
-
-**Notes.** Motivates logistic regression (squashes output into `[0, 1]`) and the generative classifiers (LDA, QDA, naive Bayes). → Logistic regression, Generative classifiers and Bayes' theorem.
-
-### Logistic regression
-
-**Definition.** Models the *probability* of a class rather than the class itself, using the logistic function `p(X) = e^(β_0 + β_1 X) / (1 + e^(β_0 + β_1 X))`, which always outputs a value in `(0, 1)`. Fit by maximum likelihood.
-
-**Intuition.** The logistic function bends any straight-line score into an S-curve pinned between 0 and 1, so you always get a sensible probability. Predict the class by thresholding (usually at 0.5). Despite the name, it's a *classification* method.
-
-**Notes.** Coefficient significance is judged with a z-statistic (`β̂_1 / SE(β̂_1)`), the classification analogue of the t-statistic. Extends to many predictors and to more than two classes. → Odds and log-odds, Maximum likelihood, Multinomial logistic regression.
-
-### Odds and log-odds (logit)
-
-**Definition.** The *odds* are `p(X) / (1 − p(X))`, ranging from 0 to ∞. Taking the log gives the *log-odds* or *logit*: `log[p(X)/(1 − p(X))] = β_0 + β_1 X` — linear in `X`.
-
-**Intuition.** Probability lives on `[0,1]`, which is awkward for a linear model. Odds stretch that to `[0, ∞)`, and the log stretches it to the full number line — so the logit is where logistic regression is actually "linear." A one-unit rise in `X` adds `β_1` to the log-odds (multiplies the odds by `e^(β_1)`).
-
-**Notes.** Odds near 0 = very unlikely; near ∞ = near-certain. This log-odds-is-linear structure is what generalizes to multinomial logistic regression and, more broadly, GLMs.
-
-### Maximum likelihood
-
-**Definition.** The method used to fit logistic regression (and GLMs): choose the coefficients that make the *likelihood* — the probability of the observed data under the model — as large as possible.
-
-**Intuition.** Find the coefficients under which the events that actually happened look most probable: push predicted probabilities toward 1 for the cases that were positive and toward 0 for the cases that were negative. Least squares is actually a special case of maximum likelihood (for Gaussian errors).
-
-**Notes.** Preferred over ad-hoc fitting because of its good statistical properties. Also fits Poisson regression and the coefficients in GLMs generally.
-
-### Multinomial logistic regression
-
-**Definition.** Extends logistic regression to `K > 2` classes. Pick one class as a *baseline*, then model the log-odds of every other class against it as linear in the predictors. The *softmax* coding is an equivalent, symmetric alternative that avoids singling out a baseline.
-
-**Intuition.** With three-plus labels you can't use a single yes/no probability. So you model each class's probability relative to a reference, and the pieces are constrained to sum to 1. Softmax does the same thing without a privileged reference class.
-
-**Notes.** Coefficient interpretation depends on the baseline choice, so read them with care. Key model outputs (fitted probabilities, pairwise log-odds) are the same under either coding. Softmax reappears as the output layer of classification neural nets. → Output layer and loss.
-
-### Confounding
-
-**Definition.** When the result of a single-predictor regression differs from — even reverses — the result using multiple predictors, because predictors are correlated and one stands in for another.
-
-**Intuition.** Alone, a predictor can look guilty just because it travels with the real culprit. Add the real driver and the impostor's effect shrinks or flips. The classic reminder that "correlated with `Y`" and "causes `Y` holding others fixed" are different questions.
-
-**Notes.** Why multiple regression coefficients ("holding others fixed") can tell a very different story than simple regressions run one predictor at a time. → Multiple linear regression, Collinearity (in Potential problems).
-
-### Generative classifiers and Bayes' theorem
-
-**Definition.** Instead of modeling `Pr(Y | X)` directly (as logistic regression does), *generative* classifiers model how the predictors are distributed *within each class* and invert with Bayes' theorem: `Pr(Y = k | X = x) = π_k f_k(x) / Σ_l π_l f_l(x)`. Here `π_k` is the *prior* (overall fraction in class `k`), `f_k(x)` is the *density* of `X` in class `k`, and the result `p_k(x)` is the *posterior* probability.
-
-**Intuition.** Learn what each class's data typically looks like, then for a new point ask "which class's profile does this most resemble, weighted by how common that class is?" Bayes' theorem turns "what does class `k` look like" into "given this look, how likely is class `k`."
-
-**Notes.** `π_k` is easy to estimate (class frequencies). The three generative methods — LDA, QDA, naive Bayes — differ only in how they estimate `f_k(x)`. All approximate the Bayes classifier. → Linear discriminant analysis, Quadratic discriminant analysis, Naive Bayes.
-
-### Linear discriminant analysis (LDA)
-
-**Definition.** A generative classifier that assumes each class's predictors follow a Gaussian (normal) distribution with class-specific means but a *shared covariance* across classes, then plugs the estimated means, shared variance, and priors into Bayes' theorem. The resulting discriminant scores are *linear* in `x`.
-
-**Intuition.** Model each class as a bell curve of the same shape, just centered differently. Assign a new point to the class whose bell it falls under most, nudged by how common that class is. "Linear" because equal-shaped bells produce straight-line boundaries.
-
-**Notes.** Useful when classes are well-separated (where logistic regression coefficients get unstable), when predictors are roughly normal with small samples, and it extends naturally to `K > 2` classes. The multivariate case uses a `p`-dimensional Gaussian with a covariance matrix — kept conceptual here. → Generative classifiers, QDA (drops the shared-covariance assumption).
-
-### Quadratic discriminant analysis (QDA)
-
-**Definition.** Like LDA, but each class gets its *own* covariance matrix. This makes the discriminant scores *quadratic* in `x`, allowing curved decision boundaries.
-
-**Intuition.** Let each class's bell have its own shape and spread, not just its own center. More flexible than LDA, so it can trace curved boundaries — at the cost of estimating many more parameters.
-
-**Notes.** Bias–variance trade-off between the two: use LDA when data are scarce (fewer parameters, lower variance) or the shared-covariance assumption is reasonable; use QDA when the training set is large or that assumption is clearly wrong. → LDA, Bias–variance trade-off.
-
-### Naive Bayes
-
-**Definition.** A generative classifier that assumes, *within each class, the predictors are independent* — so the class density factorizes: `f_k(x) = f_{k1}(x_1) × … × f_{kp}(x_p)`. Each one-dimensional density `f_{kj}` is estimated separately (Gaussian, histogram, kernel, or class proportions for categoricals).
-
-**Intuition.** Rather than model how predictors move together (hard in high dimensions), pretend they don't — estimate each predictor's behavior per class on its own and multiply. The independence assumption is usually false, yet the classifier often works well because you only need the *ranking* of class probabilities to be right.
-
-**Notes.** Trades bias for variance: the independence assumption adds bias but slashes the number of parameters, which helps when `p` is large or `n` is small. Related to LDA/QDA: LDA is a special case of naive Bayes with Gaussian, and naive Bayes with a Gaussian is LDA with a diagonal covariance; naive Bayes and QDA are not special cases of each other. → Generative classifiers.
-
-### Confusion matrix and error types
-
-**Definition.** A table cross-tabulating predicted vs actual classes, exposing the *two types of error* in binary classification: false positives (predict yes when actually no) and false negatives (predict no when actually yes).
-
-**Intuition.** A single error rate hides *which* mistakes you make. In many settings (disease screening, default prediction) one error type is far costlier than the other, and the confusion matrix lets you see and trade between them.
-
-**Notes.** Moving the classification threshold away from 0.5 trades one error type for the other. Sweeping all thresholds produces the ROC curve. → ROC curve.
-
-### ROC curve
-
-**Definition.** A plot that displays the two classification error types across *all* possible thresholds simultaneously, tracing true-positive rate against false-positive rate. (ROC = "receiver operating characteristics," a name inherited from communications theory.)
-
-**Intuition.** Instead of committing to one threshold, see the whole menu of trade-offs at once. A curve hugging the top-left corner is excellent; the diagonal is random guessing.
-
-**Notes.** The *area under the curve (AUC)* summarizes overall performance in one number: it equals the probability that a random positive case is scored higher than a random negative one, so a larger AUC is better. Useful for comparing classifiers independent of a specific threshold. → Confusion matrix and error types.
-
-### Poisson regression
-
-**Definition.** A GLM for *count* responses (`Y ∈ {0, 1, 2, …}`), which assumes `Y` follows a Poisson distribution and models its mean as `λ(X) = e^(β_0 + β_1 X_1 + … + β_p X_p)`. Fit by maximum likelihood.
-
-**Intuition.** Counts can't be negative and their spread grows with their average — a straight-line model ignores both. Poisson regression uses a log link so predictions stay non-negative, and a one-unit rise in `X_j` *multiplies* the expected count by `e^(β_j)` (e.g. `e^(−0.08) ≈ 0.923` → about 8% fewer).
-
-**Intuition (mean–variance).** The Poisson assumes mean = variance, so it naturally lets variability grow where the counts are large — something ordinary linear regression, with its constant variance, can't do.
-
-**Notes.** Advantages over linear regression on counts: never predicts negative values, and it captures the mean–variance link. An example GLM alongside linear and logistic regression. → Generalized linear models.
-
-### Generalized linear models (GLMs)
-
-**Definition.** A family that unifies linear, logistic, and Poisson regression: model a transformation (link) of the response's mean as a linear function of the predictors, and fit by maximum likelihood.
-
-**Intuition.** Same linear-predictor engine, different link and response distribution: identity link + Gaussian = linear regression; logit link + binomial = logistic regression; log link + Poisson = Poisson regression. One framework, three familiar tools.
-
-**Notes.** Logistic regression served as the jumping-off point for this generalization. → Logistic regression, Poisson regression.
-
----
-
-## Resampling Methods *(ISL ch. 5)*
-
-### Resampling methods
-
-**Definition.** Techniques that repeatedly draw different subsets from the training data, refit the model on each, and examine how the fits vary — to estimate test error or the variability of an estimate. The two workhorses are cross-validation and the bootstrap.
-
-**Intuition.** You usually can't get fresh data on demand, so you *simulate* having many datasets by resampling the one you have. The spread of the refits tells you how much your model or estimate would wobble on new data.
-
-**Notes.** Computationally expensive (fit the same method many times) but broadly applicable. → Validation set approach, k-fold cross-validation, The bootstrap.
-
-### Model assessment vs model selection
-
-**Definition.** *Model assessment* = estimating a chosen model's test-set performance. *Model selection* = choosing the right level of flexibility (or the right model) in the first place.
-
-**Intuition.** Two different jobs resampling handles: "how good is this model?" vs "which model should I use?" Cross-validation serves both.
-
-**Notes.** Selection often means picking a tuning parameter (K in KNN, λ in ridge/lasso, tree size, `d` in polynomials) by minimizing cross-validated error. → k-fold cross-validation.
-
-### Validation set approach
-
-**Definition.** Randomly split the data into a training set and a *validation (hold-out) set*; fit on the training half and estimate test error on the validation half.
-
-**Intuition.** The simplest honest test: keep some data hidden, train, then grade yourself on the hidden part. Easy to implement, but crude.
-
-**Notes.** Two drawbacks: (1) the estimate is *highly variable* — it swings depending on which points landed in which half; (2) it *overestimates* test error, because the model was trained on only part of the data and methods do worse with less data. Cross-validation fixes both. → Leave-one-out cross-validation, k-fold cross-validation.
-
-### Leave-one-out cross-validation (LOOCV)
-
-**Definition.** Hold out a *single* observation as the validation set, train on the other `n − 1`, predict the held-out point, and repeat for all `n` points; average the `n` errors.
-
-**Intuition.** Push the validation idea to its extreme: hold out just one point at a time, so almost all the data trains the model every round. This removes the "trained on too little data" bias of the validation-set approach and, by averaging over every point, removes the randomness of the split.
-
-**Notes.** Downside: it fits the model `n` times, which is costly for large `n` — *except* for least-squares linear/polynomial regression, where a shortcut formula (using leverage `h_i`) makes LOOCV cost the same as a single fit. Each single-point error is unbiased but very noisy on its own; the average is what's useful. → k-fold cross-validation (cheaper alternative).
-
-### k-fold cross-validation
-
-**Definition.** Randomly split the data into `k` roughly equal *folds*. In turn, hold out each fold as the validation set, train on the other `k − 1`, and record the error; average the `k` errors for the CV estimate. (LOOCV is the special case `k = n`.)
-
-**Intuition.** A middle ground: hold out a chunk at a time instead of one point, so you refit only `k` times (typically 5 or 10) instead of `n`. You still train on most of the data each round, so bias stays low, and averaging tames the split randomness.
-
-**Notes.** Cheaper than LOOCV and often has *lower variance* as a test-error estimate. In classification, swap MSE for the misclassification rate. This is the standard tool for tuning-parameter selection (λ, K, tree size). → Model assessment vs model selection.
-
-### The bootstrap
-
-**Definition.** A general tool for quantifying the uncertainty of an estimator: repeatedly draw *bootstrap samples* of size `n` from the data *with replacement*, recompute the estimate on each, and use the spread of those `B` estimates as a standard error.
-
-**Intuition.** Treat your sample as a stand-in for the population and "resample your resample." Because it draws with replacement, each bootstrap dataset repeats some points and omits others, mimicking the variation you'd see across genuinely new samples. The scatter of the recomputed estimates is your uncertainty.
-
-**Notes.** Works for quantities with no tidy standard-error formula. Sampling *with* replacement is the crux — it's what makes each bootstrap dataset differ. Bootstrap aggregation of this idea over trees is Bagging. → Bagging, Standard error of a coefficient.
-
----
-
-## Linear Model Selection and Regularization *(ISL ch. 6)*
-
-### Why move beyond least squares
-
-**Definition.** Alternatives to plain least squares can improve *prediction accuracy* and *interpretability*. Three families: *subset selection* (keep a subset of predictors), *shrinkage/regularization* (fit all predictors but shrink coefficients toward zero), and *dimension reduction* (project predictors into fewer combined directions).
-
-**Intuition.** Least squares has low bias but can have high variance when `n` isn't much bigger than `p` (overfitting), and when `p > n` it has no unique solution at all. It also never zeroes out useless predictors, leaving cluttered models. These methods trade a little bias for a lot less variance and simpler models.
-
-**Notes.** Shrinkage reduces variance; subset selection and the lasso also improve interpretability by dropping variables. → Best subset selection, Ridge regression, The lasso, Principal components regression.
-
-### Best subset selection
-
-**Definition.** Fit a separate least-squares model for *every* possible subset of the `p` predictors (`2^p` models), pick the best model of each size by RSS/R², then choose among those using an estimate of *test* error (Cp, AIC, BIC, adjusted R², or cross-validation).
-
-**Intuition.** Brute force: try every combination and keep the best. Note the two-stage logic — RSS picks the best model *within* a size (bigger is always better on training data), but you need a test-error estimate to compare *across* sizes fairly.
-
-**Notes.** Conceptually clean but computationally explosive (`2^p` grows fast), and a huge search space risks finding models that look good by chance → overfitting. Stepwise methods are the practical alternatives. → Forward and backward stepwise selection.
-
-### Forward and backward stepwise selection
-
-**Definition.** Greedy alternatives that explore far fewer models. *Forward*: start with no predictors, add the one that most improves the fit, repeat. *Backward*: start with all predictors, drop the least useful (largest p-value), repeat. *Mixed*: add like forward but drop any variable whose value fades as others enter.
-
-**Intuition.** Instead of all `2^p` models, walk a path one variable at a time. Much faster and usable when `p` is large. Forward can even start when `p > n`; backward needs `n > p` to begin.
-
-**Notes.** Not guaranteed to find the best subset — an early greedy choice can lock out a better later combination. Mixed selection mimics best-subset behavior while keeping the speed. As with best subset, compare across sizes with Cp/AIC/BIC/adjusted R² or CV. → Cp, AIC, BIC, and adjusted R-squared.
-
-### Cp, AIC, BIC, and adjusted R-squared
-
-**Definition.** Four ways to estimate *test* error from *training* error by penalizing model size, so you can compare models with different numbers of predictors. Mallow's `Cp` and `AIC` add a `2dσ̂²`-style penalty to training RSS; `BIC` uses a heavier `log(n)·dσ̂²` penalty; *adjusted R²* modifies R² to reward fit only when a new variable earns its keep.
-
-**Intuition.** Training error always drops as you add predictors, so it's a biased, over-optimistic gauge. These criteria charge a "complexity tax" per predictor to undo that bias. For Cp/AIC/BIC, *smaller is better*; for adjusted R², *larger is better*.
-
-**Notes.** BIC's steeper penalty favors smaller models than Cp/AIC. All are cheaper than cross-validation but rest on more assumptions. → Best subset selection, One-standard-error rule.
-
-### One-standard-error rule
-
-**Definition.** After computing cross-validated (or penalized) test-error estimates for each model size, pick the *simplest* model whose error is within one standard error of the best model's error.
-
-**Intuition.** If several models are statistically tied, prefer the simplest one. A slightly smaller, more interpretable model that's essentially as accurate beats a bigger one whose edge is within the noise.
-
-**Notes.** A general principle, applicable wherever you tune complexity by cross-validation (subset size, λ, tree size). → k-fold cross-validation.
-
-### Ridge regression
-
-**Definition.** Fits all `p` predictors but minimizes `RSS + λ Σ β_j²` (a squared, "L2" *shrinkage penalty*). The tuning parameter `λ ≥ 0` controls how hard coefficients are pulled toward zero; `λ = 0` recovers least squares, `λ → ∞` drives coefficients toward (but not exactly to) zero.
-
-**Intuition.** Add a cost for large coefficients, so the fit prefers smaller, steadier ones. This *shrinkage* trades a bit of bias for a big drop in variance — very helpful when predictors are many or correlated. Because the penalty scales with coefficient size, standardize predictors first so the penalty is fair across them.
-
-**Notes.** Ridge keeps *all* `p` predictors (coefficients shrink but rarely hit zero), so it doesn't simplify interpretation. Efficient: fitting for all `λ` at once costs about as much as one least-squares fit. Choose `λ` by cross-validation. → The lasso (which does drop variables), Ridge vs lasso.
-
-### The lasso
-
-**Definition.** Like ridge, but with an absolute-value ("L1") penalty: minimize `RSS + λ Σ |β_j|`. This penalty can force some coefficients *exactly* to zero, so the lasso performs *variable selection* and yields *sparse* models.
-
-**Intuition.** The corner-shaped L1 penalty makes it optimal to snap small coefficients all the way to zero rather than merely shrink them. So the lasso both regularizes *and* selects — you get a smaller, more interpretable model automatically. Mechanically it shaves a constant `λ/2` off each coefficient (soft-thresholding), zeroing any smaller than that.
-
-**Notes.** Big interpretability win over ridge (a subset of predictors, not all `p`). Choose `λ` by cross-validation. → Ridge vs lasso.
-
-### Ridge vs lasso
-
-**Definition.** Ridge shrinks all coefficients proportionally and keeps every predictor; the lasso can zero coefficients out and select a subset. Neither dominates.
-
-**Intuition.** Lasso tends to win when only a *few* predictors truly matter and the rest are near-zero — it cleanly discards the deadwood. Ridge tends to win when the response depends on *many* predictors of similar size — it keeps them all, gently. Since you never know which regime you're in, let cross-validation decide.
-
-**Notes.** Both reduce variance via shrinkage; the difference is sparsity. → Ridge regression, The lasso.
-
-### Principal components regression (PCR)
-
-**Definition.** A dimension-reduction method: replace the `p` predictors with `M < p` *principal components* (linear combinations capturing the most variance in the predictors), then regress `Y` on those `M` components by least squares.
-
-**Intuition.** Instead of using every correlated predictor, distill them into a few directions that capture most of their variation, and regress on those. Fewer, uncorrelated inputs → lower variance. The first component is the single direction the data spread out along most; each next one is the biggest remaining spread, perpendicular to the earlier ones.
-
-**Notes.** The components are chosen *unsupervised* — using only `X`, ignoring `Y` — so there's no guarantee the highest-variance directions are the best *predictors*. Partial least squares fixes the "ignores `Y`" gap. The component-finding procedure itself is Principal components analysis (PCA), also an unsupervised tool in its own right. → Partial least squares, Principal components analysis (PCA), High-dimensional data.
-
-### Partial least squares (PLS)
-
-**Definition.** A *supervised* dimension-reduction method: like PCR, but the derived directions are chosen using `Y` too, weighting each predictor by its correlation with the response.
-
-**Intuition.** Same "combine predictors into a few directions" idea as PCR, but aimed — build directions that not only summarize the predictors but also relate to the response. It places the most weight on the predictors most correlated with `Y`.
-
-**Notes.** Addresses PCR's blind spot (high-variance ≠ high-predictive directions), though in practice the gain over PCR is often modest. → Principal components regression.
-
-### High-dimensional data
-
-**Definition.** The setting where the number of features `p` is large relative to (or exceeds) the number of observations `n` — increasingly common in genomics, finance, marketing.
-
-**Intuition.** When `p ≥ n`, least squares can fit the training data *perfectly* regardless of whether the predictors mean anything — which is disastrous overfitting. Training R² marches to 1 and training MSE to 0 as you add features, while *test* error explodes, because each added predictor inflates variance.
-
-**Notes.** *Emphasized:* adding features truly related to `Y` helps; adding noise features hurts, raising test error. Methods that regularize or reduce dimension (forward selection, ridge, lasso, PCR) are essential here. A face of the curse of dimensionality. → Why move beyond least squares, The lasso.
-
----
-
-## Moving Beyond Linearity *(ISL ch. 7)*
-
-### Polynomial regression
-
-**Definition.** Extends linear regression by adding powers of a predictor as extra terms — e.g. cubic regression uses `X`, `X²`, `X³`. Still a linear model (in the coefficients), just with transformed predictors.
-
-**Intuition.** Let the fit curve by feeding it `X` and its powers. A cheap first step toward non-linearity.
-
-**Notes.** Degrees above 3–4 are rarely used — high-degree polynomials wiggle wildly, especially near the edges of the data. They impose one *global* shape on the whole range, which motivates the piecewise methods below. → Step functions, Regression splines.
-
-### Step functions
-
-**Definition.** Cut the range of `X` into `K` bins and fit a separate *constant* in each — a piecewise-constant fit. This turns a continuous predictor into an ordered categorical one.
-
-**Intuition.** Rather than one global curve, chop `X` into regions and predict a flat level in each, like a staircase. Avoids imposing a single global structure.
-
-**Notes.** Weakness: unless there are natural breakpoints, the flat steps can miss the action between cut points. A special case of the basis-function approach. → Basis functions.
-
-### Basis functions
-
-**Definition.** A general framework: fit `y = β_0 + β_1 b_1(X) + … + β_K b_K(X)`, where the `b_j` are *fixed, known* transformations of `X`. Polynomials and step functions are both special cases (with `b_j(X) = X^j` or bin indicators); other choices include splines, wavelets, and Fourier series.
-
-**Intuition.** Pick a menu of building-block functions, transform `X` through them, then fit an ordinary linear model on the transformed inputs. All the machinery of linear regression (standard errors, tests) still applies.
-
-**Notes.** The unifying idea behind polynomial regression, step functions, and Regression splines.
-
-### Regression splines
-
-**Definition.** Divide the range of `X` at *knots* into regions and fit a low-degree polynomial (commonly cubic) within each, constrained so the pieces join *smoothly* at the knots (continuous value and first/second derivatives). More knots → more flexibility.
-
-**Intuition.** Instead of one high-degree polynomial across the whole range, stitch together many low-degree ones and force smooth seams — flexible where you need it without the wild global swings of high-degree polynomials. Each smoothness constraint at a knot "costs" one degree of freedom.
-
-**Notes.** Splines add flexibility by adding *knots* while keeping the degree fixed — usually giving better results than raising a polynomial's degree. Where to place knots: often uniformly; more knots where the function changes fast. → Natural splines, Smoothing splines, Basis functions.
-
-### Natural splines
-
-**Definition.** A regression spline with extra *boundary constraints*: the fit is forced to be linear beyond the outermost knots.
-
-**Intuition.** Regular splines behave erratically at the edges (little data, high variance). Pinning the tails to straight lines tames that boundary wildness, giving more sensible extrapolation.
-
-**Notes.** Typically produces a more reasonable fit near the boundaries than an unconstrained spline or a high-degree polynomial. → Regression splines.
-
-### Smoothing splines
-
-**Definition.** Fit a smooth curve `g` by minimizing `Σ(y_i − g(x_i))² + λ ∫ g''(t)² dt` — a fit-the-data term plus a *roughness penalty* on the curve's wiggliness, tuned by `λ`.
-
-**Intuition.** You could make training error zero by threading a curve through every point, but that curve would be absurdly wiggly. The penalty on the second derivative (a measure of roughness) discourages that. `λ` sets the trade-off: `λ = 0` interpolates everything; `λ → ∞` forces a straight line.
-
-**Notes.** No need to choose knots — there's effectively one at every observation; instead you choose `λ`, naturally by cross-validation (LOOCV is especially cheap here). The second derivative measures roughness because it tracks how fast the slope changes. → Regression splines, k-fold cross-validation.
-
-### Local regression
-
-**Definition.** Estimate the fit at a target point `x_0` using only nearby training points, weighting closer points more, and fitting a small (often linear) weighted least-squares model there. Repeat for each target point. The key tuning knob is the *span* `s` — the fraction of points used.
-
-**Intuition.** Slide a weighted window along `X`; at each spot fit a tiny local line using mostly the neighbors. Small span → local and wiggly; large span → smooth and global. Like KNN, it's "memory-based": it needs all the training data at prediction time.
-
-**Notes.** Neighborhoods overlap smoothly, unlike the hard bins of step functions. Extends to *varying-coefficient* models. → K-nearest neighbors, Step functions.
-
-### Generalized additive models (GAMs)
-
-**Definition.** Extend multiple linear regression by replacing each linear term `β_j x_j` with a smooth non-linear function `f_j(x_j)`, then *adding* the pieces: `y = β_0 + f_1(x_1) + … + f_p(x_p) + ε`. Works for quantitative and qualitative responses.
-
-**Intuition.** Give every predictor its own flexible curve, but keep them *additive* — the total is still a sum of per-predictor effects. This automatically models non-linearities linear regression would miss, without hand-picking transformations, while staying readable: you can see each predictor's individual effect holding others fixed.
-
-**Notes.** Each `f_j`'s flexibility is summarized by its degrees of freedom. Main limitation: pure additivity misses interactions among predictors — though you can add interaction terms or low-dimensional joint functions `f_{jk}(x_j, x_k)` by hand. A sweet spot between interpretable linear models and fully flexible black boxes. → Flexibility vs interpretability, Smoothing splines.
+**Notes.** Already required by several methods in this file: ridge and the lasso (the penalty scales with coefficient size), PCA (sensitive to units), KNN and radial-kernel SVMs (distance-based), hierarchical clustering, and neural networks. Scikit-learn provides `MinMaxScaler` (with a `feature_range` option) and `StandardScaler`. Fit the scaler on the training set only, then apply it to the test set. → Ridge regression (stat), Principal components analysis (PCA), K-nearest neighbors (KNN) (stat), Hierarchical clustering.
 
 ---
 
@@ -903,7 +194,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** A big tree fits noise; a smaller one generalizes better at the cost of a little bias. The `α·|T|` term charges rent per leaf, so raising `α` prunes branches in a predictable nested order. Cross-validation finds the `α` (tree size) that minimizes test error.
 
-**Notes.** Cheaper than evaluating every possible subtree — increasing `α` sweeps out the whole useful sequence of subtrees automatically. → Regression trees, k-fold cross-validation.
+**Notes.** Cheaper than evaluating every possible subtree — increasing `α` sweeps out the whole useful sequence of subtrees automatically. → Regression trees, k-fold cross-validation (stat).
 
 ### Classification trees
 
@@ -951,7 +242,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** In plain bagging, if one predictor is very strong, nearly every tree splits on it first, so the trees look alike and averaging them barely helps. Forcing each split to ignore most predictors lets other variables lead sometimes, making the trees different — and averaging *different* trees cuts variance far more.
 
-**Notes.** `m` is the key knob: `m = p` is just bagging; small `m` helps most when predictors are many and correlated (a common default is `m ≈ √p`). → Bagging, Variance.
+**Notes.** `m` is the key knob: `m = p` is just bagging; small `m` helps most when predictors are many and correlated (a common default is `m ≈ √p`). → Bagging, Variance (stat).
 
 ### Boosting
 
@@ -995,7 +286,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Insisting on perfect separation makes the boundary brittle and often impossible. Deliberately tolerating a few violations buys a boundary that classifies *most* points more robustly. `C` sets how many/how severe the violations allowed — a bias–variance dial (loose `C` = wider margin, more bias, less variance).
 
-**Notes.** Only points on or violating the margin (the support vectors) affect the boundary, making it robust to distant points. Still linear, though. → Maximal margin classifier, Support vector machine, Bias–variance trade-off.
+**Notes.** Only points on or violating the margin (the support vectors) affect the boundary, making it robust to distant points. Still linear, though. → Maximal margin classifier, Support vector machine, Bias–variance trade-off (stat).
 
 ### Support vector machine (kernels)
 
@@ -1021,7 +312,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Zero penalty once an instance is correctly classified with enough margin, and a penalty growing linearly as it falls short — exactly the "get on the right side, with room to spare" objective of a margin classifier.
 
-**Notes.** Not differentiable at `t = 1`, but (as with the lasso's absolute-value penalty) gradient-based optimization still works using a subgradient. *(Hands-On ML)* → Support vector classifier, The lasso.
+**Notes.** Not differentiable at `t = 1`, but (as with the lasso's absolute-value penalty) gradient-based optimization still works using a subgradient. *(Hands-On ML)* → Support vector classifier, The lasso (stat).
 
 ### SVMs with more than two classes
 
@@ -1137,7 +428,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** The validation set is how you pick model size, learning rate, embedding dimension, and so on — but tuning against it means you slowly overfit *those choices* to it. A held-back test set you never optimize against catches that. Train ≈ dev loss suggests underfitting (grow the model); a big train-dev gap suggests overfitting.
 
-**Notes.** The deep-learning-practice version of ISL's train/validation idea and cross-validation. Common split: 80/10/10. → Validation set approach, k-fold cross-validation, Overfitting.
+**Notes.** The deep-learning-practice version of ISL's train/validation idea and cross-validation. Common split: 80/10/10. → Validation set approach (stat), k-fold cross-validation (stat), Overfitting (stat).
 
 ### Neural networks (feed-forward)
 
@@ -1169,7 +460,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** A regression net aims to land near the number (squared error); a classification net aims to put high probability on the true class (cross-entropy), exactly like multinomial logistic regression. Softmax turns the final scores into probabilities summing to 1.
 
-**Notes.** Softmax and cross-entropy are the neural-net versions of ideas already in multinomial logistic regression. → Multinomial logistic regression, Maximum likelihood, Softmax, Likelihood and negative log-likelihood.
+**Notes.** Softmax and cross-entropy are the neural-net versions of ideas already in multinomial logistic regression. → Multinomial logistic regression (stat), Maximum likelihood (stat), Softmax, Likelihood and negative log-likelihood.
 
 ### Softmax
 
@@ -1177,7 +468,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Exponentiating forces every score positive and blows up the differences (the biggest logit dominates); dividing by the total scales them into probabilities. It's the multi-class stand-in for the logistic function.
 
-**Notes.** Reading exp(logit) as a *count* makes the picture concrete: a count model normalizes raw counts into probabilities, and softmax normalizes exp(logits) the same way — so a logit is a learned log-count. The output layer of a classification net. → Logits, Output layer and loss, Multinomial logistic regression.
+**Notes.** Reading exp(logit) as a *count* makes the picture concrete: a count model normalizes raw counts into probabilities, and softmax normalizes exp(logits) the same way — so a logit is a learned log-count. The output layer of a classification net. → Logits, Output layer and loss, Multinomial logistic regression (stat).
 
 ### Logits
 
@@ -1201,7 +492,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Maximizing likelihood = making the observed data look as probable as possible under the model. Three equivalent moves make it a usable loss: take logs (a stable sum instead of a vanishing product of tiny numbers — and monotonic, so it preserves the ranking), then negate (we want a loss that's *lower when better*, but likelihood runs the other way), then average (a clean, dataset-size-independent number). The best possible average NLL is 0 — perfect confidence, always correct.
 
-**Notes.** Average NLL over a softmax output is exactly *cross-entropy loss*. Minimizing NLL is the loss-function face of maximum likelihood. → Maximum likelihood, Softmax, Output layer and loss.
+**Notes.** Average NLL over a softmax output is exactly *cross-entropy loss*. Minimizing NLL is the loss-function face of maximum likelihood. → Maximum likelihood (stat), Softmax, Output layer and loss.
 
 ### Language model
 
@@ -1289,7 +580,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Today resembles recent days, so predict from the recent past. Chop the series into overlapping windows of length `L` (the *lag*) and fit. An RNN and an AR model use the same windows; the AR model *flattens* each window into one predictor vector, while the RNN processes it in order with shared weights and a hidden state, adding non-linearity.
 
-**Notes.** Autocorrelation is also the "correlated errors" caveat for ordinary regression. → Potential problems in linear regression, Recurrent neural network.
+**Notes.** Autocorrelation is also the "correlated errors" caveat for ordinary regression. → Potential problems in linear regression (stat), Recurrent neural network.
 
 ### Gradient descent
 
@@ -1329,7 +620,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** By randomly knocking out units, no single unit can become indispensable, so the network spreads its representation and generalizes better. Inspired by random forests' trick of randomly restricting features; applied fresh for each training example.
 
-**Notes.** Similar in spirit to ridge regularization; ridge/lasso penalties are also applied to network weights. One of the most popular regularizers for deep nets — even strong networks have gained 1–2 percentage points of accuracy from it, which at 95% accuracy means cutting the error rate by nearly 40%. *(Hands-On ML)* → Random forests, Ridge regression, MC dropout, Neural network regularization.
+**Notes.** Similar in spirit to ridge regularization; ridge/lasso penalties are also applied to network weights. One of the most popular regularizers for deep nets — even strong networks have gained 1–2 percentage points of accuracy from it, which at 95% accuracy means cutting the error rate by nearly 40%. *(Hands-On ML)* → Random forests, Ridge regression (stat), MC dropout, Neural network regularization.
 
 ### Neural network regularization
 
@@ -1337,7 +628,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Deep networks routinely carry tens of thousands to millions of parameters — enough freedom to fit almost any dataset, and therefore enough to memorize noise. (Von Neumann's line: with four parameters he could fit an elephant, with five make its trunk wiggle; with thousands you can fit the whole zoo.) Regularization is what buys back generalization.
 
-**Notes.** L1/L2 on network weights is the same idea as the lasso and ridge penalties for linear models: the penalty is computed each training step and added to the loss. In a softmax classifier, an L2 penalty (`+λ·mean(W²)`) pulls the weights toward 0, which pulls the logits toward 0 and the class probabilities toward *uniform* — so weight decay acts as a smoothing pressure, the gradient-based twin of adding fake counts to a count model. `λ` sets how much: too large and every prediction blurs toward uniform. *(Hands-On ML; Karpathy)* → Dropout, Max-norm regularization, Early stopping, Ridge regression, The lasso, Softmax.
+**Notes.** L1/L2 on network weights is the same idea as the lasso and ridge penalties for linear models: the penalty is computed each training step and added to the loss. In a softmax classifier, an L2 penalty (`+λ·mean(W²)`) pulls the weights toward 0, which pulls the logits toward 0 and the class probabilities toward *uniform* — so weight decay acts as a smoothing pressure, the gradient-based twin of adding fake counts to a count model. `λ` sets how much: too large and every prediction blurs toward uniform. *(Hands-On ML; Karpathy)* → Dropout, Max-norm regularization, Early stopping, Ridge regression (stat), The lasso (stat), Softmax.
 
 ### Max-norm regularization
 
@@ -1361,7 +652,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Training error keeps falling long after test error has bottomed out; early stopping catches the model at the bottom of that U instead of letting it slide into overfitting. Cheap, effective, and it needs no change to the model.
 
-**Notes.** One of the best regularizers for neural nets, and the practical face of the "slow learning" safeguard. *(Hands-On ML)* → Neural network regularization, Gradient descent, Training MSE vs test MSE.
+**Notes.** One of the best regularizers for neural nets, and the practical face of the "slow learning" safeguard. *(Hands-On ML)* → Neural network regularization, Gradient descent, Training MSE vs test MSE (stat).
 
 ### Vanishing and exploding gradients
 
@@ -1377,7 +668,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Classic bias–variance says test error is U-shaped and interpolating the data is bad, and that holds *up to* the interpolation threshold. But push flexibility even further and, in some settings, test error descends a second time — so a model that fits training data perfectly can sometimes beat a slightly less flexible one. Hence "double" descent.
 
-**Notes.** A modern refinement of, not a contradiction to, the bias–variance trade-off — the trade-off governs behavior up to interpolation. Helps explain why huge over-parameterized networks can still generalize. → Bias–variance trade-off, Overfitting.
+**Notes.** A modern refinement of, not a contradiction to, the bias–variance trade-off — the trade-off governs behavior up to interpolation. Helps explain why huge over-parameterized networks can still generalize. → Bias–variance trade-off (stat), Overfitting (stat).
 
 ---
 
@@ -1385,11 +676,51 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 ### Tokenization and byte-pair encoding (BPE)
 
-**Definition.** Turning raw text into a sequence of integer *tokens* (and back) via a fixed vocabulary. A *character-level* tokenizer uses one token per character (tiny vocabulary, long sequences). *Subword* tokenizers sit between characters and words: *byte-pair encoding (BPE)* (OpenAI's `tiktoken`) and *SentencePiece* (Google) build a vocabulary by repeatedly merging the most frequent adjacent token pair.
+**Definition.** Turning raw text into a sequence of integer *tokens* (and back) via a fixed vocabulary. A *character-level* tokenizer uses one token per character (tiny vocab, long sequences). Real LLMs use *subword* tokenizers, chiefly *byte-pair encoding (BPE)*: start from the 256 raw *UTF-8 bytes* as the base vocabulary, then repeatedly find the most frequent adjacent token pair and merge it into a new token, for a fixed number of merges.
 
-**Intuition.** A lossless, reversible mapping — `encode` text → ints, `decode` ints → text, with `decode(encode(s)) == s`. The core trade-off is vocabulary size vs sequence length: characters give a small vocab but long sequences (so a fixed context window covers less text); whole words give short sequences but a huge vocab. Subword BPE compromises — common words become a single token, rare words split into pieces.
+**Intuition.** A lossless, reversible mapping — `encode` text → ints, `decode` ints → text, with `decode(encode(s)) == s`. The core trade-off is vocabulary size vs sequence length: bytes/characters give a small vocab but long sequences (so a fixed context window covers less text); merging frequent pairs shortens sequences at the cost of a bigger vocab. *Training* the tokenizer = running the merge loop to learn a `merges` table; *encoding* re-applies those merges in the order learned (earliest merge id first) until none apply; *decoding* concatenates each token's stored bytes and UTF-8-decodes.
 
-**Notes.** The character model in the build uses a 65-token vocab (the unique characters of the corpus); real LLMs use BPE with tens of thousands (GPT-3: 50,257; LLaMA: 32,000). → One-hot encoding, Embedding layer, Language model.
+**Notes.** The tokenizer is a *separate module* from the model — its own training data, its own BPE pass — and the model only ever sees token ids. Working on raw UTF-8 bytes means any string is representable (no out-of-vocabulary). GPT-3 vocab 50,257; LLaMA 32,000. → Regex pre-tokenization, Special tokens, tiktoken vs SentencePiece, Tokenization failure modes, One-hot encoding, Embedding layer, Language model.
+
+### Regex pre-tokenization
+
+**Definition.** Splitting text with a regular expression *before* BPE, so merges are only ever computed *within* each chunk, never across chunk boundaries. GPT-2's pattern breaks text into words, numbers, punctuation runs, and whitespace (using Unicode classes `\p{L}` letters, `\p{N}` numbers), and keeps a leading space attached to the following word (` ?\p{L}+`).
+
+**Intuition.** Left unconstrained, BPE would merge across category and word boundaries — fusing `dog` with a trailing `.` or a space — wasting vocabulary and hurting generalization. Pre-splitting forces merges to respect linguistic boundaries. It's also why tokens so often begin with a space.
+
+**Notes.** GPT-4's tokenizer revised this pattern (and, unlike GPT-2, does merge runs of spaces). Requires the `regex` module for `\p{...}` classes. → Tokenization and byte-pair encoding (BPE).
+
+### Special tokens
+
+**Definition.** Reserved tokens added to the vocabulary *outside* the BPE merges, with fixed ids, to mark structure rather than content — e.g. GPT-2's single `<|endoftext|>` marking document boundaries; chat models add turn-boundary tokens.
+
+**Intuition.** The model needs signals like "document ends here" or "user turn ends, assistant begins" that can't be confused with ordinary text. Because they're handled specially, a literal `<|endoftext|>` typed into the input can be intercepted as a control token instead of those characters.
+
+**Notes.** GPT-2's vocab is 256 byte tokens + 50,000 merges + 1 special = 50,257. Adding new special tokens means growing the embedding and output layers. → Adding vocabulary after training, Tokenization and byte-pair encoding (BPE), Language model.
+
+### tiktoken vs SentencePiece
+
+**Definition.** Two production tokenizers. *tiktoken* (OpenAI) encodes text to UTF-8 bytes and runs BPE on the *bytes* (inference-only). *SentencePiece* (Google; used by Llama/Mistral) runs BPE on the Unicode *code points* directly, and can both train and infer.
+
+**Intuition.** The difference is *what* BPE operates on: bytes (tiktoken) vs code points (SentencePiece). SentencePiece handles rare code points via `character_coverage` plus `byte_fallback` — very rare characters either map to an `UNK` token or fall back to raw UTF-8 byte tokens. Its `add_dummy_prefix` prepends a space so a word tokenizes the same at the start of a sentence as mid-sentence.
+
+**Notes.** tiktoken can't train a new vocabulary; SentencePiece is the go-to when you need to *train* a tokenizer. → Tokenization and byte-pair encoding (BPE).
+
+### Tokenization failure modes
+
+**Definition.** Many LLM quirks trace to tokenization rather than the model: weak spelling and character-level tasks (a token isn't its letters), shaky digit arithmetic (numbers split inconsistently), worse non-English performance (more tokens per word → less effective context), trailing-whitespace sensitivity, and "glitch tokens" like `SolidGoldMagikarp` (rare tokens the model barely trained on).
+
+**Intuition.** The model reasons over tokens, not characters, so anything needing sub-token structure — spelling, reversing a string, per-digit arithmetic — is handicapped by how the text was chunked. Tokens that appeared in the *tokenizer's* training but hardly in the *model's* trigger erratic behavior when invoked.
+
+**Notes.** Practical upshots: prefer formats that tokenize compactly (sometimes YAML over JSON), and watch for whitespace and special-token pitfalls. → Tokenization and byte-pair encoding (BPE).
+
+### Adding vocabulary after training
+
+**Definition.** Introducing new tokens (new special tokens, domain terms, a new language) into an already-trained model by *extending* the token-embedding matrix and the output (unembedding) layer with fresh rows, then training *only* those new rows while freezing all existing weights.
+
+**Intuition.** The old tokens already have good embeddings you don't want to disturb; the new rows start random and must catch up. Freezing everything else and training just the added embeddings teaches the new tokens cheaply, without degrading what the model already knows — a minimal, targeted fine-tune.
+
+**Notes.** Common when adding control tokens for fine-tuning or adapting to a new domain. *(Karpathy)* → Special tokens, Embedding layer, Parameter-efficient fine-tuning (LoRA / PEFT).
 
 ### Self-attention
 
@@ -1591,57 +922,13 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Notes.** Practical guidance: use in low-stakes settings with human oversight, treat outputs as inspiration/suggestions, and prefer copilots over autonomous agents. → Chain-of-thought prompting, Retrieval-augmented generation (RAG), Mode collapse.
 
----
+### torch.compile
 
-## Survival Analysis and Censored Data *(ISL ch. 11)*
+**Definition.** A PyTorch feature (`torch.compile(model)`) that traces the model's operations and compiles them into optimized, fused kernels ahead of execution.
 
-### Survival analysis and censored data
+**Intuition.** Eager PyTorch dispatches each operation separately with Python overhead; compiling fuses operations and strips that overhead, so the model runs substantially faster. The cost is a one-time compilation delay on the first call.
 
-**Definition.** Methods for a response that is the *time until an event* (death, failure, churn). Data are *censored* when the event hasn't occurred by the end of observation — you know the survival time exceeds some value but not its exact value.
-
-**Intuition.** A patient still alive at a study's end gives real information ("survived at least 5 years") that you shouldn't discard, yet can't treat as an ordinary observed time either. Survival analysis is built to use complete and censored observations together.
-
-**Notes.** Ordinary regression can't handle censoring directly. → Survival function, Hazard function, Cox proportional hazards model.
-
-### Survival function
-
-**Definition.** `S(t) = Pr(T > t)` — the probability of surviving (not yet experiencing the event) past time `t`. A decreasing function of `t`.
-
-**Intuition.** "What fraction are still event-free at time `t`?" Starts at 1 and falls toward 0.
-
-**Notes.** Estimated from censored data by the Kaplan-Meier curve. → Kaplan-Meier estimator, Hazard function.
-
-### Kaplan-Meier estimator
-
-**Definition.** A non-parametric estimate of the survival function, formed as a running product of "survived this step" probabilities across the observed event times, giving a step-like curve.
-
-**Intuition.** At each time an event occurs, multiply in the fraction who made it through that step; censored subjects drop out without counting as events. The curve steps down at each event time.
-
-**Notes.** The standard descriptive tool for survival data. → Survival function, Log-rank test.
-
-### Log-rank test
-
-**Definition.** A hypothesis test comparing the survival curves of two (or more) groups, built as a standardized statistic `W = (observed − expected) / sqrt(variance)` accumulated over event times.
-
-**Intuition.** At each event time, compare how many events actually occurred in a group to how many you'd expect if the groups shared one survival curve; sum the discrepancies. A large statistic means the curves differ.
-
-**Notes.** The survival analogue of a two-sample test. → Kaplan-Meier estimator.
-
-### Hazard function
-
-**Definition.** The *hazard rate* `h(t)` is the instantaneous event rate at time `t` given survival up to `t`: `h(t) = f(t) / S(t)`, where `f(t)` is the event-time density and `S(t)` the survival function.
-
-**Intuition.** "Given you've made it to time `t`, how likely is the event right now?" The survival function `S(t)`, density `f(t)`, and hazard `h(t)` are three equivalent ways to describe the same event-time distribution.
-
-**Notes.** Central to the Cox model. → Cox proportional hazards model, Survival function.
-
-### Cox proportional hazards model
-
-**Definition.** A regression for survival data: `h(t | x) = h_0(t) · exp(Σ_j x_j β_j)`, where `h_0(t)` is an unspecified *baseline hazard* (the hazard when all predictors are zero). It estimates the coefficients `β` *without* specifying the form of `h_0(t)`.
-
-**Intuition.** Predictors don't reshape the baseline risk over time — they only scale it up or down by a constant factor `exp(Σ x_j β_j)` (hence "proportional hazards"). The model's trick is learning how predictors matter while leaving the baseline hazard completely free.
-
-**Notes.** The workhorse regression method for censored time-to-event data. → Hazard function.
+**Notes.** A near-free speedup for training and inference once compiled. *(Karpathy)* → Backpropagation, Model compression (distillation, pruning, quantization).
 
 ---
 
@@ -1653,7 +940,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** No answer key, so you can't measure predictive error. Instead you explore — "what natural structure lives in this data?" Often part of exploratory data analysis.
 
-**Notes.** Harder to validate than supervised learning: no test-set error or cross-validation to lean on, and no universally agreed way to check results. → Principal components analysis, Clustering, Supervised vs unsupervised learning.
+**Notes.** Harder to validate than supervised learning: no test-set error or cross-validation to lean on, and no universally agreed way to check results. → Principal components analysis, Clustering, Supervised vs unsupervised learning (stat).
 
 ### Principal components analysis (PCA)
 
@@ -1661,7 +948,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** Find the single direction the data spread out along most — that's PC1. Then the next-biggest spread at right angles to it, and so on. A few components often capture most of the variation, so you can compress or visualize high-dimensional data with little loss. The components also trace the line/plane closest to the data cloud.
 
-**Notes.** Center variables to mean zero first, and usually scale them too — PCA is sensitive to units. An `n × p` dataset has `min(n−1, p)` components, but you keep only the first few. Feeding components into a regression is PCR. → Principal components regression (PCR), Unsupervised learning.
+**Notes.** Center variables to mean zero first, and usually scale them too — PCA is sensitive to units. An `n × p` dataset has `min(n−1, p)` components, but you keep only the first few. Feeding components into a regression is PCR. → Principal components regression (PCR) (stat), Unsupervised learning.
 
 ### Matrix completion
 
@@ -1701,7 +988,7 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 **Intuition.** K-means assigns each point to its nearest centroid, full stop. A GMM instead models each cluster as an ellipsoidal blob with its own shape, size, density, and orientation, and gives each point a *probability* of belonging to each cluster. Softer and more flexible than K-means, which effectively assumes round, equal-sized clusters.
 
-**Notes.** In the simplest variant you must specify `k` in advance. Fitting the parameters (weights, means, covariances) is done by the EM algorithm — *(beyond both books' highlights here)*. Related to QDA, which also models each class as its own Gaussian, but supervised. *(Hands-On ML)* → Clustering, K-means clustering, Quadratic discriminant analysis (QDA).
+**Notes.** In the simplest variant you must specify `k` in advance. Fitting the parameters (weights, means, covariances) is done by the EM algorithm — *(beyond both books' highlights here)*. Related to QDA, which also models each class as its own Gaussian, but supervised. *(Hands-On ML)* → Clustering, K-means clustering, Quadratic discriminant analysis (QDA) (stat).
 
 ### Bayesian Gaussian mixture
 
@@ -1713,163 +1000,308 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 
 ---
 
-## Multiple Testing *(ISL ch. 13)*
+## Machine Learning Systems Design *(Designing ML Systems)*
 
-### Type I and Type II errors
+### When to use machine learning
 
-**Definition.** In a hypothesis test, a *Type I error* (false positive) is rejecting a true null hypothesis; a *Type II error* (false negative) is failing to reject a false null. The Type I error rate is the probability of a false positive.
+**Definition.** Machine learning is an approach to *learn* *complex patterns* from *existing data* and use them to make *predictions* on *unseen data*. It fits when all of these hold: there are patterns to learn, the patterns are complex (hard to hand-code), data exists (or can be collected), the problem is predictive, and the patterns generalize — ideally the task is also repetitive, operates at scale, and lives in a changing environment.
 
-**Intuition.** Type I = crying wolf (declaring an effect that isn't there); Type II = missing a real effect. Lowering one generally raises the other. The four-step test (state hypotheses, compute a statistic, get a p-value, decide) controls Type I error at a chosen level `α`.
+**Intuition.** With no pattern, no data, or a problem cheaply solved by explicit rules, ML is the wrong tool. It earns its keep when rules would be too many or too brittle, and when being right *most* of the time is already valuable.
 
-**Notes.** They trade off much like bias and variance. → Hypothesis test, Family-wise error rate.
+**Notes.** Complements the statistical-learning framing (`Y = f(X) + ε`) by stressing the *systems* preconditions and deployment realities. → Statistical learning (stat), Prediction vs inference (stat).
 
-### Family-wise error rate (FWER)
+### Classification task types (binary, multiclass, multilabel)
 
-**Definition.** When testing `m` hypotheses at once, the FWER is the probability of making *at least one* Type I error: `Pr(V ≥ 1)`, where `V` counts false positives.
+**Definition.** Within classification: *binary* (two classes), *multiclass* (one label from `K > 2` mutually exclusive classes), and *multilabel* (each example may carry *several* labels at once).
 
-**Intuition.** Run enough tests at the usual 5% each and false positives become nearly guaranteed — flip 100 fair coins and some will "look" biased. FWER control keeps the chance of *any* false discovery low across the whole family.
+**Intuition.** Multiclass assumes exactly one class is correct (probabilities sum to 1, softmax); multilabel drops that assumption — an image can be both "cat" and "outdoors" — so it's usually framed as `K` independent binary problems (a sigmoid per label). Multilabel is the hardest to source labels for and to evaluate.
 
-**Notes.** Controlling FWER is strict; with large `m` it gets too conservative, motivating FDR. → Bonferroni correction, Holm's method, False discovery rate.
+**Notes.** Very high-cardinality multiclass is sometimes decomposed hierarchically. → Regression vs classification (stat), Softmax, Multinomial logistic regression (stat), Classification metrics (precision, recall, F1).
 
-### Bonferroni correction
+### Decoupling objectives (multi-objective optimization)
 
-**Definition.** A simple FWER-control rule: reject a hypothesis only if its p-value is below `α/m` (the target level divided by the number of tests).
+**Definition.** When a model must satisfy several competing objectives (e.g. rank posts by *engagement* and by *quality*), train a separate model or head per objective and combine their outputs with a weighted (linear) sum, rather than optimizing one pre-blended loss.
 
-**Intuition.** Split your error budget evenly across all tests so their combined false-positive chance stays under `α`. Dead simple and assumption-free, but conservative — it rejects few hypotheses, risking many Type II errors.
+**Intuition.** Folding objectives into a single loss `α·loss_a + β·loss_b` means retraining every time you re-weight the trade-off. Decoupling — optimize each objective separately, then combine scores with tunable weights at serving time — lets you re-weight without retraining and keeps each objective's behavior legible.
 
-**Notes.** Makes no assumptions about the tests' dependence. → Family-wise error rate, Holm's method.
+**Notes.** The combination weights become product knobs. → Neural network regularization.
 
-### Holm's method
+### ETL (extract, transform, load)
 
-**Definition.** A step-down FWER-control procedure: sort the p-values ascending and compare each to a threshold that loosens as you proceed, rejecting until one fails.
+**Definition.** The standard data pipeline: *extract* from sources, *transform* (clean, validate, aggregate, reshape), and *load* into a destination (warehouse, database, files) for downstream use.
 
-**Intuition.** Like Bonferroni but less harsh — it controls FWER just as validly while rejecting more hypotheses (fewer Type II errors, more power), at no cost in assumptions.
+**Intuition.** The plumbing that turns messy source data into query-ready tables feeding training and features. ("ELT" reorders it — load raw first, transform later inside the warehouse.)
 
-**Notes.** Generally preferred over plain Bonferroni. → Bonferroni correction, Family-wise error rate.
+**Notes.** → Batch features vs streaming features.
 
-### False discovery rate (FDR)
+### Non-probability sampling
 
-**Definition.** The expected *fraction* of false positives among all rejected hypotheses: `FDR = E[V/R]`, where `V` is false positives and `R` total rejections. The realized ratio `V/R` is the *false discovery proportion* (FDP).
+**Definition.** Selecting data by convenience rather than random chance: *convenience* (whatever's easily available), *snowball* (existing samples recruit more), *judgment* (an expert hand-picks), and *quota* (fill fixed counts per group).
 
-**Intuition.** With thousands of tests, demanding zero false positives (FWER) is hopeless. Instead, tolerate some — just keep the *proportion* of your "discoveries" that are false below a level `q` (say 10%). A far more practical target at scale.
+**Intuition.** Cheap and common, but the selection criteria are non-random, so the sample carries selection bias and rarely represents the population — a frequent hidden source of biased models.
 
-**Notes.** Controlled by the Benjamini-Hochberg procedure. → Family-wise error rate, Benjamini-Hochberg procedure.
+**Notes.** Fine for exploration; risky as the basis for a production model. → Random sampling methods (simple, stratified, weighted, reservoir), Data leakage.
 
-### Benjamini-Hochberg procedure
+### Random sampling methods (simple, stratified, weighted, reservoir)
 
-**Definition.** A procedure that controls the FDR at a chosen level `q`: sort the p-values ascending, find the largest `j` with `p_(j) < q·j/m`, and reject all hypotheses up to that one.
+**Definition.** Probability-based selection: *simple random* (every item equally likely), *stratified* (split into groups/strata and sample each so all are represented), *weighted* (each item drawn with a chosen probability), and *reservoir* (a streaming algorithm keeping a uniform sample of `k` items from a stream of unknown length).
 
-**Intuition.** A ranked cutoff that lets more discoveries through than FWER methods while guaranteeing the false-discovery *fraction* stays ≤ `q`. The standard tool for large-scale testing (genomics, screening).
+**Intuition.** Stratified sampling guarantees rare classes appear; weighted sampling encodes priorities or corrects imbalance. Reservoir sampling solves the streaming case: keep the first `k`, then for the `i`-th arrival (`i > k`) keep it with probability `k/i`, evicting a random current member — leaving every item seen so far equally likely to be in the reservoir at any moment.
 
-**Notes.** → False discovery rate, Family-wise error rate.
+**Notes.** → Non-probability sampling, Class imbalance.
+
+### Labeling and weak supervision
+
+**Definition.** Producing labels without (or with little) hand-annotation. *Weak supervision* generates noisy labels programmatically via *labeling functions* — heuristics such as regex/keyword rules, existing knowledge bases, or the outputs of other models — which are then combined.
+
+**Intuition.** Hand-labeling is slow and expensive; labeling functions encode cheap, noisy expert intuition at scale, and aggregating many weak signals yields usable (if imperfect) labels. Neighboring paradigms lower labeling cost differently: semi-supervised learning leverages unlabeled data, transfer learning reuses another task's model, active learning labels only the most informative points.
+
+**Notes.** → Semi-supervised learning (stat), Transfer learning, Active learning.
+
+### Transfer learning
+
+**Definition.** Reusing a model trained on one (data-rich) task as the starting point for another related task — as a fixed feature extractor, or by fine-tuning it on the new task's smaller dataset.
+
+**Intuition.** Representations learned on a big task (a pretrained language or vision model) capture general structure that transfers, so the target task needs far less data and compute. This is the foundation of the pretrain-then-adapt recipe.
+
+**Notes.** → Pretraining and base models, Parameter-efficient fine-tuning (LoRA / PEFT), Zero-shot learning.
+
+### Zero-shot learning
+
+**Definition.** Making correct predictions for a task the system was *never trained on*, by leveraging training on a *related* task (also called zero-data learning).
+
+**Intuition.** The system needs *no* data for the task at hand — but it still had to learn from data for a related task, so "zero-shot" does not mean "zero data" overall. Common with large pretrained models prompted to do new tasks.
+
+**Notes.** → In-context learning (zero/one/few-shot), Transfer learning.
+
+### Active learning
+
+**Definition.** A labeling strategy in which the model chooses which unlabeled examples it would most benefit from having labeled next (e.g. the ones it is most uncertain about), and a human labels those.
+
+**Intuition.** Not all labels are equally useful; labeling the most informative/uncertain points buys more accuracy per label than random labeling, cutting annotation cost.
+
+**Notes.** → Labeling and weak supervision.
+
+### Class imbalance
+
+**Definition.** When some classes vastly outnumber others (e.g. fraud detection), biasing a model toward the majority. Addressed by *resampling* — undersample the majority and/or oversample the minority (e.g. SMOTE, which synthesizes new minority examples) — and by adjusting the loss (class weights, focal loss).
+
+**Intuition.** Accuracy is useless under imbalance (just predict the majority). Rebalancing the data or reweighting the loss forces the model to care about the rare class; the choice of *metric* matters as much as the fix.
+
+**Notes.** → Random sampling methods (simple, stratified, weighted, reservoir), Classification metrics (precision, recall, F1), Data augmentation.
+
+### Handling missing data
+
+**Definition.** Two broad strategies: *deletion* (drop rows or columns with missing values) and *imputation* (fill them — with the mean/median/mode, a constant, or a model's prediction).
+
+**Intuition.** Deletion is simple but discards data and can bias the set when missingness isn't random. Imputation keeps the rows but injects assumptions; whether missingness is random (MCAR/MAR) or informative (MNAR) determines what's safe. The *fact* of missingness can itself be a useful feature.
+
+**Notes.** Fit imputation statistics on the training set only. → Feature scaling, Data leakage.
+
+### Categorical feature encoding (hashing trick)
+
+**Definition.** Turning categories into numbers a model can use. Beyond one-hot/dummy encoding, the *hashing trick* maps each category through a hash function into a fixed number of buckets, handling unseen and high-cardinality categories in bounded space.
+
+**Intuition.** One-hot explodes with high cardinality and can't represent categories unseen at training time. Hashing fixes the dimension in advance and absorbs new categories gracefully (at the cost of occasional collisions), which is why it suits large-scale, streaming category spaces.
+
+**Notes.** → One-hot encoding, Qualitative predictors and dummy variables (stat), Embedding layer.
+
+### Feature crossing
+
+**Definition.** Creating a new feature by combining two or more existing features (e.g. `area = length × width`, or the pair `(marital_status, num_children)`), so a model can capture their joint effect.
+
+**Intuition.** The same idea as interaction terms in linear models: crossing lets a model that treats features additively express effects that depend on *combinations*. Especially useful for linear models, and it helps DNNs learn faster — at the cost of more features and higher overfitting risk.
+
+**Notes.** → Interaction terms (stat), Feature scaling.
+
+### Data leakage
+
+**Definition.** When information unavailable at prediction time leaks into training, inflating offline metrics and then collapsing in production. *Group leakage* is a common form: correlated or duplicate records split across train and test (e.g. multiple scans of one patient), so the test set isn't truly unseen.
+
+**Intuition.** Leakage lets the model "cheat" — via a target-derived feature, scaling statistics computed over the whole dataset, time-travel in a time-series split, or grouped duplicates straddling the split. Suspiciously high performance, or a single feature with implausibly high correlation to the target, is a red flag.
+
+**Notes.** Guard by splitting *before* any preprocessing, splitting by group/time where relevant, and checking feature–target correlations. → Train / dev / test split, Handling missing data, Feature scaling.
+
+### Classification metrics (precision, recall, F1)
+
+**Definition.** Beyond raw accuracy: *precision* = TP/(TP+FP) (of predicted positives, how many are correct), *recall* = TP/(TP+FN) (of actual positives, how many were caught), and *F1* = their harmonic mean `2·P·R/(P+R)`.
+
+**Intuition.** Accuracy hides *which* errors you make and misleads under class imbalance. Precision vs recall is the false-positive vs false-negative trade-off; F1 balances them in one number. Pick the metric matching each error's cost — recall for disease screening, precision when false alarms are expensive.
+
+**Notes.** All read off the confusion matrix; sweeping the threshold traces the ROC (or precision–recall) curve. → Confusion matrix and error types (stat), ROC curve (stat), Class imbalance.
+
+### Stacking (stacked generalization)
+
+**Definition.** An ensemble that trains several diverse *base* models and then a *meta-model* which learns how best to combine their predictions, instead of a fixed average or vote.
+
+**Intuition.** Where bagging averages and boosting adds sequentially, stacking *learns* the combination — the meta-model discovers which base learner to trust when. Often squeezes out extra accuracy in competitions.
+
+**Notes.** Train the meta-model on *out-of-fold* base predictions to avoid leakage. → Ensemble methods and weak learners, Bagging, Boosting.
+
+### Distributed training (data vs model parallelism)
+
+**Definition.** Training across multiple devices. *Data parallelism*: replicate the model on each device, split the batch across them, and average gradients. *Model parallelism*: split the *model itself* across devices (different layers/tensors on different GPUs) when it's too big to fit on one.
+
+**Intuition.** Data parallelism scales throughput (more data per step) and is the common case; model parallelism is for models too large for one device's memory. Real systems often combine both, plus pipeline parallelism.
+
+**Notes.** Data-parallel gradient averaging effectively enlarges the batch, which interacts with the learning rate. → Stochastic gradient descent (SGD), Batch normalization.
+
+### Model evaluation tests (perturbation, invariance, slice-based)
+
+**Definition.** Behavioral tests beyond a single aggregate score. *Perturbation test*: add small noise/changes to inputs and check the outputs stay sensible/robust. *Invariance test*: change inputs that *shouldn't* affect the output (e.g. a name or gender) and check the prediction doesn't move. *Slice-based evaluation*: measure performance separately on meaningful *subsets* (slices) — by segment, device, language — to expose failures the aggregate hides.
+
+**Intuition.** A good overall number can mask that the model fails a critical subgroup or reacts to irrelevant features. These tests probe the robustness and fairness a lump-sum metric can't.
+
+**Notes.** *Correction:* slice-based evaluation is **not** the train/validation/test split. The split partitions data to *estimate generalization*; slicing evaluates the *already-trained* model on subgroups of the *same* eval set to find hidden weaknesses — a different purpose. → Train / dev / test split, Classification metrics (precision, recall, F1).
+
+### Batch features vs streaming features
+
+**Definition.** *Batch (static) features* are precomputed from historical data at rest (e.g. a user's average rating over the last month), stored, and looked up. *Streaming (dynamic/online) features* are computed in near-real-time from a stream of events at request time (e.g. clicks in the last 10 minutes).
+
+**Intuition.** Batch features are cheap and simple but can be stale; streaming features are fresh and often more predictive but need streaming infrastructure. Many systems use both.
+
+**Notes.** *Clarification:* "streaming features" and "online features" usually mean the *same* thing — the real contrast is **batch/static vs streaming/online**, not "streaming vs online." → ETL, Batch prediction vs online prediction, Storage vs compute.
+
+### Batch prediction vs online prediction
+
+**Definition.** *Batch prediction* (asynchronous): precompute predictions for many inputs on a schedule and store them for lookup. *Online prediction* (on-demand/synchronous): generate a prediction the moment a request arrives.
+
+**Intuition.** Batch is simpler and cheaper and hides model latency, but predictions can be stale and you must know the inputs in advance. Online serves fresh, input-dependent predictions (needed for search or recommendations on new queries) but demands low-latency serving. Batch features often feed batch prediction; streaming features enable responsive online prediction.
+
+**Notes.** → Batch features vs streaming features, Model compression (distillation, pruning, quantization), Storage vs compute.
+
+### Model compression (distillation, pruning, quantization)
+
+**Definition.** Shrinking a model for cheaper/faster inference. *Knowledge distillation*: train a small *student* to mimic a large *teacher*'s outputs. *Pruning*: remove unimportant weights/neurons from a trained network (often zeroing small-magnitude weights). *Quantization*: store and compute weights at lower precision (e.g. 32-bit → 8-bit or lower).
+
+**Intuition.** Big models are accurate but expensive to serve; these techniques trade a little accuracy for large gains in size, latency, and energy. Quantization is the most broadly used and the most hardware-friendly.
+
+**Notes.** *Clarification:* "pruning" here is **neural-network** pruning — removing weights — distinct from decision-tree *cost-complexity pruning* (trimming branches), though both simplify a trained model. → Tree pruning (cost-complexity), torch.compile, Batch prediction vs online prediction.
+
+### Data distribution shifts (covariate, label, concept)
+
+**Definition.** When the data a deployed model sees drifts from its training distribution. *Covariate shift*: input distribution `P(X)` changes while `P(Y|X)` holds. *Label shift*: label distribution `P(Y)` changes while `P(X|Y)` holds. *Concept drift*: the relationship `P(Y|X)` itself changes (same inputs, different correct answer).
+
+**Intuition.** A model trained on last year's data goes stale — slowly or suddenly — as the world changes. Identifying which distribution moved guides the fix: reweighting for covariate/label shift, retraining for concept drift.
+
+**Notes.** Detected by monitoring input/output/label distributions over time. → Continual learning (stateless vs stateful), Degenerate feedback loops, Train / dev / test split.
+
+### Degenerate feedback loops
+
+**Definition.** When a model's own predictions shape the future data it is trained on, reinforcing its biases over time — e.g. a recommender that only surfaces popular items makes them more popular, so they look even better next round.
+
+**Intuition.** The model shapes the world it later learns from, creating a self-fulfilling loop that narrows exposure and entrenches whatever it already favored (popularity bias, filter bubbles). Breaking it needs deliberate exploration (randomization, bandits) or positional debiasing.
+
+**Notes.** → Data distribution shifts (covariate, label, concept), Bandit algorithms.
+
+### Continual learning (stateless vs stateful)
+
+**Definition.** How a model is updated over time. *Stateless retraining*: retrain from scratch on a fresh window of data each cycle. *Stateful training* (incremental/continual): continue training the *existing* model on new data, carrying its learned state forward.
+
+**Intuition.** Stateless is simple and reproducible but wasteful and slower to adapt; stateful updates cheaply on just the new data and reacts faster — at the risk of *catastrophic forgetting* and harder debugging. Update cadence trades freshness against stability.
+
+**Notes.** → Data distribution shifts (covariate, label, concept), Transfer learning.
+
+### Deployment strategies (shadow, canary, A/B testing)
+
+**Definition.** Ways to roll out and evaluate a new model in production. *Shadow deployment*: run the new model alongside the old on live traffic but don't serve its predictions — just log and compare. *Canary*: release to a small slice of traffic first, then widen. *A/B testing*: route a fraction of real traffic to the new model and compare outcomes statistically before full rollout.
+
+**Intuition.** Offline metrics don't guarantee online wins. Shadow mode de-risks by testing on real inputs with zero user impact; A/B testing measures the real causal effect on user-facing metrics on a slice of traffic.
+
+**Notes.** → Model evaluation tests (perturbation, invariance, slice-based), Bandit algorithms, Hypothesis test, t-statistic, and p-value (stat).
+
+### Bandit algorithms
+
+**Definition.** Online decision algorithms that balance *exploration* (trying options to learn their payoff) against *exploitation* (choosing the current best), allocating traffic adaptively — e.g. among candidate models or content. *Contextual bandits* condition the choice on features of each request.
+
+**Intuition.** Plain A/B testing sends fixed traffic to a losing variant for the whole test; a bandit shifts traffic toward better performers as evidence accumulates, so it's more data-efficient. The exploration keeps it from prematurely locking onto a wrong "best."
+
+**Notes.** A remedy for degenerate feedback loops (deliberate exploration). → Deployment strategies (shadow, canary, A/B testing), Degenerate feedback loops.
+
+### Storage vs compute
+
+**Definition.** A recurring systems trade-off: precompute-and-store results (spend storage) versus compute-on-demand (spend compute) — as in batch vs streaming features, or batch vs online prediction.
+
+**Intuition.** Storing precomputed answers makes serving cheap and fast but risks staleness and grows storage; computing fresh each time is always current but costs latency and compute per request. The right balance depends on freshness needs, request volume, and cost.
+
+**Notes.** → Batch features vs streaming features, Batch prediction vs online prediction.
 
 ---
 
 ## Glossary
 
 - **Activation function** — the non-linearity (sigmoid, ReLU) inside a neural-net unit. → [Activation function](#activation-function).
+- **Active learning** — the model requests labels for its most informative examples. → [Active learning](#active-learning).
 - **Adam / AdamW** — adaptive per-parameter optimizer; AdamW decouples weight decay. → [Adam and AdamW](#adam-and-adamw).
-- **Additivity assumption** — a predictor's effect on `Y` doesn't depend on other predictors' values. → [Additivity and linearity assumptions](#additivity-and-linearity-assumptions).
-- **Adjusted R-squared** — R² modified to penalize useless predictors; larger = better. → [Cp, AIC, BIC, and adjusted R-squared](#cp-aic-bic-and-adjusted-r-squared).
-- **AIC / Cp** — test-error estimates that tax training RSS by model size; smaller = better. → [Cp, AIC, BIC, and adjusted R-squared](#cp-aic-bic-and-adjusted-r-squared).
-- **AUC** — area under the ROC curve; chance a random positive outscores a random negative. → [ROC curve](#roc-curve).
+- **Adding vocabulary after training** — extend embedding/output rows and train only those, frozen elsewhere. → [Adding vocabulary after training](#adding-vocabulary-after-training).
 - **Autocorrelation / autoregressive (AR) model** — time-series values correlate with their own lags; AR(L) regresses on the previous `L` values. → [Autoregressive models and autocorrelation](#autoregressive-models-and-autocorrelation).
 - **Bag-of-words** — represent a document by which dictionary words it contains. → [Bag-of-words](#bag-of-words).
 - **Activation saturation** — squashing units pinned at ±1 (or dead at 0) with ~0 gradient. → [Activation saturation](#activation-saturation).
 - **Backpropagation** — forward pass, chain-rule backward pass, then a gradient step. → [Backpropagation](#backpropagation).
+- **Bandit algorithms** — adaptively balance exploration vs exploitation over traffic. → [Bandit algorithms](#bandit-algorithms).
 - **Base model** — pretraining-only next-token predictor; not yet an assistant. → [Pretraining and base models](#pretraining-and-base-models).
+- **Batch vs online prediction** — precomputed/stored vs generated on-demand at request time. → [Batch prediction vs online prediction](#batch-prediction-vs-online-prediction).
+- **Batch vs streaming features** — precomputed static vs near-real-time online features. → [Batch features vs streaming features](#batch-features-vs-streaming-features).
 - **Broadcasting** — stretch a smaller tensor to match a larger one for element-wise ops; mind `keepdims`. → [Broadcasting](#broadcasting).
 - **Bagging** — averaging trees fit on bootstrap samples to cut variance. → [Bagging](#bagging).
 - **BART** — tree ensemble combining random perturbation with boosting-style residual fitting. → [Bayesian additive regression trees (BART)](#bayesian-additive-regression-trees-bart).
-- **Basis functions** — fixed transformations of `X` fed into a linear model. → [Basis functions](#basis-functions).
-- **Bayes classifier** — assigns each point to its most probable class; the ideal classifier. → [Bayes classifier](#bayes-classifier).
-- **Bayes error rate** — lowest possible test error rate; classification analogue of irreducible error. → [Bayes error rate](#bayes-error-rate).
-- **Bayes' theorem** — inverts within-class densities into class probabilities for generative classifiers. → [Generative classifiers and Bayes' theorem](#generative-classifiers-and-bayes-theorem).
-- **Benjamini-Hochberg procedure** — controls the FDR via a ranked p-value cutoff. → [Benjamini-Hochberg procedure](#benjamini-hochberg-procedure).
-- **BIC** — like Cp/AIC but with a heavier size penalty, favoring smaller models. → [Cp, AIC, BIC, and adjusted R-squared](#cp-aic-bic-and-adjusted-r-squared).
 - **Bayesian Gaussian mixture** — GMM variant that zeroes out surplus clusters. → [Bayesian Gaussian mixture](#bayesian-gaussian-mixture).
 - **Batch normalization** — normalize pre-activations across the batch; learned scale/shift; mild regularizer. → [Batch normalization](#batch-normalization).
-- **Bias** — error from approximating a complex truth with a simpler model. → [Bias](#bias).
-- **Bias–variance trade-off** — expected test MSE `= Var(f̂) + Bias² + Var(ε)`. → [Bias–variance trade-off](#biasvariance-trade-off).
-- **Bonferroni correction** — reject only p-values below `α/m` to control FWER. → [Bonferroni correction](#bonferroni-correction).
 - **Boosting** — sequential trees each fit to the previous model's residuals. → [Boosting](#boosting).
-- **Bootstrap** — resampling with replacement to quantify an estimate's uncertainty. → [The bootstrap](#the-bootstrap).
 - **Byte-pair encoding (BPE)** — subword tokenization by merging frequent token pairs. → [Tokenization and byte-pair encoding (BPE)](#tokenization-and-byte-pair-encoding-bpe).
 - **Causal (masked) self-attention** — attention restricted to current and past tokens via a triangular mask. → [Causal (masked) self-attention](#causal-masked-self-attention).
 - **Chain-of-thought (CoT)** — prompt the model to reason in steps before answering. → [Chain-of-thought prompting](#chain-of-thought-prompting).
-- **Classification** — predicting a qualitative (label) response. → [Regression vs classification](#regression-vs-classification).
-- **Classification error rate** — fraction misclassified; test rate `= Ave(I(y_0 ≠ ŷ_0))`. → [Classification error rate](#classification-error-rate).
+- **Classification task types** — binary, multiclass (one of K), multilabel (several at once). → [Classification task types (binary, multiclass, multilabel)](#classification-task-types-binary-multiclass-multilabel).
+- **Class imbalance** — skewed class counts; fix via resampling (SMOTE) or loss weights. → [Class imbalance](#class-imbalance).
 - **Clustering** — partitioning observations into similar subgroups. → [Clustering](#clustering).
-- **Collinearity / VIF** — predictors too related to separate; VIF > 5–10 flags it. → [Potential problems in linear regression](#potential-problems-in-linear-regression).
-- **Confidence interval** — range holding the true parameter with stated probability; `≈ β̂ ± 2·SE`. → [Confidence interval](#confidence-interval).
-- **Confounding** — single- vs multiple-predictor results differ due to correlated predictors. → [Confounding](#confounding).
-- **Confusion matrix** — table of predicted vs actual classes, exposing error types. → [Confusion matrix and error types](#confusion-matrix-and-error-types).
 - **Computational graph / autograd** — recorded op graph that makes derivatives automatic. → [Computational graph and autograd](#computational-graph-and-autograd).
 - **Constrained prompting** — templates forcing structured (e.g. JSON) output. → [Constrained prompting](#constrained-prompting).
+- **Continual learning** — stateless retraining vs stateful incremental training. → [Continual learning (stateless vs stateful)](#continual-learning-stateless-vs-stateful).
 - **Convolution filter** — small learned matrix slid over image patches to detect local patterns. → [Convolution filter](#convolution-filter).
 - **Convolutional neural network (CNN)** — image network of convolution + pooling layers. → [Convolutional neural network (CNN)](#convolutional-neural-network-cnn).
-- **Cox proportional hazards model** — survival regression scaling a free baseline hazard by `exp(Σ x_j β_j)`. → [Cox proportional hazards model](#cox-proportional-hazards-model).
 - **Cross-attention** — Q from one sequence, K/V from another (e.g. encoder → decoder). → [Encoder, decoder, and cross-attention](#encoder-decoder-and-cross-attention).
 - **Cross-entropy** — the classification loss for neural nets (negative log-likelihood). → [Output layer and loss](#output-layer-and-loss).
-- **Cross-validation** — resampling to estimate test error (LOOCV, k-fold). → [k-fold cross-validation](#k-fold-cross-validation).
 - **Data augmentation** — label-preserving random distortions that enlarge training data. → [Data augmentation](#data-augmentation).
+- **Data distribution shift** — covariate P(X), label P(Y), or concept P(Y|X) drift. → [Data distribution shifts (covariate, label, concept)](#data-distribution-shifts-covariate-label-concept).
+- **Data leakage** — train-time use of info unavailable at prediction; includes group leakage. → [Data leakage](#data-leakage).
 - **Decoder-only transformer (GPT)** — stacked masked-attention blocks; the GPT architecture. → [Decoder-only transformer (GPT)](#decoder-only-transformer-gpt).
+- **Decoupling objectives** — train a head per objective, combine scores with tunable weights. → [Decoupling objectives (multi-objective optimization)](#decoupling-objectives-multi-objective-optimization).
+- **Degenerate feedback loop** — predictions shape future training data, entrenching bias. → [Degenerate feedback loops](#degenerate-feedback-loops).
 - **Dense (fully connected) layer** — every neuron connected to every neuron of the previous layer; `φ(XW + b)`. → [Dense (fully connected) layer](#dense-fully-connected-layer).
 - **Decision tree** — flowchart of splits carving the predictor space into regions. → [Decision trees](#decision-trees).
 - **Dendrogram** — the nested-cluster tree produced by hierarchical clustering. → [Hierarchical clustering](#hierarchical-clustering).
-- **Dimension reduction** — regress on a few combined directions instead of all predictors. → [Principal components regression (PCR)](#principal-components-regression-pcr).
+- **Distributed training** — data parallelism (split the batch) vs model parallelism (split the model). → [Distributed training (data vs model parallelism)](#distributed-training-data-vs-model-parallelism).
 - **Double descent** — test error can fall again past the interpolation point. → [Double descent](#double-descent).
 - **Dropout** — regularize a net by randomly zeroing units during training. → [Dropout](#dropout).
 - **Early stopping** — halt training when validation performance stops improving. → [Early stopping](#early-stopping).
-- **Dummy variable** — 0/1 encoding of a categorical predictor. → [Qualitative predictors and dummy variables](#qualitative-predictors-and-dummy-variables).
 - **Encoder / decoder** — bidirectional vs masked transformer stacks; GPT is decoder-only. → [Encoder, decoder, and cross-attention](#encoder-decoder-and-cross-attention).
 - **Ensemble / weak learner** — combine many mediocre models into a strong one. → [Ensemble methods and weak learners](#ensemble-methods-and-weak-learners).
-- **F-statistic** — tests whether all regression coefficients are zero. → [F-statistic](#f-statistic).
-- **False discovery rate (FDR)** — expected fraction of false positives among rejections. → [False discovery rate (FDR)](#false-discovery-rate-fdr).
-- **Family-wise error rate (FWER)** — probability of at least one false positive across many tests. → [Family-wise error rate (FWER)](#family-wise-error-rate-fwer).
+- **ETL** — extract, transform, load: the data pipeline. → [ETL (extract, transform, load)](#etl-extract-transform-load).
+- **Feature crossing** — combine features into a new joint feature (an interaction). → [Feature crossing](#feature-crossing).
 - **Embedding layer** — learned lookup table mapping tokens to dense vectors. → [Embedding layer](#embedding-layer).
 - **Feature scaling** — min-max scaling vs standardization to put attributes on one scale. → [Feature scaling](#feature-scaling).
 - **Feed-forward network** — inputs flow through hidden layers to an output. → [Neural networks (feed-forward)](#neural-networks-feed-forward).
-- **Flexibility vs interpretability** — the spectrum from restrictive/readable to flexible/opaque. → [Flexibility vs interpretability](#flexibility-vs-interpretability).
 - **Gaussian mixture model (GMM)** — probabilistic clustering as a mixture of `k` Gaussians. → [Gaussian mixture model (GMM)](#gaussian-mixture-model-gmm).
-- **GAM** — additive model with a smooth non-linear function per predictor. → [Generalized additive models (GAMs)](#generalized-additive-models-gams).
-- **Generalized linear model (GLM)** — linear predictor + link + response distribution (linear/logistic/Poisson). → [Generalized linear models (GLMs)](#generalized-linear-models-glms).
 - **Gradient descent** — fit by stepping parameters downhill on the loss. → [Gradient descent](#gradient-descent).
-- **Hazard function** — instantaneous event rate given survival so far; `h(t) = f(t)/S(t)`. → [Hazard function](#hazard-function).
+- **Hashing trick** — hash categories into fixed buckets for high-cardinality encoding. → [Categorical feature encoding (hashing trick)](#categorical-feature-encoding-hashing-trick).
 - **Hinge loss** — `max(0, 1 − t)`; the SVM's margin objective. → [Hinge loss](#hinge-loss).
-- **Heteroscedasticity** — non-constant error variance (funnel-shaped residuals). → [Potential problems in linear regression](#potential-problems-in-linear-regression).
 - **Hidden layer / units** — a neural net's layers of derived features. → [Hidden layers and units](#hidden-layers-and-units).
 - **Hierarchical clustering** — merge clusters bottom-up into a dendrogram; no `K` needed. → [Hierarchical clustering](#hierarchical-clustering).
-- **High-dimensional data** — `p` large relative to `n`; overfitting danger. → [High-dimensional data](#high-dimensional-data).
-- **Holm's method** — step-down FWER control; rejects more than Bonferroni. → [Holm's method](#holms-method).
 - **Hyperplane** — flat `(p−1)`-dimensional divider; basis of SVMs. → [Hyperplane](#hyperplane).
 - **In-context learning (zero/one/few-shot)** — task behavior from prompt examples, no gradient updates. → [In-context learning (zero/one/few-shot)](#in-context-learning-zeroonefew-shot).
-- **Interaction term** — product predictor capturing predictor synergy. → [Interaction terms](#interaction-terms).
-- **Irreducible error** — `Var(ε)`, the noise floor no model removes. → [Reducible vs irreducible error](#reducible-vs-irreducible-error).
-- **k-fold cross-validation** — average test error over `k` held-out folds. → [k-fold cross-validation](#k-fold-cross-validation).
 - **K-means clustering** — partition into `K` clusters via centroids. → [K-means clustering](#k-means-clustering).
-- **K-nearest neighbors (KNN)** — majority vote / average of the `K` closest points; `1/K` sets flexibility. → [K-nearest neighbors (KNN)](#k-nearest-neighbors-knn) / [KNN regression](#knn-regression).
-- **Kaplan-Meier estimator** — non-parametric step-curve estimate of the survival function. → [Kaplan-Meier estimator](#kaplan-meier-estimator).
-- **Lasso** — L1-penalized regression that zeros out coefficients (variable selection). → [The lasso](#the-lasso).
+- **Knowledge distillation** — train a small student model to mimic a large teacher. → [Model compression (distillation, pruning, quantization)](#model-compression-distillation-pruning-quantization).
 - **Layer normalization** — normalize each token's own features (batch-independent); transformer default. → [Layer normalization](#layer-normalization).
 - **Leaky ReLU / ELU / SELU** — ReLU variants; rough ordering SELU > ELU > leaky ReLU > ReLU > tanh > logistic. → [Activation function](#activation-function).
 - **Language model (n-gram / bigram)** — predicts the next token from previous ones. → [Language model](#language-model).
 - **Learning-rate schedule** — vary/decay the step size over training. → [Learning-rate schedule](#learning-rate-schedule).
 - **Learning rate** — the step size in gradient descent. → [Gradient descent](#gradient-descent).
-- **Least squares (RSS)** — fit that minimizes the residual sum of squares. → [Least squares and residuals (RSS)](#least-squares-and-residuals-rss).
-- **Leverage** — a point's unusualness in the predictors; high leverage yanks the fit. → [Potential problems in linear regression](#potential-problems-in-linear-regression).
-- **Linear discriminant analysis (LDA)** — Gaussian generative classifier, shared covariance → linear boundary. → [Linear discriminant analysis (LDA)](#linear-discriminant-analysis-lda).
 - **Linkage** — rule for cluster-to-cluster dissimilarity (complete/average/single/centroid). → [Hierarchical clustering](#hierarchical-clustering).
 - **Likelihood / NLL** — product of assigned probabilities; negate the log for a loss. → [Likelihood and negative log-likelihood](#likelihood-and-negative-log-likelihood).
 - **LLM agent (ReAct)** — an LLM in a reason–act–observe loop with tools. → [LLM agents (chains, ReAct)](#llm-agents-chains-react).
 - **LLM limitations** — bias, hallucination, reasoning errors, cutoffs, prompt injection. → [LLM limitations and safe use](#llm-limitations-and-safe-use).
 - **Loadings** — the predictor weights defining a principal component. → [Principal components analysis (PCA)](#principal-components-analysis-pca).
-- **Local regression** — fit at each point from weighted nearby points; span sets smoothness. → [Local regression](#local-regression).
-- **Logistic regression** — models class probability via the logistic (S-curve) function. → [Logistic regression](#logistic-regression).
 - **Logits** — un-normalized scores (log-counts) fed into softmax. → [Logits](#logits).
-- **Log-odds (logit)** — `log[p/(1−p)]`; linear in `X` for logistic regression. → [Odds and log-odds (logit)](#odds-and-log-odds-logit).
-- **Log-rank test** — compares survival curves between groups. → [Log-rank test](#log-rank-test).
-- **LOOCV** — cross-validation holding out one point at a time. → [Leave-one-out cross-validation (LOOCV)](#leave-one-out-cross-validation-loocv).
 - **LoRA / PEFT** — parameter-efficient fine-tuning via a few added weights. → [Parameter-efficient fine-tuning (LoRA / PEFT)](#parameter-efficient-fine-tuning-lora--peft).
 - **LSTM** — RNN variant with long- and short-term memory tracks. → [LSTM](#lstm).
 - **Max-norm regularization** — cap each neuron's incoming weight norm at `r`. → [Max-norm regularization](#max-norm-regularization).
@@ -1877,92 +1309,65 @@ Sources so far: *An Introduction to Statistical Learning* (ISL/ISLP) and *Hands-
 - **Mercer's theorem** — licence for the kernel trick: a valid kernel implies a feature map exists. → [Mercer's theorem](#mercers-theorem).
 - **Matrix completion** — fill missing entries via a low-rank PCA-style fit. → [Matrix completion](#matrix-completion).
 - **Maximal margin classifier** — separating hyperplane with the widest buffer. → [Maximal margin classifier](#maximal-margin-classifier).
-- **Maximum likelihood** — fit by maximizing the probability of the observed data. → [Maximum likelihood](#maximum-likelihood).
-- **Mean squared error (MSE)** — `(1/n) Σ (y_i − f̂(x_i))²`; standard regression fit measure. → [Mean squared error (MSE)](#mean-squared-error-mse).
+- **Missing data (imputation / deletion)** — drop or fill missing values. → [Handling missing data](#handling-missing-data).
 - **Mode collapse** — RLHF's loss of output diversity/entropy. → [Mode collapse](#mode-collapse).
-- **Model assessment vs selection** — grading a model vs choosing its flexibility. → [Model assessment vs model selection](#model-assessment-vs-model-selection).
+- **Model compression** — distillation, (network) pruning, quantization for cheaper serving. → [Model compression (distillation, pruning, quantization)](#model-compression-distillation-pruning-quantization).
 - **Multi-head attention** — several parallel attention heads concatenated and projected. → [Multi-head attention](#multi-head-attention).
-- **Multiple linear regression** — regression on `p` predictors, each effect "holding others fixed." → [Multiple linear regression](#multiple-linear-regression).
-- **Multinomial logistic regression** — logistic regression for more than two classes (softmax coding). → [Multinomial logistic regression](#multinomial-logistic-regression).
+- **Multilabel classification** — each example may carry several labels; per-label sigmoids. → [Classification task types (binary, multiclass, multilabel)](#classification-task-types-binary-multiclass-multilabel).
 - **Multi-layer perceptron (MLP)** — stacked perceptron layers; solves XOR. → [Multi-layer perceptron (MLP) and the XOR problem](#multi-layer-perceptron-mlp-and-the-xor-problem).
-- **Naive Bayes** — generative classifier assuming within-class predictor independence. → [Naive Bayes](#naive-bayes).
-- **Natural spline** — regression spline forced linear beyond the outer knots. → [Natural splines](#natural-splines).
 - **Neural network** — layered model of derived features; basis of deep learning. → [Neural networks (feed-forward)](#neural-networks-feed-forward).
 - **Neural network regularization** — early stopping, L1/L2, dropout, max-norm. → [Neural network regularization](#neural-network-regularization).
+- **Non-probability sampling** — convenience/snowball/judgment/quota; cheap but biased. → [Non-probability sampling](#non-probability-sampling).
 - **Numerical stability (log-sum-exp)** — subtract the max logit before exp so nothing overflows. → [Numerical stability](#numerical-stability).
-- **Non-parametric methods** — no assumed form for `f`; flexible but data-hungry. → [Non-parametric methods](#non-parametric-methods).
 - **One-hot encoding** — index → length-K vector, 1 in that slot. → [One-hot encoding](#one-hot-encoding).
-- **Odds** — `p/(1−p)`, ranging 0 to ∞. → [Odds and log-odds (logit)](#odds-and-log-odds-logit).
-- **One-standard-error rule** — pick the simplest model within 1 SE of the best. → [One-standard-error rule](#one-standard-error-rule).
 - **Out-of-bag (OOB) error** — free test-error estimate from bagging's unused points. → [Out-of-bag (OOB) error](#out-of-bag-oob-error).
-- **Overfitting** — following training noise; low training error, high test error. → [Overfitting](#overfitting).
-- **Parametric methods** — assume a form for `f`, then estimate its parameters. → [Parametric methods](#parametric-methods).
 - **Perceptron / TLU** — weighted sum plus a step function; single layer of threshold units. → [Artificial neuron and the perceptron](#artificial-neuron-and-the-perceptron).
 - **Perceptron learning rule** — error-driven weight update `w ← w + η(y − ŷ)x`. → [Perceptron learning rule](#perceptron-learning-rule).
-- **Partial least squares (PLS)** — supervised dimension reduction using `Y`. → [Partial least squares (PLS)](#partial-least-squares-pls).
-- **Poisson regression** — GLM for count responses (log link, mean = variance). → [Poisson regression](#poisson-regression).
-- **Polynomial regression** — linear model with powers of `X` as predictors. → [Polynomial regression](#polynomial-regression).
+- **Perturbation / invariance / slice tests** — robustness, irrelevant-input, and subgroup evaluation. → [Model evaluation tests (perturbation, invariance, slice-based)](#model-evaluation-tests-perturbation-invariance-slice-based).
 - **Pooling** — downsampling (e.g. max pooling) in a CNN for compactness and location invariance. → [Pooling](#pooling).
-- **Population vs least squares line** — true line vs its sample estimate. → [Population regression line vs least squares line](#population-regression-line-vs-least-squares-line).
 - **Positional encoding** — inject token order into order-agnostic attention. → [Positional encoding](#positional-encoding).
-- **Prediction vs inference** — accurate outputs vs understanding the relationship. → [Prediction vs inference](#prediction-vs-inference).
+- **Precision / recall / F1** — of-predicted-positive / of-actual-positive / their harmonic mean. → [Classification metrics (precision, recall, F1)](#classification-metrics-precision-recall-f1).
 - **Pretraining** — next-token training on a huge corpus to make a base model. → [Pretraining and base models](#pretraining-and-base-models).
 - **Principal components analysis (PCA)** — unsupervised top-variance directions of the data. → [Principal components analysis (PCA)](#principal-components-analysis-pca).
-- **Principal components regression (PCR)** — regress on top unsupervised variance directions. → [Principal components regression (PCR)](#principal-components-regression-pcr).
-- **p-value** — chance of an association this strong under the null; small → reject. → [Hypothesis test, t-statistic, and p-value](#hypothesis-test-t-statistic-and-p-value).
 - **Pruning (cost-complexity)** — trim a grown tree via an `α·|T|` penalty. → [Tree pruning (cost-complexity)](#tree-pruning-cost-complexity).
-- **QDA** — Gaussian generative classifier with per-class covariance → curved boundary. → [Quadratic discriminant analysis (QDA)](#quadratic-discriminant-analysis-qda).
-- **Qualitative / quantitative variables** — labels vs numbers. → [Quantitative vs qualitative variables](#quantitative-vs-qualitative-variables).
+- **Quantization** — store and compute weights at lower precision. → [Model compression (distillation, pruning, quantization)](#model-compression-distillation-pruning-quantization).
+- **Regex pre-tokenization** — split text before BPE so merges don't cross word/space boundaries. → [Regex pre-tokenization](#regex-pre-tokenization).
+- **Reservoir sampling** — uniform sample of k items from a stream of unknown length. → [Random sampling methods (simple, stratified, weighted, reservoir)](#random-sampling-methods-simple-stratified-weighted-reservoir).
 - **Residual (skip) connection** — `x = x + sublayer(x)`; a gradient highway for deep nets. → [Residual (skip) connections](#residual-skip-connections).
 - **Retrieval-augmented generation (RAG)** — fetch documents into the context window at query time. → [Retrieval-augmented generation (RAG)](#retrieval-augmented-generation-rag).
 - **Reward model (RM) / RLHF** — score responses from human preferences, then RL-optimize against it. → [Reward modeling and RLHF](#reward-modeling-and-rlhf).
-- **R-squared** — proportion of variance explained; `1 − RSS/TSS`. → [R-squared and correlation](#r-squared-and-correlation).
 - **Random forests** — bagging + random feature subsets per split to decorrelate trees. → [Random forests](#random-forests).
 - **Recurrent neural network (RNN)** — sequence network with a running hidden state. → [Recurrent neural network (RNN)](#recurrent-neural-network-rnn).
-- **Reducible vs irreducible error** — error you can attack vs the noise floor. → [Reducible vs irreducible error](#reducible-vs-irreducible-error).
-- **Regression** — predicting a quantitative response. → [Regression vs classification](#regression-vs-classification).
-- **Regression splines** — piecewise polynomials joined smoothly at knots. → [Regression splines](#regression-splines).
 - **Regression tree** — tree predicting the mean response in each region. → [Regression trees](#regression-trees).
 - **ReLU / sigmoid** — the two common activation functions. → [Activation function](#activation-function).
-- **Residual standard error (RSE)** — estimated SD of the noise; average deviation from the line. → [Residual standard error (RSE)](#residual-standard-error-rse).
-- **Resampling** — refitting on repeated data subsets to estimate error/variability. → [Resampling methods](#resampling-methods).
-- **Ridge regression** — L2-penalized regression that shrinks all coefficients. → [Ridge regression](#ridge-regression).
-- **ROC curve** — error-type trade-offs across all thresholds. → [ROC curve](#roc-curve).
 - **Scaled dot-product attention** — divide scores by √(head size) to keep softmax diffuse. → [Scaled dot-product attention](#scaled-dot-product-attention).
 - **Self-attention** — tokens communicate via query/key/value weighted sums. → [Self-attention](#self-attention).
 - **Self-consistency** — majority-vote over multiple sampled reasoning paths. → [Self-consistency and ensembling attempts](#self-consistency-and-ensembling-attempts).
-- **Semi-supervised learning** — some observations labeled, some not. → [Semi-supervised learning](#semi-supervised-learning).
-- **Shrinkage / regularization** — penalize coefficient size to reduce variance. → [Ridge regression](#ridge-regression).
-- **Simple linear regression** — straight-line fit from one predictor. → [Simple linear regression](#simple-linear-regression).
-- **Smoothing spline** — curve minimizing RSS + a roughness penalty. → [Smoothing splines](#smoothing-splines).
+- **Shadow / canary / A/B deployment** — log-only, small-slice, and split-traffic rollouts. → [Deployment strategies (shadow, canary, A/B testing)](#deployment-strategies-shadow-canary-ab-testing).
 - **Softmax** — exponentiate logits then normalize into class probabilities. → [Softmax](#softmax).
-- **Standard error** — typical sampling wobble of an estimate. → [Standard error of a coefficient](#standard-error-of-a-coefficient).
-- **Statistical learning** — approaches for estimating `f` in `Y = f(X) + ε`. → [Statistical learning](#statistical-learning).
-- **Step functions** — piecewise-constant fit over bins of `X`. → [Step functions](#step-functions).
-- **Stepwise selection** — greedily add (forward) or drop (backward) predictors. → [Forward and backward stepwise selection](#forward-and-backward-stepwise-selection).
+- **Special tokens** — reserved non-content tokens (e.g. `<|endoftext|>`) added outside BPE. → [Special tokens](#special-tokens).
+- **Stacking** — a meta-model learns to combine base models' predictions. → [Stacking (stacked generalization)](#stacking-stacked-generalization).
 - **Stochastic gradient descent (SGD)** — gradient steps on random minibatches. → [Stochastic gradient descent (SGD)](#stochastic-gradient-descent-sgd).
-- **Subset selection (best)** — try all `2^p` predictor subsets. → [Best subset selection](#best-subset-selection).
+- **Storage vs compute** — precompute-and-store vs compute-on-demand trade-off. → [Storage vs compute](#storage-vs-compute).
+- **Stratified sampling** — sample within groups so all strata are represented. → [Random sampling methods (simple, stratified, weighted, reservoir)](#random-sampling-methods-simple-stratified-weighted-reservoir).
 - **Supervised fine-tuning (SFT)** — imitate high-quality demonstration responses. → [Supervised fine-tuning (SFT)](#supervised-fine-tuning-sft).
-- **Supervised / unsupervised learning** — labeled `(x,y)` vs predictors-only. → [Supervised vs unsupervised learning](#supervised-vs-unsupervised-learning).
 - **Support vector classifier** — soft-margin linear classifier tolerating violations. → [Support vector classifier (soft margin)](#support-vector-classifier-soft-margin).
 - **Support vector machine (SVM)** — kernel-enlarged classifier for non-linear boundaries. → [Support vector machine (kernels)](#support-vector-machine-kernels).
-- **Survival analysis (censored data)** — modeling time-until-event with censored (incomplete) observations. → [Survival analysis and censored data](#survival-analysis-and-censored-data).
-- **Survival function** — `S(t) = Pr(T > t)`, probability of surviving past `t`. → [Survival function](#survival-function).
+- **tiktoken / SentencePiece** — BPE on UTF-8 bytes vs on Unicode code points. → [tiktoken vs SentencePiece](#tiktoken-vs-sentencepiece).
 - **Tokenization** — reversible text↔integer mapping (char, BPE, SentencePiece). → [Tokenization and byte-pair encoding (BPE)](#tokenization-and-byte-pair-encoding-bpe).
+- **Tokenization failure modes** — spelling, arithmetic, non-English, glitch tokens trace to tokenization. → [Tokenization failure modes](#tokenization-failure-modes).
+- **torch.compile** — compiles/fuses model ops for a large speedup after a one-time cost. → [torch.compile](#torchcompile).
+- **Transfer learning** — reuse a model trained on a related, data-rich task. → [Transfer learning](#transfer-learning).
 - **Transformer block** — attention + feed-forward, each with a residual and layer norm. → [Transformer block](#transformer-block).
 - **Tree of thoughts** — search a tree of intermediate reasoning steps. → [Tree of thoughts](#tree-of-thoughts).
-- **t-statistic** — coefficient estimate in units of its standard error. → [Hypothesis test, t-statistic, and p-value](#hypothesis-test-t-statistic-and-p-value).
 - **tanh** — S-shaped activation with output in `(−1, 1)`, centered near 0. → [Activation function](#activation-function).
 - **Train / dev / test split** — fit / tune / final-check partitions. → [Train / dev / test split](#train--dev--test-split).
-- **Test / training MSE** — error on unseen vs fitting data; test is U-shaped in flexibility. → [Training MSE vs test MSE](#training-mse-vs-test-mse).
-- **Type I / Type II error** — false positive (reject true null) vs false negative (miss a real effect). → [Type I and Type II errors](#type-i-and-type-ii-errors).
 - **Unsupervised learning** — finding structure with no response variable. → [Unsupervised learning](#unsupervised-learning).
-- **Validation set approach** — single train/hold-out split. → [Validation set approach](#validation-set-approach).
 - **Vanishing / exploding gradients** — gradients decaying or blowing up through deep layers. → [Vanishing and exploding gradients](#vanishing-and-exploding-gradients).
-- **Variance** — how much `f̂` shifts across training sets; rises with flexibility. → [Variance](#variance).
-- **Variable selection** — choosing which predictors to include. → [Best subset selection](#best-subset-selection).
 - **WaveNet / hierarchical context** — fuse a sequence progressively in a tree. → [WaveNet / hierarchical context](#wavenet--hierarchical-context).
+- **Weak supervision** — programmatic noisy labels from regex/heuristics/other models. → [Labeling and weak supervision](#labeling-and-weak-supervision).
 - **Weight init (Kaiming / fan-in)** — scale weights by gain/√(fan_in) to keep activations healthy. → [Weight initialization](#weight-initialization).
 - **Weight initialization** — must be random, to break symmetry between units. → [Weight initialization](#weight-initialization).
 - **Word embeddings** — dense vectors placing similar words nearby (word2vec, GloVe). → [Embedding layer](#embedding-layer).
 - **Zeroing gradients** — clear `.grad` before each backward pass; gradients accumulate. → [Zeroing gradients](#zeroing-gradients).
+- **Zero-shot learning** — predict a task with no data for it, via a related task. → [Zero-shot learning](#zero-shot-learning).
