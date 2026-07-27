@@ -4,7 +4,7 @@ A running file of statistics and statistical-learning concepts, in Definition / 
 
 Split out from the ML notes to keep the statistics track separate (companion to StatQuest). Machine-learning and deep-learning methods — trees, SVMs, neural networks, transformers, unsupervised learning, and ML systems design — live in a companion **ML_notes.md**, and cross-references to them are marked *(ML)*.
 
-Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standard additions marked inline. Section tags show which pass a topic came from.
+Sources here: *An Introduction to Statistical Learning* (ISL/ISLP) and StatQuest (Josh Starmer), with standard additions marked inline. Section tags show which pass a topic came from.
 
 ---
 
@@ -116,6 +116,20 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 - [Holm's method](#holms-method)
 - [False discovery rate (FDR)](#false-discovery-rate-fdr)
 - [Benjamini-Hochberg procedure](#benjamini-hochberg-procedure)
+
+**Statistical Inference and Distributions** *(StatQuest)*
+- [Normal distribution](#normal-distribution)
+- [Probability distributions](#probability-distributions)
+- [Standard error and the sampling distribution of the mean](#standard-error-and-the-sampling-distribution-of-the-mean)
+- [Error bars (std dev, standard error, confidence interval)](#error-bars-std-dev-standard-error-confidence-interval)
+- [Z-scores (standardization)](#z-scores-standardization)
+- [t-tests (one-sample, paired, two-sample)](#t-tests-one-sample-paired-two-sample)
+- [One-tailed vs two-tailed tests](#one-tailed-vs-two-tailed-tests)
+- [ANOVA (analysis of variance)](#anova-analysis-of-variance)
+- [Fisher's exact test](#fishers-exact-test)
+- [Statistical power and power analysis](#statistical-power-and-power-analysis)
+- [Biological vs technical replicates](#biological-vs-technical-replicates)
+- [RPKM, FPKM, and TPM (RNA-seq normalization)](#rpkm-fpkm-and-tpm-rna-seq-normalization)
 
 **[Glossary](#glossary)** — alphabetical index
 
@@ -337,11 +351,13 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 
 ### Confidence interval
 
-**Definition.** A range that contains the true parameter with a stated probability. The 95% CI for `β_1` is approximately `β̂_1 ± 2·SE(β̂_1)`.
+**Definition.** A range that contains the true parameter with a stated probability (typically 95%). For a regression coefficient, the 95% CI is approximately `β̂_1 ± 2·SE(β̂_1)`; for a mean, `x̄ ± 2·SE` with `SE = σ/√n`. It can also be read straight off a bootstrap: the middle 95% of the bootstrapped estimates.
 
-**Intuition.** "We're 95% confident the truth lies in here." More precisely: if you repeated the sampling many times, about 95% of the intervals you'd build this way would contain the true value.
+**Intuition.** "We're 95% confident the truth lies in here." More precisely: if you repeated the sampling many times, about 95% of the intervals you'd build this way would contain the true value. A value *outside* the 95% CI is one the data reject at `p < 0.05`, so a CI doubles as a visual hypothesis test.
 
-**Notes.** Width scales with the standard error, so more data → tighter interval. The `± 2` is an approximation (holds when observations are uncorrelated). → Standard error of a coefficient.
+**Example.** Bootstrap the mean weight of a sample of mice 10,000 times; the 2.5th–97.5th percentiles of those means, say `[19.4, 21.8] g`, are the 95% CI. Since `18 g` lies outside it, the true mean weight is greater than 18 g at `p < 0.05`. Comparing two groups: if the 95% CIs for female and male mouse weight **don't overlap**, the difference is significant (`p < 0.05`); if they **do** overlap, it's inconclusive — run a t-test.
+
+**Notes.** Width scales with the standard error, so more data → tighter interval. *Caveat on the overlap rule:* non-overlapping CIs imply a significant difference, but overlapping CIs do **not** guarantee non-significance — hence the follow-up t-test. → Standard error and the sampling distribution of the mean, The bootstrap, t-tests (one-sample, paired, two-sample), Standard error of a coefficient. *(StatQuest)*
 
 ### Hypothesis test, t-statistic, and p-value
 
@@ -361,17 +377,21 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 
 ### R-squared and correlation
 
-**Definition.** `R² = 1 − RSS/TSS`, where `TSS = Σ(y_i − ȳ)²` is the total sum of squares. It's the *proportion of variance in `Y` explained* by the regression, always between 0 and 1. Correlation `Cor(X, Y)` also measures the linear relationship; in *simple* linear regression, `R² = r²`.
+**Definition.** `R² = 1 − RSS/TSS`, where `TSS = Σ(y_i − ȳ)²` is the total sum of squares. Equivalently, the *variance-explained* form: `R² = (SS(mean) − SS(fit)) / SS(mean)`, where `SS(mean) = Σ(y_i − ȳ)²` is the variation around the mean and `SS(fit) = Σ(y_i − ŷ_i)²` the variation around the fitted line. It's the *proportion of variance in `Y` explained* by the model, always between 0 and 1. Correlation `Cor(X, Y) = r` measures the linear relationship on `[−1, 1]`; in *simple* linear regression, `R² = r²`.
 
-**Intuition.** TSS is how much `Y` varies on its own; RSS is how much variation is left after the model. Their ratio is the fraction the model mopped up. R² near 1 = the model explains most of the variability; near 0 = it explains little (wrong model, high noise, or both).
+**Intuition.** TSS is how much `Y` varies on its own; RSS is how much variation is left after the model. Their ratio is the fraction the model mopped up. Its big advantage over the raw correlation `r` is *interpretability*: `r = 0.7` vs `r = 0.5` doesn't tell you "how much better," but `R²` does — `R² = 0.7` explains **1.4×** as much variance as `R² = 0.5` (0.7 / 0.5). The cost: `R²` drops the *sign*, so unlike `r` it won't tell you whether the relationship is positive or negative.
 
-**Notes.** Unit-free, unlike RSE, so easier to interpret across problems. The `R² = r²` identity only holds for a single predictor; with multiple predictors R² generalizes but correlation doesn't directly. Adding predictors never decreases R² → motivates adjusted R². → Adjusted R-squared.
+**Example.** Regress mouse weight on size; suppose the variation around the mean is `SS(mean) = 100` and around the fitted line `SS(fit) = 20`. Then `R² = (100 − 20)/100 = 0.80` — size explains 80% of the weight variation, leaving 20% unexplained.
+
+**Notes.** Unit-free, unlike RSE, so easier to interpret across problems. *Correction to the jotted formula:* it's `(SS(mean) − SS(fit)) / SS(mean)` — the subtraction sits **inside** the numerator (mind the parentheses), and each `SS` is a sum of **squared** deviations `Σ(x_i − x̄)²`, not `Σ(x_i − x̄)` (which is always 0). The `R² = r²` identity only holds for a single predictor; with multiple predictors R² generalizes but correlation doesn't directly. Adding predictors never decreases R² → motivates adjusted R². → Adjusted R-squared. *(StatQuest)*
 
 ### Multiple linear regression
 
 **Definition.** Extends simple regression to `p` predictors: `Y = β_0 + β_1 X_1 + … + β_p X_p + ε`. Each `β_j` is the *average effect on `Y` of a one-unit increase in `X_j`, holding all other predictors fixed*. Coefficients are again estimated by least squares (minimizing RSS).
 
 **Intuition.** Instead of one slope you have one per predictor, each isolating that predictor's effect while the others are held constant. That "holding fixed" is crucial — a predictor's solo effect can differ sharply from its effect alongside correlated others (→ Confounding).
+
+**Example.** `price = 50 + 0.15·size − 0.8·age` (price in \$k, size in sq ft, age in years): holding age fixed, each extra square foot adds \$150; holding size fixed, each extra year subtracts \$800. The age coefficient is age's effect *beyond* what size already explains.
 
 **Notes.** To ask whether *any* predictor matters, use the F-statistic, not `p` individual t-tests. Which predictors to include is Variable selection (→ Best subset selection, Forward and backward stepwise selection).
 
@@ -491,11 +511,13 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 
 ### Linear discriminant analysis (LDA)
 
-**Definition.** A generative classifier that assumes each class's predictors follow a Gaussian (normal) distribution with class-specific means but a *shared covariance* across classes, then plugs the estimated means, shared variance, and priors into Bayes' theorem. The resulting discriminant scores are *linear* in `x`.
+**Definition.** A generative classifier that separates classes by finding the axis that best *pushes the class means apart while keeping each class tight*. Project the data onto a new axis chosen to maximize `(μ_1 − μ_2)² / (s_1² + s_2²)` — squared distance between class means over the total within-class scatter. Equivalently (ISL framing) it assumes each class is Gaussian with class-specific means but a *shared covariance*, and plugs the means, shared variance, and priors into Bayes' theorem; the discriminant scores come out *linear* in `x`.
 
-**Intuition.** Model each class as a bell curve of the same shape, just centered differently. Assign a new point to the class whose bell it falls under most, nudged by how common that class is. "Linear" because equal-shaped bells produce straight-line boundaries.
+**Intuition.** Like PCA it builds a new axis out of the existing features, but with a supervised goal: PCA maximizes total spread, LDA maximizes *separability*. Push the means apart (numerator) and squeeze each class's scatter (denominator) so the projected groups barely overlap. For `K > 2` groups, maximize the spread of the class means around the overall (central) mean while minimizing within-class scatter.
 
-**Notes.** Useful when classes are well-separated (where logistic regression coefficients get unstable), when predictors are roughly normal with small samples, and it extends naturally to `K > 2` classes. The multivariate case uses a `p`-dimensional Gaussian with a covariance matrix — kept conceptual here. → Generative classifiers, QDA (drops the shared-covariance assumption).
+**Example.** Two mouse groups measured on two genes where neither gene alone separates them: LDA finds the diagonal axis along which the group means are far apart *and* each group stays compact, so projecting onto it makes them separable with a single threshold.
+
+**Notes.** *Correction to the jotted formula:* the denominator is the **sum** of the within-group variances `s_1² + s_2²` (total within-class scatter), **not** their difference. Useful when classes are well-separated (where logistic regression coefficients get unstable) and with small, roughly-normal samples; extends naturally to `K > 2`. The multivariate case uses a `p`-dimensional Gaussian with a covariance matrix — kept conceptual here. → Generative classifiers, QDA (drops the shared-covariance assumption), Principal components analysis (PCA) (ML). *(StatQuest)*
 
 ### Quadratic discriminant analysis (QDA)
 
@@ -593,11 +615,13 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 
 ### The bootstrap
 
-**Definition.** A general tool for quantifying the uncertainty of an estimator: repeatedly draw *bootstrap samples* of size `n` from the data *with replacement*, recompute the estimate on each, and use the spread of those `B` estimates as a standard error.
+**Definition.** A general tool for quantifying the uncertainty of an estimator: repeatedly draw *bootstrap samples* of size `n` from the data *with replacement*, recompute the estimate (mean, median, slope, …) on each, and use the spread of those `B` estimates as a standard error — or their percentiles as a confidence interval.
 
 **Intuition.** Treat your sample as a stand-in for the population and "resample your resample." Because it draws with replacement, each bootstrap dataset repeats some points and omits others, mimicking the variation you'd see across genuinely new samples. The scatter of the recomputed estimates is your uncertainty.
 
-**Notes.** Works for quantities with no tidy standard-error formula. Sampling *with* replacement is the crux — it's what makes each bootstrap dataset differ. Bootstrap aggregation of this idea over trees is Bagging. → Bagging (ML), Standard error of a coefficient.
+**Example.** From 12 measured mouse weights, draw 12 *with replacement* (some repeat, some drop out) and record the mean; repeat 10,000 times. The standard deviation of those 10,000 means estimates the standard error, and their 2.5th–97.5th percentiles give a 95% CI — no formula required.
+
+**Notes.** Works for quantities with no tidy standard-error formula. Sampling *with* replacement is the crux — it's what makes each bootstrap dataset differ. Wants a reasonable sample to resample from (a rough rule of thumb is ~10+ observations). Bootstrap aggregation of this idea over trees is Bagging. → Bagging (ML), Standard error and the sampling distribution of the mean, Confidence interval. *(StatQuest)*
 
 ---
 
@@ -749,7 +773,9 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 
 **Intuition.** Slide a weighted window along `X`; at each spot fit a tiny local line using mostly the neighbors. Small span → local and wiggly; large span → smooth and global. Like KNN, it's "memory-based": it needs all the training data at prediction time.
 
-**Notes.** Neighborhoods overlap smoothly, unlike the hard bins of step functions. Extends to *varying-coefficient* models. → K-nearest neighbors, Step functions.
+**Example.** Fit **LOESS** to a noisy expression-vs-time scatter with span 0.3: at each time point it fits a weighted line to the ~30% nearest points, tracing a smooth trend curve that follows local bumps without the wild edge swings of a high-degree polynomial.
+
+**Notes.** Neighborhoods overlap smoothly, unlike the hard bins of step functions. Extends to *varying-coefficient* models. Commonly called **LOWESS**/**LOESS** (locally weighted scatterplot smoothing) — the smooth curve drawn through a noisy scatter. → K-nearest neighbors, Step functions. *(StatQuest)*
 
 ### Generalized additive models (GAMs)
 
@@ -865,11 +891,136 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 
 ---
 
+## Statistical Inference and Distributions *(StatQuest)*
+
+### Normal distribution
+
+**Definition.** The bell-shaped continuous distribution `N(μ, σ²)` with density `f(x) = (1/(σ·√(2π)))·e^(−(x−μ)²/(2σ²))`, symmetric about its mean `μ`, with spread set by the standard deviation `σ`.
+
+**Intuition.** Many measurements (heights, weights, measurement noise) pile up around a central value and thin out symmetrically. `μ` locates the peak; `σ` sets the width — larger `σ`, flatter and wider.
+
+**Example (68–95–99.7 rule).** For any `N(μ, σ)`: about **68%** of values fall within `μ ± 1σ`, **95%** within `μ ± 2σ`, and **99.7%** within `μ ± 3σ`. If mouse weights are `N(20, 2²)` g, ~95% of mice weigh between 16 and 24 g.
+
+**Notes.** The reference distribution behind z-scores, standard errors, confidence intervals, t-tests, and LDA's class model. → Z-scores (standardization), Standard error and the sampling distribution of the mean, Probability distributions.
+
+### Probability distributions
+
+**Definition.** A function giving the probability (for discrete variables) or probability *density* (for continuous ones) of each possible value; the area under it over a range is the probability of landing in that range, and the total area is 1.
+
+**Intuition.** If you know the distribution's shape, you can estimate how likely any value or bin is *without* collecting every data point — the distribution stands in for the whole population.
+
+**Example.** Knowing adult heights are ≈ `N(170, 7²)` cm lets you say a random person is ~95% likely to be 156–184 cm, and that someone 200 cm tall is very rare — all read off the distribution, no new data.
+
+**Notes.** Common ones: normal (continuous, symmetric), binomial (counts of successes in `n` trials), Poisson (counts per interval). → Normal distribution, Poisson regression.
+
+### Standard error and the sampling distribution of the mean
+
+**Definition.** Take many samples, compute each one's mean, and those means form a distribution — the *sampling distribution of the mean*. Its standard deviation is the *standard error of the mean*: `SE = σ/√n` (estimated by `s/√n`).
+
+**Intuition.** A standard deviation describes the spread of the *data*; a standard error describes the spread of a *statistic* (here the mean) across repeated samples — i.e. how precisely you've pinned the mean down. Bigger `n` → smaller SE, because averaging more points steadies the estimate (the `√n`).
+
+**Example.** 100 mouse weights with `s = 4 g` give `SE = 4/√100 = 0.4 g`. So the sample mean is precise to about ±0.8 g (2·SE) at 95%, even though individual mice vary by ±8 g (2·s).
+
+**Notes.** Don't confuse the two: report the standard deviation to describe variability in the data, the standard error to describe uncertainty in the mean. Bootstrapping estimates the same SE without the formula. → Error bars (std dev, standard error, confidence interval), Confidence interval, The bootstrap, Standard error of a coefficient.
+
+### Error bars (std dev, standard error, confidence interval)
+
+**Definition.** Three different things a ± bar on a plot can represent: *standard deviation* (spread of the data), *standard error* (`σ/√n`, uncertainty of the mean), or a *confidence interval* (usually 95%, ≈ mean ± 2·SE).
+
+**Intuition.** They answer different questions — how variable the data are, vs how precise the mean is, vs the plausible range for the true mean — and they get smaller in that order (`SE = SD/√n`; a 95% CI ≈ 2·SE). Always state which one a bar shows, or it's meaningless.
+
+**Example.** For 100 mice with `SD = 4 g`: `SE = 0.4 g` and `95% CI ≈ ±0.8 g`. A ±4 g bar (SD) looks alarming, but the ±0.8 g bar (CI) shows the *mean* is actually well-pinned.
+
+**Notes.** SD is fixed by the data; SE and CI tighten as `n` grows. → Standard error and the sampling distribution of the mean, Confidence interval.
+
+### Z-scores (standardization)
+
+**Definition.** Rescale a value by how many standard deviations it sits from the mean: `z = (x − μ)/σ`. Applied to every value, it produces data with mean 0 and standard deviation 1.
+
+**Intuition.** Puts different features on one comparable scale and makes "how unusual is this?" explicit — `z = 2` means two SDs above average (~top 2.5% under a normal).
+
+**Example (heatmaps).** To build a gene-expression heatmap: for each gene, subtract its mean and divide by its SD (z-score its row) so highly- and lowly-expressed genes become comparable; then cluster the rows (and columns) by similarity and colour cells by z-score. Clustering needs a *distance* — *Euclidean* `√Σ(a_i − b_i)²` or *Manhattan* `Σ|a_i − b_i|` — plus a *linkage* rule (merge on the nearest, farthest, or average pair) to decide which clusters join.
+
+**Notes.** Standardization is the same operation as scikit-learn's `StandardScaler`. → Feature scaling (ML), Hierarchical clustering (ML), Normal distribution.
+
+### t-tests (one-sample, paired, two-sample)
+
+**Definition.** Tests about means using `t = (difference in means) / (standard error of that difference)`, compared to a t-distribution. Flavours: *one-sample* (a mean vs a fixed value), *paired* (same subjects measured twice — e.g. before/after), and *two-sample / unpaired* (two independent groups). The unpaired test has *equal-variance* (pooled) and *unequal-variance* (Welch) variants.
+
+**Intuition.** `t` asks "how many standard errors apart are the means?" Large `|t|` → the gap is unlikely to be noise → small p-value. Pairing removes between-subject variability (each subject is its own control), so a paired test is more powerful when it applies.
+
+**Example.** Blood pressure before vs after a drug on the *same* 20 patients → a **paired** t-test on the 20 differences. Drug vs placebo on two *different* groups → **unpaired**; if you can't assume equal variances, use **Welch's** (unequal-variance) as the safe default.
+
+**Notes.** Default to a **two-tailed** test unless you have a strict, pre-specified directional hypothesis. Comparing 3+ groups → use ANOVA, not many t-tests (which inflate false positives). → One-tailed vs two-tailed tests, ANOVA (analysis of variance), Hypothesis test, t-statistic, and p-value.
+
+### One-tailed vs two-tailed tests
+
+**Definition.** A *two-tailed* test asks "is there a difference in **either** direction?" (`H_a: μ_1 ≠ μ_2`); a *one-tailed* test asks about a **single** direction (`H_a: μ_1 > μ_2`), putting the whole rejection region in one tail.
+
+**Intuition.** One-tailed has more power to detect an effect in the direction you specified, but it is **blind** to an effect the other way — so it can claim "better" but can never notice "worse." Two-tailed is the honest default when either direction matters.
+
+**Example.** Testing a new drug two-tailed catches both "helps" and "harms"; a one-tailed `drug > placebo` test would miss a drug that's actively harmful. Only choose one-tailed when the opposite direction is genuinely irrelevant and decided in advance.
+
+**Notes.** A one-tailed p-value is half the two-tailed one (for symmetric distributions) — which is exactly why switching to it *after* seeing the data is p-hacking. → t-tests (one-sample, paired, two-sample), Hypothesis test, t-statistic, and p-value.
+
+### ANOVA (analysis of variance)
+
+**Definition.** Tests whether **3+ group means** are all equal (`H_0: μ_1 = μ_2 = … = μ_k`) with an F-statistic: `F = (variance between groups) / (variance within groups)`. `F` near 1 → groups look alike; `F` well above 1 → at least one mean differs.
+
+**Intuition.** Running many pairwise t-tests inflates false positives; ANOVA gives one overall verdict. If the spread *between* group means dwarfs the spread *within* groups, the grouping is explaining real structure.
+
+**Example.** Mean yield across 4 fertilizers gives `F = 6.2`, `p = 0.002` → they're not all equal. A significant ANOVA says "some group differs" but not which, so follow up with corrected pairwise tests (Tukey/Bonferroni) to locate the differences.
+
+**Notes.** Same variance-ratio idea as the regression F-statistic. → F-statistic, Multiple Testing, Bonferroni correction.
+
+### Fisher's exact test
+
+**Definition.** An exact test of association in a 2×2 count table. Using the hypergeometric distribution it computes the probability of the observed table (with row/column totals held fixed), and the p-value is the **sum of the probabilities of all tables as rare or rarer** than the one observed.
+
+**Intuition.** It enumerates every table consistent with the margins and adds up the probability sitting on outcomes at least as extreme as yours — no large-sample approximation, so it's the right tool for small counts where the chi-squared test is unreliable.
+
+**Example.** 3/10 treated vs 8/10 controls fell ill. Fisher's test takes the hypergeometric probability of that split plus every more-extreme split; summing gives, say, `p = 0.07` — not quite significant. (Only the counts matter, not the order within a group.)
+
+**Notes.** Exact but expensive for large tables; chi-squared approximates it once counts are big. → Type I and Type II errors, Multiple Testing.
+
+### Statistical power and power analysis
+
+**Definition.** *Power* is the probability a test **detects a real effect** when one truly exists: `power = 1 − β`, where `β` is the Type II (false-negative) rate. *Power analysis* solves for the sample size needed to reach a target power (commonly 0.8) before the study runs.
+
+**Intuition.** Underpowered studies miss true effects and give irreproducible results. Power rises with **effect size** (bigger differences are easier to see), **sample size** `n`, **lower noise** (variance), and a **less strict** `α`. Compute it *first* so you collect enough data.
+
+**Example.** To detect a 5-unit difference with `SD = 10` at `α = 0.05` and 80% power, a calculation might call for ~64 subjects per group; halving the expected effect roughly *quadruples* the `n` needed.
+
+**Notes.** The four knobs — effect size, variance, `n`, `α` — trade off; fix any three to solve for the fourth. The design matters too: a paired test is more powerful than unpaired when pairing is valid (this is the accurate version of "a t-test is best"). → Type I and Type II errors, t-tests (one-sample, paired, two-sample).
+
+### Biological vs technical replicates
+
+**Definition.** *Biological replicates* are independent samples (e.g. different mice); *technical replicates* re-measure the **same** sample (e.g. the same mouse assayed three times).
+
+**Intuition.** Technical replicates only capture *measurement* noise; biological replicates capture the *biological* variability you actually want to generalize over. Many mice beat one mouse measured many times, because one mouse can't tell you about the population.
+
+**Example.** To claim a drug lowers weight in mice, 20 *different* mice (biological) support a population-level conclusion; weighing *one* mouse 20 times (technical) only shows your scale is consistent.
+
+**Notes.** More biological replicates raise statistical power; technical replicates mainly reduce assay noise. → Statistical power and power analysis.
+
+### RPKM, FPKM, and TPM (RNA-seq normalization)
+
+**Definition.** Normalizations that make RNA-seq read counts comparable across genes and samples. *RPKM* (reads per kilobase per million) divides counts by gene length (in kilobases) and by sequencing depth (in millions of reads); *FPKM* is the paired-end version (fragments, not reads); *TPM* (transcripts per million) applies the same two corrections in the **opposite order** so every sample's values sum to the same total.
+
+**Intuition.** Longer genes and more-deeply-sequenced samples rack up more reads for no biological reason; these divide that artefact out. TPM is preferred because its constant per-sample total makes proportions comparable across samples, which RPKM/FPKM don't guarantee.
+
+**Example.** A 4 kb gene with 400 reads in a 10-million-read sample: `RPKM = 400 / (4 × 10) = 10`. TPM rescales so the sample's values sum to 1,000,000.
+
+**Notes.** Niche (bioinformatics), included for completeness — prefer TPM. *(The jotted "normalizing with columns and first row" wasn't quite the mechanism; the two divisors are gene length and read depth.)*
+
+---
+
 ## Glossary
 
 - **Additivity assumption** — a predictor's effect on `Y` doesn't depend on other predictors' values. → [Additivity and linearity assumptions](#additivity-and-linearity-assumptions).
 - **Adjusted R-squared** — R² modified to penalize useless predictors; larger = better. → [Cp, AIC, BIC, and adjusted R-squared](#cp-aic-bic-and-adjusted-r-squared).
 - **AIC / Cp** — test-error estimates that tax training RSS by model size; smaller = better. → [Cp, AIC, BIC, and adjusted R-squared](#cp-aic-bic-and-adjusted-r-squared).
+- **ANOVA** — F-test that 3+ group means are all equal. → [ANOVA (analysis of variance)](#anova-analysis-of-variance).
 - **AUC** — area under the ROC curve; chance a random positive outscores a random negative. → [ROC curve](#roc-curve).
 - **Basis functions** — fixed transformations of `X` fed into a linear model. → [Basis functions](#basis-functions).
 - **Bayes classifier** — assigns each point to its most probable class; the ideal classifier. → [Bayes classifier](#bayes-classifier).
@@ -879,6 +1030,7 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 - **BIC** — like Cp/AIC but with a heavier size penalty, favoring smaller models. → [Cp, AIC, BIC, and adjusted R-squared](#cp-aic-bic-and-adjusted-r-squared).
 - **Bias** — error from approximating a complex truth with a simpler model. → [Bias](#bias).
 - **Bias–variance trade-off** — expected test MSE `= Var(f̂) + Bias² + Var(ε)`. → [Bias–variance trade-off](#biasvariance-trade-off).
+- **Biological vs technical replicates** — independent samples vs re-measuring one sample. → [Biological vs technical replicates](#biological-vs-technical-replicates).
 - **Bonferroni correction** — reject only p-values below `α/m` to control FWER. → [Bonferroni correction](#bonferroni-correction).
 - **Bootstrap** — resampling with replacement to quantify an estimate's uncertainty. → [The bootstrap](#the-bootstrap).
 - **Classification** — predicting a qualitative (label) response. → [Regression vs classification](#regression-vs-classification).
@@ -891,6 +1043,8 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 - **Cross-validation** — resampling to estimate test error (LOOCV, k-fold). → [k-fold cross-validation](#k-fold-cross-validation).
 - **Dimension reduction** — regress on a few combined directions instead of all predictors. → [Principal components regression (PCR)](#principal-components-regression-pcr).
 - **Dummy variable** — 0/1 encoding of a categorical predictor. → [Qualitative predictors and dummy variables](#qualitative-predictors-and-dummy-variables).
+- **Error bars** — a ± bar may show SD, standard error, or a confidence interval. → [Error bars (std dev, standard error, confidence interval)](#error-bars-std-dev-standard-error-confidence-interval).
+- **Fisher's exact test** — exact hypergeometric test of a 2×2 count table. → [Fisher's exact test](#fishers-exact-test).
 - **F-statistic** — tests whether all regression coefficients are zero. → [F-statistic](#f-statistic).
 - **False discovery rate (FDR)** — expected fraction of false positives among rejections. → [False discovery rate (FDR)](#false-discovery-rate-fdr).
 - **Family-wise error rate (FWER)** — probability of at least one false positive across many tests. → [Family-wise error rate (FWER)](#family-wise-error-rate-fwer).
@@ -915,6 +1069,7 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 - **Log-odds (logit)** — `log[p/(1−p)]`; linear in `X` for logistic regression. → [Odds and log-odds (logit)](#odds-and-log-odds-logit).
 - **Log-rank test** — compares survival curves between groups. → [Log-rank test](#log-rank-test).
 - **LOOCV** — cross-validation holding out one point at a time. → [Leave-one-out cross-validation (LOOCV)](#leave-one-out-cross-validation-loocv).
+- **LOWESS / LOESS** — locally weighted smoothing curve (local regression). → [Local regression](#local-regression).
 - **Maximum likelihood** — fit by maximizing the probability of the observed data. → [Maximum likelihood](#maximum-likelihood).
 - **Mean squared error (MSE)** — `(1/n) Σ (y_i − f̂(x_i))²`; standard regression fit measure. → [Mean squared error (MSE)](#mean-squared-error-mse).
 - **Model assessment vs selection** — grading a model vs choosing its flexibility. → [Model assessment vs model selection](#model-assessment-vs-model-selection).
@@ -923,19 +1078,24 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 - **Naive Bayes** — generative classifier assuming within-class predictor independence. → [Naive Bayes](#naive-bayes).
 - **Natural spline** — regression spline forced linear beyond the outer knots. → [Natural splines](#natural-splines).
 - **Non-parametric methods** — no assumed form for `f`; flexible but data-hungry. → [Non-parametric methods](#non-parametric-methods).
+- **Normal distribution** — bell curve N(μ, σ²); the 68–95–99.7 rule. → [Normal distribution](#normal-distribution).
 - **Odds** — `p/(1−p)`, ranging 0 to ∞. → [Odds and log-odds (logit)](#odds-and-log-odds-logit).
 - **One-standard-error rule** — pick the simplest model within 1 SE of the best. → [One-standard-error rule](#one-standard-error-rule).
+- **One- vs two-tailed test** — directional vs either-direction alternative. → [One-tailed vs two-tailed tests](#one-tailed-vs-two-tailed-tests).
 - **Overfitting** — following training noise; low training error, high test error. → [Overfitting](#overfitting).
 - **Parametric methods** — assume a form for `f`, then estimate its parameters. → [Parametric methods](#parametric-methods).
 - **Partial least squares (PLS)** — supervised dimension reduction using `Y`. → [Partial least squares (PLS)](#partial-least-squares-pls).
 - **Poisson regression** — GLM for count responses (log link, mean = variance). → [Poisson regression](#poisson-regression).
 - **Polynomial regression** — linear model with powers of `X` as predictors. → [Polynomial regression](#polynomial-regression).
 - **Population vs least squares line** — true line vs its sample estimate. → [Population regression line vs least squares line](#population-regression-line-vs-least-squares-line).
+- **Power (statistical)** — 1 − β, the chance of detecting a true effect. → [Statistical power and power analysis](#statistical-power-and-power-analysis).
 - **Prediction vs inference** — accurate outputs vs understanding the relationship. → [Prediction vs inference](#prediction-vs-inference).
 - **Principal components regression (PCR)** — regress on top unsupervised variance directions. → [Principal components regression (PCR)](#principal-components-regression-pcr).
+- **Probability distribution** — density/mass over values; total area 1. → [Probability distributions](#probability-distributions).
 - **p-value** — chance of an association this strong under the null; small → reject. → [Hypothesis test, t-statistic, and p-value](#hypothesis-test-t-statistic-and-p-value).
 - **QDA** — Gaussian generative classifier with per-class covariance → curved boundary. → [Quadratic discriminant analysis (QDA)](#quadratic-discriminant-analysis-qda).
 - **Qualitative / quantitative variables** — labels vs numbers. → [Quantitative vs qualitative variables](#quantitative-vs-qualitative-variables).
+- **RPKM / FPKM / TPM** — RNA-seq read normalizations (prefer TPM). → [RPKM, FPKM, and TPM (RNA-seq normalization)](#rpkm-fpkm-and-tpm-rna-seq-normalization).
 - **R-squared** — proportion of variance explained; `1 − RSS/TSS`. → [R-squared and correlation](#r-squared-and-correlation).
 - **Reducible vs irreducible error** — error you can attack vs the noise floor. → [Reducible vs irreducible error](#reducible-vs-irreducible-error).
 - **Regression** — predicting a quantitative response. → [Regression vs classification](#regression-vs-classification).
@@ -949,6 +1109,7 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 - **Simple linear regression** — straight-line fit from one predictor. → [Simple linear regression](#simple-linear-regression).
 - **Smoothing spline** — curve minimizing RSS + a roughness penalty. → [Smoothing splines](#smoothing-splines).
 - **Standard error** — typical sampling wobble of an estimate. → [Standard error of a coefficient](#standard-error-of-a-coefficient).
+- **Standard error of the mean (SEM)** — σ/√n; spread of the sample mean across samples. → [Standard error and the sampling distribution of the mean](#standard-error-and-the-sampling-distribution-of-the-mean).
 - **Statistical learning** — approaches for estimating `f` in `Y = f(X) + ε`. → [Statistical learning](#statistical-learning).
 - **Step functions** — piecewise-constant fit over bins of `X`. → [Step functions](#step-functions).
 - **Stepwise selection** — greedily add (forward) or drop (backward) predictors. → [Forward and backward stepwise selection](#forward-and-backward-stepwise-selection).
@@ -958,7 +1119,9 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), with standar
 - **Survival function** — `S(t) = Pr(T > t)`, probability of surviving past `t`. → [Survival function](#survival-function).
 - **t-statistic** — coefficient estimate in units of its standard error. → [Hypothesis test, t-statistic, and p-value](#hypothesis-test-t-statistic-and-p-value).
 - **Test / training MSE** — error on unseen vs fitting data; test is U-shaped in flexibility. → [Training MSE vs test MSE](#training-mse-vs-test-mse).
+- **t-test** — compares means via t = mean-difference / its standard error. → [t-tests (one-sample, paired, two-sample)](#t-tests-one-sample-paired-two-sample).
 - **Type I / Type II error** — false positive (reject true null) vs false negative (miss a real effect). → [Type I and Type II errors](#type-i-and-type-ii-errors).
 - **Validation set approach** — single train/hold-out split. → [Validation set approach](#validation-set-approach).
 - **Variance** — how much `f̂` shifts across training sets; rises with flexibility. → [Variance](#variance).
 - **Variable selection** — choosing which predictors to include. → [Best subset selection](#best-subset-selection).
+- **Z-score (standardization)** — z = (x − μ)/σ; rescales to mean 0, SD 1. → [Z-scores (standardization)](#z-scores-standardization).

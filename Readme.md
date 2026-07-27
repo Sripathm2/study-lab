@@ -24,7 +24,7 @@ One notes file per package — a class's note is always in the file matching its
 | `Problems_notes.md` | Recursion/D&C exercises (multiplication, list sum, string reversal, max-2D, three-way min), DP problems (magical cows, tilings, mountain scenes, narrow art gallery, knapsacks), grid shortest path, Held-Karp TSP, and bipartite matching via max flow (Mice and Owls, Elementary Math) |
 | `ML_notes.md` | The ML/statistics track, built topic by topic from book/video highlights (ISL, Hands-On ML, Karpathy Zero to Hero, Designing ML Systems). Concept notes in Definition / Intuition / Notes format, grouped by topic |
 
-## The `Machine_learning/` area (Python)
+## The `Machine_learning/` area (Python) (FIX)
 
 The ML track lives beside the Java packages, in Python, organized by **topic — never per book** (books come and go; topics accumulate). Each topic folder holds book labs and my own experiments, distinguished by filename prefix:
 
@@ -123,7 +123,7 @@ Listed by title only (links move over time and are easy to find by name). Checke
 - [x] **Andrej Karpathy — Neural Networks: Zero to Hero**
 - [x] **Aurélien Géron — Hands-On Machine Learning** (ch. 10–16)
 - [x] **Chip Huyen — Designing Machine Learning Systems** (Stanford CS329S)
-- [ ] **StatQuest** (Josh Starmer) — videos
+- [x] **StatQuest** (Josh Starmer) — videos
 - [ ] **Ian Goodfellow et al. — Deep Learning**
 - [ ] **Ron Kohavi et al. — Trustworthy Online Controlled Experiments**
 - [ ] **Harvard Stat 110 — Probability** (Joe Blitzstein) — ch. 1–4 & 6–8
