@@ -2,11 +2,13 @@
 # Builds/runs the Java packages (Data_structures, Algorithms, Problems) and the
 # Jupyter notebooks under Machine_learning/.
 #
-#   make setup                    -> verify the toolchain (javac, python3, conda)
-#                                    — errors out naming whatever is missing —
+#   make setup                    -> verify the toolchain (javac, python3, conda,
+#                                    pandoc, xelatex) — errors out naming whatever
+#                                    is missing and can't be auto-installed —
 #                                    then create/update the `ml` conda env from
 #                                    Machine_learning/environment.yml and register
-#                                    its Jupyter kernel
+#                                    its Jupyter kernel. pandoc/xelatex are
+#                                    installed automatically via apt-get if absent.
 #   make run F=Stack              -> runs Data_structures.Stack_Main
 #   make run F=Merge_sort         -> runs Algorithms.Merge_sort_Main
 #   make run F=Magical_cows      -> runs Problems.Magical_cows_Main
@@ -20,13 +22,17 @@
 #                                    test-results.log, prints only failures
 #                                    (notebooks are skipped with a notice when
 #                                    neither conda nor jupyter is installed)
+#   make notes-pdf                -> converts every .md under Notes/ (recursively)
+#                                    into a same-named .pdf via pandoc+xelatex.
+#                                    Override sizing: make notes-pdf FONTSIZE=10pt MARGIN=0.8in
 #   make list                     -> list runnable classes + notebooks, newest first
 #   make clean                    -> delete .class files, .ipynb_checkpoints, and
 #                                    GENERATED artifacts under Machine_learning/
 #                                    (anything not a protected type, outside
 #                                    Machine_learning/data/ — see below)
 #   make clean-all                -> clean + strip all output cells from every
-#                                    notebook under Machine_learning/ (commit-ready notebooks)
+#                                    notebook under Machine_learning/ (commit-ready
+#                                    notebooks) + delete every generated PDF under Notes/
 #
 # clean's protected types under Machine_learning/ (never deleted): .ipynb .py
 # .yml .yaml .md, everything inside Machine_learning/data/, and hidden files.
@@ -46,14 +52,19 @@ ML_DIR   := Machine_learning
 ML_KEEP  := ipynb py yml yaml md
 NBS       = $(shell find $(ML_DIR) -name '*.ipynb' -not -path '*/.ipynb_checkpoints/*' 2>/dev/null)
 
+NOTES_DIR := Notes
+FONTSIZE  ?= 11pt
+MARGIN    ?= 1in
+
 # Run jupyter inside the ml conda env when conda exists; fall back to PATH.
 JUPYTER  := $(shell command -v conda >/dev/null 2>&1 && echo "conda run -n ml jupyter" || echo "jupyter")
 MLPY     := $(shell command -v conda >/dev/null 2>&1 && echo "conda run -n ml python" || echo "python3")
 
-.PHONY: setup run run-nb run-latest run-all list clean clean-all
+.PHONY: setup run run-nb run-latest run-all notes-pdf list clean clean-all
 
 
 # One-time toolchain + environment setup. Fails fast, naming what's missing.
+# Also ensures pandoc + xelatex are present (auto-installed via apt-get if not).
 setup:
 	@ok=1; \
 	if command -v javac >/dev/null 2>&1; then \
@@ -76,6 +87,19 @@ setup:
 	  conda env create -f $(ML_DIR)/environment.yml; \
 	fi; \
 	conda run -n ml python -m ipykernel install --user --name ml --display-name "Python (ml)"; \
+	echo "--- checking markdown-to-pdf toolchain (pandoc + LaTeX) ---"; \
+	if command -v pandoc >/dev/null 2>&1; then \
+	  echo "  pandoc : $$(pandoc --version | head -1)"; \
+	else \
+	  echo "pandoc not found — installing (sudo apt-get install -y pandoc)"; \
+	  sudo apt-get update && sudo apt-get install -y pandoc || { echo "ERROR: failed to install pandoc"; exit 1; }; \
+	fi; \
+	if command -v xelatex >/dev/null 2>&1; then \
+	  echo "  xelatex: $$(xelatex --version | head -1)"; \
+	else \
+	  echo "xelatex not found — installing texlive (sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-latex-extra)"; \
+	  sudo apt-get update && sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-latex-extra || { echo "ERROR: failed to install texlive"; exit 1; }; \
+	fi; \
 	echo "setup complete — 'conda activate ml' to work interactively"
 
 # Build everything, run <F>_Main from whichever package contains <F>.java, then clean.
@@ -156,6 +180,26 @@ run-all:
 	if [ $$fail -eq 0 ]; then echo "all runnables passed (see test-results.log)"; \
 	else echo "some runnables failed (see test-results.log)"; fi
 
+# Convert every Markdown file under Notes/ (recursively) into a same-named PDF,
+# via pandoc + xelatex. Override sizing on the command line, e.g.:
+#   make notes-pdf FONTSIZE=10pt MARGIN=0.8in
+notes-pdf:
+	@if [ ! -d $(NOTES_DIR) ]; then echo "no $(NOTES_DIR)/ directory found"; exit 0; fi
+	@command -v pandoc >/dev/null 2>&1 || { echo "pandoc not found — run 'make setup' first"; exit 1; }
+	@command -v xelatex >/dev/null 2>&1 || { echo "xelatex not found — run 'make setup' first"; exit 1; }
+	@found=0; \
+	for f in $$(find $(NOTES_DIR) -name '*.md'); do \
+	  found=1; \
+	  out="$${f%.md}.pdf"; \
+	  echo "converting $$f -> $$out"; \
+	  pandoc "$$f" -o "$$out" \
+	    --pdf-engine=xelatex \
+	    -V fontsize=$(FONTSIZE) \
+	    -V geometry:margin=$(MARGIN) \
+	    -V mainfont="Latin Modern Roman" || echo "  FAILED: $$f"; \
+	done; \
+	if [ $$found -eq 0 ]; then echo "no markdown files found under $(NOTES_DIR)/"; fi
+
 # List runnable classes and notebooks, newest first.
 list:
 	@ls -t $(foreach d,$(DIRS),$(d)/*.java) | sed 's|.*/||;s|\.java||' | awk '{print "  make run F="$$1}'
@@ -178,10 +222,18 @@ clean:
 	rm -rf ./Machine_learning/logs
 	rm -rf ./Machine_learning/lightning_logs
 
-# clean-all: clean + strip every notebook's output cells (small, diff-friendly commits).
+# clean-all: clean + strip every notebook's output cells (small, diff-friendly
+# commits) + remove every generated PDF under Notes/.
 clean-all: clean
 	@if [ -n "$(NBS)" ]; then \
 	  echo "stripping notebook outputs:"; \
 	  for nb in $(NBS); do echo "  $$nb"; done; \
 	  $(JUPYTER) nbconvert --clear-output --inplace $(NBS); \
 	else echo "no notebooks to strip"; fi
+	@if [ -d $(NOTES_DIR) ]; then \
+	  pdfs=$$(find $(NOTES_DIR) -name '*.pdf'); \
+	  if [ -n "$$pdfs" ]; then \
+	    echo "removing generated notes PDFs:"; \
+	    for p in $$pdfs; do echo "  $$p"; rm -f "$$p"; done; \
+	  else echo "no notes PDFs to remove"; fi; \
+	fi
