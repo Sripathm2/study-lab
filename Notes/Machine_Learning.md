@@ -4,7 +4,7 @@ A running file of machine-learning concepts, in Definition / Intuition / Notes f
 
 Statistics foundations — statistical-learning theory, linear regression, classification, resampling, model selection & regularization, moving beyond linearity, survival analysis, and multiple testing — live in a companion **Stat.md**. Cross-references to those concepts are marked *(stat)*.
 
-Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Machine Learning* (Géron), Karpathy's *Zero to Hero*, and Chip Huyen's *Designing Machine Learning Systems*. Section tags show which pass a topic came from.
+Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Machine Learning* (Géron), Karpathy's *Zero to Hero*, Chip Huyen's *Designing Machine Learning Systems*, and Kohavi et al.'s *Trustworthy Online Controlled Experiments*. Section tags show which pass a topic came from.
 
 ---
 
@@ -25,6 +25,7 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Ma
 - [Random forests](#random-forests)
 - [Boosting](#boosting)
 - [Bayesian additive regression trees (BART)](#bayesian-additive-regression-trees-bart)
+- [Gradient boosting libraries (XGBoost, LightGBM, CatBoost)](#gradient-boosting-libraries-xgboost-lightgbm-catboost)
 
 **Support Vector Machines** *(ISL ch. 9)*
 - [Hyperplane](#hyperplane)
@@ -154,6 +155,14 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Ma
 - [Bandit algorithms](#bandit-algorithms)
 - [Storage vs compute](#storage-vs-compute)
 
+**Controlled Experiments and A/B Testing** *(Trustworthy Online Controlled Experiments)*
+- [A/B testing (controlled experiments)](#ab-testing-controlled-experiments)
+- [Overall Evaluation Criterion (OEC)](#overall-evaluation-criterion-oec)
+- [Parameters, variants, and randomization unit](#parameters-variants-and-randomization-unit)
+- [Metric taxonomy (goal, driver, guardrail)](#metric-taxonomy-goal-driver-guardrail)
+- [Good metric properties (measurable, attributable, sensitive)](#good-metric-properties-measurable-attributable-sensitive)
+- [Twyman's law and trustworthiness](#twymans-law-and-trustworthiness)
+
 **[Glossary](#glossary)** — alphabetical index
 
 ---
@@ -259,6 +268,16 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Ma
 **Intuition.** Each round, randomly tweak the existing trees, keeping changes that improve the fit — a guided random search that both chases leftover signal and avoids getting stuck in one solution, exploring the space of models thoroughly.
 
 **Notes.** Places among the tree ensembles by how it builds trees: bagging (independent, on resamples), random forests (independent, random feature subsets), boosting (sequential, no resampling, slow learning), BART (sequential, perturbation-based, avoids local minima). → Ensemble methods, Boosting.
+
+### Gradient boosting libraries (XGBoost, LightGBM, CatBoost)
+
+**Definition.** Production implementations of gradient-boosted trees. *XGBoost* and *LightGBM* are heavily optimized, regularized boosters (LightGBM grows trees leaf-wise and is very fast on large data). *CatBoost* adds two distinctive ideas: **native categorical handling** (ordered target statistics instead of manual one-hot) and **ordered boosting** (a permutation scheme that prevents the target leakage ordinary boosting suffers from).
+
+**Intuition.** Plain boosting is the *algorithm*; these are the batteries-included *libraries* that make it fast, regularized, and practical. CatBoost's ordered boosting computes each row's residual from a model trained only on *earlier* rows, so a row's own label never leaks into its encoding or gradient — cutting overfitting, especially with categorical features.
+
+**Example.** On a table with a high-cardinality `city` column, CatBoost encodes each city by an *ordered* target statistic (the average label over previously-seen rows) instead of exploding it into thousands of one-hot columns — often better accuracy with far less preprocessing.
+
+**Notes.** All three routinely top tabular-data benchmarks; the pick is usually empirical. *(beyond ISL)* → Boosting, Categorical feature encoding (hashing trick), Bagging.
 
 ---
 
@@ -1228,8 +1247,73 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Ma
 
 ---
 
+## Controlled Experiments and A/B Testing *(Trustworthy Online Controlled Experiments)*
+
+### A/B testing (controlled experiments)
+
+**Definition.** A **controlled experiment** randomly splits users into a **Control** (A, the current experience) and one or more **Treatments** (B, …, the change), then compares a metric between them. Because assignment is random, a difference in the metric can be attributed **causally** to the change.
+
+**Intuition.** Randomization makes the groups statistically equivalent on everything *except* the change, so any outcome gap is caused by the change — not by a confound. It's the gold standard for "does this actually help?" Larger designs (A/B/C/D) compare several options at once.
+
+**Example.** Ship a new checkout button to 50% of users (Treatment) and keep the old one for 50% (Control); if Treatment's purchase rate beats Control's beyond noise (a two-sample test, → (stat)), the button *caused* the lift.
+
+**Notes.** The online analogue of a randomized controlled trial. → Deployment strategies (shadow, canary, A/B testing), Bandit algorithms, Overall Evaluation Criterion (OEC), Hypothesis test, t-statistic, and p-value (stat).
+
+### Overall Evaluation Criterion (OEC)
+
+**Definition.** The **OEC** is the single agreed metric (or weighted combination) an experiment optimizes — chosen to reflect **long-term** value, not just a short-term bump.
+
+**Intuition.** You get what you measure. A bad OEC (clicks alone) is easily gamed by changes that hurt the business — clickbait raises clicks but lowers trust and retention. A good OEC balances short-term signal against long-term goals, so "winning" the test means genuinely improving.
+
+**Example.** Optimizing *sessions per user* or *long-term revenue* rather than immediate clicks discourages dark-pattern changes that spike clicks but drive users away.
+
+**Notes.** The hardest and most important design choice in experimentation. → Metric taxonomy (goal, driver, guardrail), Decoupling objectives (multi-objective optimization).
+
+### Parameters, variants, and randomization unit
+
+**Definition.** A **parameter** (factor/variable) is a controllable knob thought to affect the OEC, set to different **levels** (values). A **variant** is one user experience (a setting of the parameters) — A and B are the Control and Treatment variants. The **randomization unit** is what you randomly assign (usually a user, via hashing) to a variant. A **multivariate test (MVT)** varies several parameters together to find interactions.
+
+**Intuition.** Hashing the unit (e.g. user id) to a variant gives a stable, pseudo-random split so the same user always sees the same variant and the groups stay comparable. Randomizing by *user* (not by page view) keeps a person's experience consistent and avoids correlated observations.
+
+**Example.** Parameter = button colour with levels {blue, green} → two variants. An MVT crossing colour × font size finds the best *combination*, catching interactions a one-parameter test would miss.
+
+**Notes.** Proper randomization is exactly what licenses the causal claim. → A/B testing (controlled experiments), Interaction terms (stat).
+
+### Metric taxonomy (goal, driver, guardrail)
+
+**Definition.** Three roles a metric can play. **Goal** (success / true-north) metrics capture what the org ultimately wants. **Driver** (sign-post / surrogate / predictive) metrics are shorter-term, more sensitive proxies believed to *lead* to the goal. **Guardrail** metrics guard against harm — some protect the business, others protect the *trustworthiness / internal validity* of the experiment itself.
+
+**Intuition.** Goal metrics are often slow and hard to move in one experiment, so you steer by driver metrics that respond faster, while guardrails make sure a "win" didn't break something (latency, crashes, revenue) or invalidate the test (e.g. a sample-ratio mismatch).
+
+**Example.** Goal = customer lifetime value; driver = weekly active days; guardrails = page-load time and error rate (business) plus the traffic split actually matching the intended 50/50 (trustworthiness).
+
+**Notes.** → Overall Evaluation Criterion (OEC), Good metric properties (measurable, attributable, sensitive).
+
+### Good metric properties (measurable, attributable, sensitive)
+
+**Definition.** An experiment metric should be **measurable** (you can actually quantify it — some effects, like post-purchase satisfaction, are hard), **attributable** (each value can be tied to a specific variant), and **sensitive & timely** (able to detect changes that matter, soon enough to act on).
+
+**Intuition.** A metric you can't attribute to a variant can't be compared across A and B; a metric too insensitive won't budge even when the change truly helps, wasting the experiment. These properties decide whether a metric is *usable* at all — before you even ask whether it's the right thing to optimize.
+
+**Example.** "Revenue per user" is measurable, attributable, and fairly sensitive; "brand love" matters but is hard to measure and attribute, so it makes a poor *experiment* metric.
+
+**Notes.** Sensitivity ties directly to statistical power — an insensitive metric needs a huge sample to move. → Statistical power and power analysis (stat), Metric taxonomy (goal, driver, guardrail).
+
+### Twyman's law and trustworthiness
+
+**Definition.** **Twyman's law:** any figure that looks especially interesting or surprising is probably *wrong* — a data or instrumentation error — and should be double-checked before it's believed.
+
+**Intuition.** Spectacular results (a 50% lift!) far more often come from bugs, logging errors, or broken randomization than from genuinely huge effects. Trustworthy experimentation means distrusting the too-good result and validating it (guardrails, A/A tests, sanity checks) before acting.
+
+**Example.** A treatment showing an implausible 30% revenue jump usually traces to a tracking bug or a sample-ratio mismatch, not a real win — investigate before shipping.
+
+**Notes.** The cultural backbone of a trustworthy experimentation platform. → Metric taxonomy (goal, driver, guardrail), Model evaluation tests (perturbation, invariance, slice-based).
+
+---
+
 ## Glossary
 
+- **A/B test (controlled experiment)** — randomized Control vs Treatment comparison for causal effects. → [A/B testing (controlled experiments)](#ab-testing-controlled-experiments).
 - **Activation function** — the non-linearity (sigmoid, ReLU) inside a neural-net unit. → [Activation function](#activation-function).
 - **Active learning** — the model requests labels for its most informative examples. → [Active learning](#active-learning).
 - **Adam / AdamW** — adaptive per-parameter optimizer; AdamW decouples weight decay. → [Adam and AdamW](#adam-and-adamw).
@@ -1249,6 +1333,7 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Ma
 - **Batch normalization** — normalize pre-activations across the batch; learned scale/shift; mild regularizer. → [Batch normalization](#batch-normalization).
 - **Boosting** — sequential trees each fit to the previous model's residuals. → [Boosting](#boosting).
 - **Byte-pair encoding (BPE)** — subword tokenization by merging frequent token pairs. → [Tokenization and byte-pair encoding (BPE)](#tokenization-and-byte-pair-encoding-bpe).
+- **CatBoost / XGBoost / LightGBM** — production gradient-boosting libraries; CatBoost adds ordered boosting + native categoricals. → [Gradient boosting libraries (XGBoost, LightGBM, CatBoost)](#gradient-boosting-libraries-xgboost-lightgbm-catboost).
 - **Causal (masked) self-attention** — attention restricted to current and past tokens via a triangular mask. → [Causal (masked) self-attention](#causal-masked-self-attention).
 - **Chain-of-thought (CoT)** — prompt the model to reason in steps before answering. → [Chain-of-thought prompting](#chain-of-thought-prompting).
 - **Classification task types** — binary, multiclass (one of K), multilabel (several at once). → [Classification task types (binary, multiclass, multilabel)](#classification-task-types-binary-multiclass-multilabel).
@@ -1282,6 +1367,7 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Ma
 - **Feature scaling** — min-max scaling vs standardization to put attributes on one scale. → [Feature scaling](#feature-scaling).
 - **Feed-forward network** — inputs flow through hidden layers to an output. → [Neural networks (feed-forward)](#neural-networks-feed-forward).
 - **Gaussian mixture model (GMM)** — probabilistic clustering as a mixture of `k` Gaussians. → [Gaussian mixture model (GMM)](#gaussian-mixture-model-gmm).
+- **Goal / driver / guardrail metric** — true-north / leading-proxy / protective experiment metrics. → [Metric taxonomy (goal, driver, guardrail)](#metric-taxonomy-goal-driver-guardrail).
 - **Gradient descent** — fit by stepping parameters downhill on the loss. → [Gradient descent](#gradient-descent).
 - **Hashing trick** — hash categories into fixed buckets for high-cardinality encoding. → [Categorical feature encoding (hashing trick)](#categorical-feature-encoding-hashing-trick).
 - **Hinge loss** — `max(0, 1 − t)`; the SVM's margin objective. → [Hinge loss](#hinge-loss).
@@ -1319,6 +1405,7 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Ma
 - **Neural network regularization** — early stopping, L1/L2, dropout, max-norm. → [Neural network regularization](#neural-network-regularization).
 - **Non-probability sampling** — convenience/snowball/judgment/quota; cheap but biased. → [Non-probability sampling](#non-probability-sampling).
 - **Numerical stability (log-sum-exp)** — subtract the max logit before exp so nothing overflows. → [Numerical stability](#numerical-stability).
+- **OEC (Overall Evaluation Criterion)** — the long-term metric an experiment optimizes. → [Overall Evaluation Criterion (OEC)](#overall-evaluation-criterion-oec).
 - **One-hot encoding** — index → length-K vector, 1 in that slot. → [One-hot encoding](#one-hot-encoding).
 - **Out-of-bag (OOB) error** — free test-error estimate from bagging's unused points. → [Out-of-bag (OOB) error](#out-of-bag-oob-error).
 - **Perceptron / TLU** — weighted sum plus a step function; single layer of threshold units. → [Artificial neuron and the perceptron](#artificial-neuron-and-the-perceptron).
@@ -1331,6 +1418,7 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Ma
 - **Principal components analysis (PCA)** — unsupervised top-variance directions of the data. → [Principal components analysis (PCA)](#principal-components-analysis-pca).
 - **Pruning (cost-complexity)** — trim a grown tree via an `α·|T|` penalty. → [Tree pruning (cost-complexity)](#tree-pruning-cost-complexity).
 - **Quantization** — store and compute weights at lower precision. → [Model compression (distillation, pruning, quantization)](#model-compression-distillation-pruning-quantization).
+- **Randomization unit** — what is randomly assigned to a variant (usually a hashed user). → [Parameters, variants, and randomization unit](#parameters-variants-and-randomization-unit).
 - **Regex pre-tokenization** — split text before BPE so merges don't cross word/space boundaries. → [Regex pre-tokenization](#regex-pre-tokenization).
 - **Reservoir sampling** — uniform sample of k items from a stream of unknown length. → [Random sampling methods (simple, stratified, weighted, reservoir)](#random-sampling-methods-simple-stratified-weighted-reservoir).
 - **Residual (skip) connection** — `x = x + sublayer(x)`; a gradient highway for deep nets. → [Residual (skip) connections](#residual-skip-connections).
@@ -1362,8 +1450,10 @@ Sources here: *An Introduction to Statistical Learning* (ISL/ISLP), *Hands-On Ma
 - **Tree of thoughts** — search a tree of intermediate reasoning steps. → [Tree of thoughts](#tree-of-thoughts).
 - **tanh** — S-shaped activation with output in `(−1, 1)`, centered near 0. → [Activation function](#activation-function).
 - **Train / dev / test split** — fit / tune / final-check partitions. → [Train / dev / test split](#train--dev--test-split).
+- **Twyman's law** — a surprising figure is probably an error; verify it. → [Twyman's law and trustworthiness](#twymans-law-and-trustworthiness).
 - **Unsupervised learning** — finding structure with no response variable. → [Unsupervised learning](#unsupervised-learning).
 - **Vanishing / exploding gradients** — gradients decaying or blowing up through deep layers. → [Vanishing and exploding gradients](#vanishing-and-exploding-gradients).
+- **Variant / parameter / level** — a tested experience; a knob (factor) set to values. → [Parameters, variants, and randomization unit](#parameters-variants-and-randomization-unit).
 - **WaveNet / hierarchical context** — fuse a sequence progressively in a tree. → [WaveNet / hierarchical context](#wavenet--hierarchical-context).
 - **Weak supervision** — programmatic noisy labels from regex/heuristics/other models. → [Labeling and weak supervision](#labeling-and-weak-supervision).
 - **Weight init (Kaiming / fan-in)** — scale weights by gain/√(fan_in) to keep activations healthy. → [Weight initialization](#weight-initialization).

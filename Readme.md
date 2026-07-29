@@ -125,9 +125,11 @@ Listed by title only (links move over time and are easy to find by name). Checke
 - [x] **Chip Huyen — Designing Machine Learning Systems** (Stanford CS329S)
 - [x] **StatQuest** (Josh Starmer) — videos
 - [ ] **Ian Goodfellow et al. — Deep Learning**
-- [ ] **Ron Kohavi et al. — Trustworthy Online Controlled Experiments**
+- [x] **Ron Kohavi et al. — Trustworthy Online Controlled Experiments**
 - [ ] **Harvard Stat 110 — Probability** (Joe Blitzstein) — ch. 1–4 & 6–8
-- [ ] **3Blue1Brown — Essence of Linear Algebra**
+- [x] **3Blue1Brown — Essence of Linear Algebra**
+- [x] **3Blue1Brown — Essence of Calculus**
+- [x] **3Blue1Brown — Differential Equations**
 - [ ] **Sebastian Raschka — Build a Large Language Model (From Scratch)** (Manning, 2024)
 - [ ] **Stanford CS336 — Language Modeling from Scratch**
 - [ ] **Sebastian Raschka — Build a Reasoning Model (From Scratch)** (Manning, 2026)
@@ -140,3 +142,8 @@ Listed by title only (links move over time and are easy to find by name). Checke
 ## License
 
 BSD 2-Clause — see `LICENSE`. Chosen to match the license of the ISLP package this repo's ML labs build on, so my code and the upstream lab code sit under compatible terms. Note that any ISLP lab files copied into `Machine_learning/` remain © their original authors under their own BSD-2-Clause notice — keep upstream headers intact on copied files; this repo's license covers my own code and notes.
+
+## notes todo 
+1) fixing this readme to be more general
+2) convert md files to well formed latex files as they support addinional functions
+3) create notaion cheatsheet on the side
