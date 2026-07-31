@@ -1,0 +1,1029 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[parfill]{parskip}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!55!black,urlcolor=blue!55!black]{hyperref}
+
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+\allowdisplaybreaks
+\sloppy
+
+\title{Probability Notes\\[0.3em]\large Harvard Stat 110 (Joe Blitzstein)}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+A running file of probability concepts, in Definition / Intuition / Example / Notes form. Written to stand alone. Math is kept light but concrete: the formula plus a worked example, not proofs.
+
+Source: \textbf{Harvard Stat 110} (Joe Blitzstein), \textit{Introduction to Probability}. The through-line is \textit{conditioning} --- ``the soul of statistics'' --- and \textit{story proofs}: understanding a formula by the process it counts rather than by algebra. Cross-references to the statistics and ML notes are marked \textit{(stat)} / \textit{(ML)}.
+
+\section*{Notation}
+\addcontentsline{toc}{section}{Notation}
+\small
+
+\noindent%
+\begin{minipage}[t]{0.465\textwidth}
+\textbf{Events and probability}\\[0.4em]
+\begin{tabular}{@{}l@{\hspace{0.6em}}>{\raggedright\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+$S$ & sample space (all outcomes) \\
+$A \subseteq S$ & an event \\
+$A^{c}$ & complement, ``not $A$'' \\
+$A \cap B$ & both occur \\
+$A \cup B$ & at least one occurs \\
+$\emptyset$ & impossible event \\
+$|A|$ & number of outcomes in $A$ \\
+$P(A)$ & probability of $A$ \\
+$P(A \mid B)$ & conditional: $A$ given $B$ \\
+$P(A, B)$ & joint; same as $P(A \cap B)$ \\
+\midrule
+$n!$ & factorial \\
+$C(n,k)$ & binomial coefficient \\
+$H_n$ & harmonic number \\
+\bottomrule
+\end{tabular}
+\end{minipage}%
+\hfill%
+\begin{minipage}[t]{0.465\textwidth}
+\textbf{Random variables}\\[0.4em]
+\begin{tabular}{@{}l@{\hspace{0.6em}}>{\raggedright\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+$X, Y$ & random variables \\
+$X \sim \mathrm{Dist}$ & is distributed as \\
+$X \perp\!\!\!\perp Y$ & independent \\
+$p_X(x)$ & PMF, $P(X = x)$ \\
+$f(x)$ & PDF (density) \\
+$F(x)$ & CDF, $P(X \leq x)$ \\
+$F^{-1}$ & quantile / inverse CDF \\
+$I_A$ & indicator of $A$ \\
+$X_{(k)}$ & $k$-th order statistic \\
+$\bar{X}_n$ & sample mean \\
+\midrule
+$E(X)$ & expectation \\
+$E(Y \mid X)$ & conditional expectation \\
+$\mathrm{Var}(X)$ & variance \\
+$\mathrm{SD}(X)$ & $\sqrt{\mathrm{Var}(X)}$ \\
+$\mathrm{Cov}, \mathrm{Corr}$ & covariance, correlation \\
+$M_X(t)$ & moment generating function \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+
+\vspace{1.4em}
+\noindent%
+\begin{minipage}[t]{0.465\textwidth}
+\textbf{Distributions}\\[0.4em]
+\begin{tabular}{@{}l@{\hspace{0.6em}}>{\raggedright\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+$\mathrm{Bern}(p)$ & Bernoulli \\
+$\mathrm{Bin}(n,p)$ & binomial \\
+$\mathrm{HGeom}$ & hypergeometric \\
+$\mathrm{Geom}(p)$ & geometric (failures first) \\
+$\mathrm{FS}(p)$ & first success \\
+$\mathrm{NBin}(r,p)$ & negative binomial \\
+$\mathrm{Pois}(\lambda)$ & Poisson \\
+$\mathrm{Unif}(a,b)$ & uniform \\
+$N(\mu, \sigma^{2})$ & normal; $N(0,1)$ standard \\
+$\mathrm{Expo}(\lambda)$ & exponential \\
+$\mathrm{Beta}(a,b)$ & beta \\
+$\mathrm{Gamma}(a,\lambda)$ & gamma \\
+$\chi^{2}_{n}$, $t_n$ & chi-square, Student-$t$ \\
+\bottomrule
+\end{tabular}
+\end{minipage}%
+\hfill%
+\begin{minipage}[t]{0.465\textwidth}
+\textbf{Parameters and chains}\\[0.4em]
+\begin{tabular}{@{}l@{\hspace{0.6em}}>{\raggedright\arraybackslash}p{0.66\linewidth}@{}}
+\toprule
+$p$, $q = 1-p$ & success, failure probability \\
+$\lambda$ & rate \\
+$\mu$, $\sigma$, $\sigma^{2}$ & mean, SD, variance \\
+$Z$ & standard normal \\
+$Q$, $q_{ij}$ & transition matrix, entries \\
+$s$ & stationary dist., $sQ = s$ \\
+$\alpha$ & PageRank damping \\
+\midrule
+r.v. & random variable \\
+iid & independent, identically distributed \\
+LOTUS & law of the unconscious statistician \\
+LLN & law of large numbers \\
+CLT & central limit theorem \\
+MGF & moment generating function \\
+MCMC & Markov chain Monte Carlo \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+
+\vspace{1em}
+\normalsize
+Cross-references to the statistics and machine-learning notes are marked \textit{(stat)} and
+\textit{(ML)}. Section names following a $\to$ are internal links.
+
+
+
+\section{Counting and the Naive Definition}
+
+\subsection{Sample space and events}\label{sec:sample-space-and-events}
+
+\textbf{Definition.} The \textbf{sample space} $S$ is the set of all possible outcomes of an experiment. An \textbf{event} $A$ is a subset of $S$. The event \textit{occurs} if the actual outcome lies in $A$.
+
+\textbf{Intuition.} Everything in probability is set theory on $S$: ``A and B'' is $A \cap  B$, ``A or B'' is $A \cup  B$, ``not A'' is $A^{c}$. Framing a word problem as explicit events is most of the work --- naming them precisely is what makes the algebra reliable.
+
+\textbf{Example.} Flip a coin twice: $S = \{HH, HT, TH, TT\}$. The event ``at least one head'' is $A = \{HH, HT, TH\}$.
+
+\textbf{Notes.} Two events are \textbf{disjoint} (mutually exclusive) if $A \cap  B = \emptyset$. $\to$ \hyperref[sec:naive-definition-of-probability]{Naive definition of probability}, \hyperref[sec:probability-space-and-axioms]{Probability space and axioms}.
+
+\subsection{Naive definition of probability}\label{sec:naive-definition-of-probability}
+
+\textbf{Definition.} For a finite sample space in which every outcome is equally likely, $P(A) = (\text{number of favorable outcomes}) / (\text{total number of outcomes}) = |A| / |S|$.
+
+\textbf{Intuition.} Just counting: how many ways can the thing happen, out of all the ways anything can happen. It's the version everyone learns first, and it turns probability into a combinatorics problem.
+
+\textbf{Example.} Two dice: $P(\text{sum} = 7) = 6/36 = 1/6$ (the six pairs 1-6, 2-5, \ldots{}, 6-1).
+
+\textbf{Notes.} Two assumptions, both easy to violate: outcomes must be \textbf{equally likely} and the sample space \textbf{finite}. When they fail (a biased coin, an infinite space), you need the axiomatic definition. $\to$ \hyperref[sec:probability-space-and-axioms]{Probability space and axioms}, \hyperref[sec:multiplication-rule-counting]{Multiplication rule (counting)}.
+
+\subsection{Multiplication rule (counting)}\label{sec:multiplication-rule-counting}
+
+\textbf{Definition.} If an experiment has $n_{1}$ possible outcomes, and for each of those a second sub-experiment has $n_{2}$ outcomes, \ldots{}, and for each an $r$-th has $n_r$ outcomes, then the overall number of outcomes is $n_{1} \cdot  n_{2} \cdot  \ldots  \cdot  n_r$.
+
+\textbf{Intuition.} Choices compound multiplicatively --- picture a tree where each stage branches, and count the leaves. It's the engine behind every other counting formula here.
+
+\textbf{Example.} An ice cream cone with 3 cone types and 5 flavors: $3 \times  5 = 15$ combinations. Ordered draws of $k$ items from $n$ \textbf{with} replacement: $n \cdot  n \cdot  \ldots  \cdot  n = n^{k}$.
+
+\textbf{Notes.} The rule holds even when the \textit{identity} of the later options depends on the earlier choice, as long as the \textit{count} $n_{2}$ stays the same. $\to$ \hyperref[sec:sampling-table-four-cases]{Sampling table (four cases)}, \hyperref[sec:binomial-coefficient]{Binomial coefficient}.
+
+\subsection{Binomial coefficient}\label{sec:binomial-coefficient}
+
+\textbf{Definition.} $C(n, k) = n! / ((n-k)! \cdot  k!)$ is the number of subsets of size $k$ from $n$ items, where \textbf{order doesn't matter}. It is 0 if $k > n$.
+
+\textbf{Intuition.} Start with the ordered count $n!/(n-k)!$ (pick $k$ in order), then divide by $k!$ to erase the ordering within the chosen group --- every unordered subset was counted $k!$ times.
+
+\textbf{Example (full house).} A full house is three of one rank and two of another: choose the triple's rank (13), its suits $C(4,3)$, then the pair's rank (12) and its suits $C(4,2)$:
+$P = 13\cdot C(4,3)\cdot 12\cdot C(4,2) / C(52,5) = 3744/2,598,960 \approx  0.00144$ (about 1 hand in 694).
+
+\textbf{Notes.} Order matters in the \textit{ranks} here --- 13 then 12, not $C(13,2)$ --- because the triple rank and pair rank play different roles. $\to$ \hyperref[sec:sampling-table-four-cases]{Sampling table (four cases)}, \hyperref[sec:story-proofs]{Story proofs}, \hyperref[sec:binomial-distribution]{Binomial distribution}.
+
+\subsection{Sampling table (four cases)}\label{sec:sampling-table-four-cases}
+
+\textbf{Definition.} Choosing $k$ objects from $n$, the count depends on two questions --- replacement? order?
+
+\begin{center}\begin{tabular}{@{}lcc@{}}\toprule
+ & \textbf{Order matters} & \textbf{Order doesn't matter} \\
+\midrule
+\textbf{With replacement} & $n^{k}$ & $C(n + k - 1, k)$ \\
+\textbf{Without replacement} & $n! / (n-k)!$ & $C(n, k)$ \\
+\bottomrule\end{tabular}\end{center}
+
+\textbf{Intuition.} Three of the four follow directly from the multiplication rule. The awkward one is \textit{with replacement, order doesn't matter}: think of placing $k$ indistinguishable balls into $n$ labeled bins, encoded as $k$ stars and $n-1$ bars --- choose which $k$ of the $n+k-1$ positions are stars.
+
+\textbf{Example.} Splitting 10 people into a team of 4 and a team of 6: $C(10,4) = C(10,6) = 210$ --- picking the 4 \textit{determines} the 6. But into two teams of 5, it's $C(10,5)/2 = 126$, because each split gets counted twice when the two teams are interchangeable.
+
+\textbf{Notes.} The stars-and-bars case is the one people misremember; the other three are worth deriving on the spot rather than memorizing. $\to$ \hyperref[sec:multiplication-rule-counting]{Multiplication rule (counting)}, \hyperref[sec:binomial-coefficient]{Binomial coefficient}.
+
+\subsection{Story proofs}\label{sec:story-proofs}
+
+\textbf{Definition.} A \textbf{story proof} proves an identity by interpretation --- counting the \textit{same thing two different ways} --- rather than by algebraic manipulation.
+
+\textbf{Intuition.} If both sides of an equation count the same set, they must be equal. These proofs are shorter, more memorable, and explain \textit{why} the identity holds, which algebra often hides.
+
+\textbf{Example 1.} $C(n, k) = C(n, n-k)$ --- choosing the $k$ people who are in the group is the same as choosing the $n-k$ who are out.
+
+\textbf{Example 2.} $n \cdot  C(n-1, k-1) = k \cdot  C(n, k)$ --- count committees of $k$ people from $n$ with one designated president. \textbf{Right side:} pick the $k$-person committee, then pick its president from those $k$. \textbf{Left side:} pick the president first from all $n$, then the other $k-1$ members from the remaining $n-1$. Same set, two counts.
+
+\textbf{Example 3 (Vandermonde).} $C(m+n, k) = \sum _{j=0}^{k} C(m, j)\cdot C(n, k-j)$ --- choose $k$ people from $m$ men and $n$ women by conditioning on $j$, how many are men.
+
+\textbf{Notes.} The reflex to build is ``what set does each side count?'' $\to$ \hyperref[sec:binomial-coefficient]{Binomial coefficient}.
+
+
+\section{Axioms and Basic Properties}
+
+\subsection{Probability space and axioms}\label{sec:probability-space-and-axioms}
+
+\textbf{Definition.} A \textbf{probability space} is a pair $(S, P)$: the sample space $S$ and a function $P$ taking an event $A \subseteq  S$ to a number $P(A) \in  [0, 1]$, satisfying two axioms:
+\begin{enumerate}[leftmargin=1.4em]
+\item $P(\emptyset ) = 0$ and $P(S) = 1$.
+\item \textbf{Countable additivity:} for disjoint events $A_{1}, A_{2}, \ldots$, $P(A_{1} \cup  A_{2} \cup  \ldots ) = P(A_{1}) + P(A_{2}) + \ldots$
+\end{enumerate}
+
+\textbf{Intuition.} This drops the naive definition's assumptions --- outcomes needn't be equally likely and $S$ needn't be finite. Everything else in probability is \textit{derived} from these two axioms; nothing else is assumed.
+
+\textbf{Example.} A biased coin with $P(H) = 0.7$, $P(T) = 0.3$: not equally likely, so the naive definition can't touch it, but the axioms handle it fine ($0.7 + 0.3 = 1$).
+
+\textbf{Notes.} \textit{Refinement of the jotted note:} additivity is stated for a \textbf{countable sequence} of disjoint events, not just two --- the two-event case $P(A \cup  B) = P(A) + P(B)$ is the special case, and the infinite version is what makes limits work. $\to$ \hyperref[sec:basic-properties-of-probability]{Basic properties of probability}.
+
+\subsection{Basic properties of probability}\label{sec:basic-properties-of-probability}
+
+\textbf{Definition.} Consequences of the axioms:
+\begin{enumerate}[leftmargin=1.4em]
+\item \textbf{Complement:} $P(A^{c}) = 1 - P(A)$.
+\item \textbf{Monotonicity:} if $A \subseteq  B$ (A occurring forces B to occur), then $P(A) \leq  P(B)$.
+\item \textbf{Union:} $P(A \cup  B) = P(A) + P(B) - P(A \cap  B)$.
+\end{enumerate}
+
+\textbf{Intuition.} The complement rule is the single most useful trick in the subject: ``at least one'' problems are almost always easier as $1 - P(\text{none})$. The union rule subtracts the overlap that would otherwise be double-counted.
+
+\textbf{Example.} $P(\text{at least one 6 in four rolls}) = 1 - P(\text{no 6}) = 1 - (5/6)^{4} \approx  0.518$ --- far easier than summing the cases of exactly one, two, three, or four sixes.
+
+\textbf{Notes.} For \textbf{disjoint} events the intersection term vanishes and the union rule reduces to the axiom. $\to$ \hyperref[sec:inclusion-exclusion]{Inclusion-exclusion}, \hyperref[sec:independence]{Independence}.
+
+\subsection{Inclusion-exclusion}\label{sec:inclusion-exclusion}
+
+\textbf{Definition.} For $n$ events, $P(A_{1} \cup  \ldots  \cup  A_{n}) = \sum  P(A_{i}) - \sum _{i<j} P(A_{i} \cap  A_{j}) + \sum _{i<j<k} P(A_{i} \cap  A_{j} \cap  A_k) - \ldots  \pm  P(A_{1} \cap  \ldots  \cap  A_{n})$ --- add the singles, subtract the pairs, add the triples, \textbf{alternating} signs.
+
+\textbf{Intuition.} Adding the individual probabilities over-counts every overlap, so you subtract the pairwise overlaps; but that over-corrects on triple overlaps, so you add those back, and so on.
+
+\textbf{Example.} Three events: $P(A \cup  B \cup  C) = P(A)+P(B)+P(C) - P(A\cap B) - P(A\cap C) - P(B\cap C) + P(A\cap B\cap C)$.
+
+\textbf{Notes.} \textit{Correction to the jotted note:} the terms are combined with \textbf{alternating + and --}, not multiplied together. $\to$ \hyperref[sec:matching-problem-de-montmort]{Matching problem (de Montmort)}, \hyperref[sec:basic-properties-of-probability]{Basic properties of probability}.
+
+\subsection{Birthday problem}\label{sec:birthday-problem}
+
+\textbf{Definition.} With $k$ people (365 equally likely birthdays, independent, ignoring leap years), the probability that at least two share a birthday is $P(\text{match}) = 1 - [365 \cdot  364 \cdot  \ldots  \cdot  (365 - k + 1)] / 365^{k}$.
+
+\textbf{Intuition.} Compute the \textit{complement}: line people up and let each pick a birthday none of the earlier ones took. The count of pairs --- $C(k,2)$, which grows quadratically --- is what drives the surprise, not $k$ itself: 23 people give 253 pairs.
+
+\textbf{Example.} $k = 23$ $\to$ $P(\text{match}) \approx  0.507$, just past a coin flip; $k = 50$ $\to$ $\approx  0.970$. If $k > 365$, the probability is exactly 1 by the \textbf{pigeonhole principle}.
+
+\textbf{Notes.} The famous counter-intuition comes from confusing ``someone shares \textit{my} birthday'' (rare) with ``some pair shares a birthday'' (common). $\to$ \hyperref[sec:basic-properties-of-probability]{Basic properties of probability}.
+
+\subsection{Matching problem (de Montmort)}\label{sec:matching-problem-de-montmort}
+
+\textbf{Definition.} A shuffled deck of $n$ cards labeled $1\ldots n$; let $A_j$ be ``the $j$-th card is in position $j$.'' Then $P(A_j) = 1/n$, and for any \textbf{$k$ specific} events, $P(A_1 \cap  \ldots  \cap  A_k) = (n-k)! / n!$. By inclusion-exclusion,
+$P(\text{at least one match}) = 1 - 1/2! + 1/3! - \ldots  \pm  1/n! \to  1 - 1/e \approx  0.632$.
+
+\textbf{Intuition.} Each card individually matches with chance $1/n$, and there are $n$ cards, so you'd guess ``about one match on average'' --- and indeed the expected number of matches is exactly 1, for every $n$. The probability of \textit{at least} one match converges fast to $1 - 1/e$.
+
+\textbf{Example.} $n = 5$: $1 - 1/2 + 1/6 - 1/24 + 1/120 = 0.6333$, already within 0.002 of $1 - 1/e = 0.6321$.
+
+\textbf{Notes.} \textit{Correction to the jotted note:} the general intersection formula was written as $P(A_1 \cap  \ldots  \cap  A_n) = (n-k)!/n!$, mixing indices --- it should be \textbf{$P(A_1 \cap  \ldots  \cap  A_k) = (n-k)!/n!$} for $k$ specified cards (with $k = n$ giving $1/n!$, all cards matching). $\to$ \hyperref[sec:inclusion-exclusion]{Inclusion-exclusion}, \hyperref[sec:indicator-random-variables-and-the-fundamental-bridge]{Indicator random variables and the fundamental bridge}.
+
+
+\section{Independence and Conditioning}
+
+\subsection{Independence}\label{sec:independence}
+
+\textbf{Definition.} Events $A$ and $B$ are \textbf{independent} if $P(A \cap  B) = P(A)\cdot P(B)$. Three events $A, B, C$ are independent if \textbf{all three pairwise} products hold \textit{and} $P(A \cap  B \cap  C) = P(A)P(B)P(C)$.
+
+\textbf{Intuition.} Independence means learning that $B$ happened tells you nothing about $A$. It is \textbf{completely different from disjointness}: disjoint events are maximally \textit{dependent} --- if $A$ occurs, $B$ definitely did not ($P(A \cap  B) = 0$, so disjoint events with nonzero probability are never independent).
+
+\textbf{Example.} Two coin flips: $P(\text{both heads}) = P(H_{1})P(H_{2}) = 1/4$ $\checkmark$ independent. But ``first flip is heads'' and ``first flip is tails'' are disjoint, not independent.
+
+\textbf{Notes.} Pairwise independence does \textbf{not} imply full (three-way) independence --- the triple condition is a genuinely separate requirement. $\to$ \hyperref[sec:conditional-independence]{Conditional independence}, \hyperref[sec:conditional-probability]{Conditional probability}.
+
+\subsection{Newton-Pepys dice problem}\label{sec:newton-pepys-dice-problem}
+
+\textbf{Definition.} With fair dice, which is more likely: at least one 6 in 6 dice, at least two 6s in 12 dice, or at least three 6s in 18 dice? Compute each with the complement plus the binomial:
+\begin{itemize}[leftmargin=1.4em]
+\item $P(\geq 1 \text{six in 6}) = 1 - (5/6)^{6} \approx  0.665$
+\item $P(\geq 2 \text{sixes in 12}) = 1 - (5/6)^{12} - 12\cdot (1/6)(5/6)^{11} \approx  0.619$
+\item $P(\geq 3 \text{sixes in 18}) = 1 - \sum _{k=0}^{2} C(18,k)(1/6)^{k}(5/6)^{18-k} \approx  0.597$
+\end{itemize}
+
+\textbf{Intuition.} Pepys guessed the third was likeliest; Newton showed the \textbf{first} is. Scaling dice and required successes together doesn't preserve the probability --- the required count grows as fast as the dice, and the distribution concentrates, so clearing the bar gets \textit{harder}.
+
+\textbf{Example.} The general pattern: $P(\geq  \text{m successes in n trials}) = 1 - \sum _{k=0}^{m-1} C(n,k) p^{k} q^{n-k}$ --- note the sum stops at \textbf{$m - 1$}.
+
+\textbf{Notes.} \textit{Correction to the jotted note:} the third case was written ``at least \textbf{two} 3s with 18 dice'' but paired with $\sum _{k=0}^{2}$, which computes ``at least \textbf{three}.'' The two disagree --- for ``at least two'' the sum must stop at $k = 1$ (giving $\approx$ 0.827); as written, the formula is the classic ``at least three'' case ($\approx$ 0.597), which is the Newton-Pepys comparison. I've kept the ``at least three'' reading, since 6/12/18 dice with 1/2/3 successes is the actual problem. (The face --- 6 or 3 --- is irrelevant; both have probability 1/6.) $\to$ \hyperref[sec:binomial-distribution]{Binomial distribution}, \hyperref[sec:basic-properties-of-probability]{Basic properties of probability}.
+
+\subsection{Conditional probability}\label{sec:conditional-probability}
+
+\textbf{Definition.} $P(A \mid B) = P(A \cap  B) / P(B)$, defined when $P(B) > 0$ --- the probability of $A$ \textbf{given} that $B$ occurred.
+
+\textbf{Intuition (pebble world).} Picture the sample space as 9 pebbles with total mass 1. Conditioning on $B$ means you learn the outcome is one of $B$'s 4 pebbles: throw away the other 5, then \textbf{renormalize} the survivors so their masses sum to 1 again. That renormalization is the division by $P(B)$. Conditioning is how you \textit{update beliefs} as evidence arrives.
+
+\textbf{Example (two aces).} Draw 2 cards from a deck.
+\begin{itemize}[leftmargin=1.4em]
+\item $P(\text{both aces} \mid \text{at least one ace}) = P(\text{both aces})/P(\text{at least one ace}) = [C(4,2)/C(52,2)] / [1 - C(48,2)/C(52,2)] = 6/198 = \mathbf{1/33}$
+\item $P(\text{both aces} \mid \text{have the ace of spades}) = \mathbf{3/51 = 1/17}$ --- given that specific card, the other card is uniform over the remaining 51, of which 3 are aces.
+\end{itemize}
+
+Why does naming the \textit{specific} ace nearly double the answer? ``At least one ace'' is a weak, easily-satisfied condition met by many two-card hands with one ace; ``has the ace of spades'' is far more restrictive, and the hands satisfying it are relatively more likely to hold a second ace.
+
+\textbf{Notes.} \textit{Correction to the jotted note:} the containment goes the other way --- $\{\text{both aces}\} \subseteq  \{\text{at least one ace}\}$, which is why $P(\text{both} \cap  \text{at least one}) = P(\text{both aces})$. $\to$ \hyperref[sec:multiplication-chain-rule]{Multiplication (chain) rule}, \hyperref[sec:bayes-rule]{Bayes' rule}, \hyperref[sec:common-conditional-probability-mistakes]{Common conditional-probability mistakes}.
+
+\subsection{Multiplication (chain) rule}\label{sec:multiplication-chain-rule}
+
+\textbf{Definition.} $P(A \cap  B) = P(B)\cdot P(A \mid B) = P(A)\cdot P(B \mid A)$. In general, for $n$ events:
+$P(A_{1} \cap  A_{2} \cap  \ldots  \cap  A_{n}) = P(A_{1})\cdot P(A_{2} \mid A_{1})\cdot P(A_{3} \mid A_{1}, A_{2}) \cdot  \ldots  \cdot  P(A_{n} \mid A_{1}, \ldots , A_{n-1})$.
+
+\textbf{Intuition.} Build a joint probability sequentially: the chance the first happens, times the chance the second happens \textit{given} the first, and so on. Each new factor conditions on \textbf{everything already assumed}.
+
+\textbf{Example.} Drawing 2 aces without replacement: $P(\text{both aces}) = (4/52)\cdot (3/51) = 1/221$.
+
+\textbf{Notes.} \textit{Correction to the jotted note:} it was written $P(A_{1})P(A_{1}|A_{2})\ldots P(A_{1}|A_{2}\ldots A_{n})$, which repeats $A_{1}$ on the left of every conditional. The correct chain conditions on the \textit{accumulating} earlier events: $P(A_{1})\cdot P(A_{2}|A_{1})\cdot P(A_{3}|A_{1},A_{2})\cdot \ldots$. $\to$ \hyperref[sec:conditional-probability]{Conditional probability}, \hyperref[sec:bayes-rule]{Bayes' rule}.
+
+\subsection{Law of total probability}\label{sec:law-of-total-probability}
+
+\textbf{Definition.} If $B_{1}, \ldots , B_{n}$ \textbf{partition} the sample space (disjoint, and together covering $S$), then for any event $A$:
+$P(A) = \sum _{i} P(A \mid B_{i})\cdot P(B_{i})$. The two-case version: $P(A) = P(A|B)P(B) + P(A|B^{c})P(B^{c})$.
+
+\textbf{Intuition.} Split a hard, unconditional question into easy conditional cases, then weight each case by how likely it is. This ``condition on what you wish you knew'' move is the workhorse of the whole subject.
+
+\textbf{Example.} Bag 1 has 2 red / 3 blue; bag 2 has 4 red / 1 blue; pick a bag at random, then a ball:
+$P(\text{red}) = (2/5)(1/2) + (4/5)(1/2) = 0.6$.
+
+\textbf{Notes.} Supplies the denominator in Bayes' rule. $\to$ \hyperref[sec:bayes-rule]{Bayes' rule}, \hyperref[sec:conditional-probability]{Conditional probability}.
+
+\subsection{Bayes' rule}\label{sec:bayes-rule}
+
+\textbf{Definition.} $P(A \mid B) = P(B \mid A)\cdot P(A) / P(B)$, where the denominator is usually expanded by the law of total probability: $P(B) = P(B|A)P(A) + P(B|A^{c})P(A^{c})$.
+
+\textbf{Intuition.} It \textbf{reverses} a conditional: you know the probability of the evidence given the hypothesis, and want the hypothesis given the evidence. $P(A)$ is the \textbf{prior} (belief before evidence), $P(A|B)$ the \textbf{posterior} (belief after). The prior is not a nuisance term --- it can dominate the answer.
+
+\textbf{Example.} See the disease-testing example below --- the canonical demonstration that a ``95\% accurate'' test can still leave you probably healthy.
+
+\textbf{Notes.} The engine behind generative classifiers (naive Bayes, LDA/QDA). $\to$ \hyperref[sec:base-rates-and-the-disease-testing-example]{Base rates and the disease-testing example}, \hyperref[sec:law-of-total-probability]{Law of total probability}, Generative classifiers and Bayes' theorem (stat).
+
+\subsection{Base rates and the disease-testing example}\label{sec:base-rates-and-the-disease-testing-example}
+
+\textbf{Definition.} A disease afflicts 1\% of the population; a test is ``95\% accurate,'' meaning $P(T \mid D) = 0.95$ and $P(T^{c} \mid D^{c}) = 0.95$. A patient tests positive --- what's $P(D \mid T)$?
+
+\textbf{Intuition.} The \textbf{false-positive pool is huge}: 99\% of people are healthy, and 5\% of them still test positive, which swamps the small number of true positives from the 1\% who are sick. This is \textbf{base-rate neglect} --- the instinct to answer ``95\%'' ignores how rare the disease is.
+
+\textbf{Example (worked).} $P(T \mid D^{c}) = 1 - 0.95 = 0.05$.
+$P(D|T) = P(T|D)P(D) / [P(T|D)P(D) + P(T|D^{c})P(D^{c})] = (0.95)(0.01) / [(0.95)(0.01) + (0.05)(0.99)] = 0.0095 / 0.059 \approx  \mathbf{0.161}$
+So a positive result leaves only a ~16\% chance of disease. Per 10,000 people: 95 true positives vs 495 false positives.
+
+\textbf{Notes.} Your worked value of 0.16 checks out exactly. Raise the base rate (test a symptomatic group instead of screening everyone) and the posterior jumps. $\to$ \hyperref[sec:bayes-rule]{Bayes' rule}, Confusion matrix and error types (stat), Classification metrics (precision, recall, F1) (ML).
+
+\subsection{Common conditional-probability mistakes}\label{sec:common-conditional-probability-mistakes}
+
+\textbf{Definition.} Three classic errors:
+\begin{enumerate}[leftmargin=1.4em]
+\item \textbf{Confusing $P(A|B)$ with $P(B|A)$} (the prosecutor's fallacy / inverse fallacy).
+\item \textbf{Confusing the prior $P(A)$ with the posterior $P(A|B)$.} Note $P(A|A) = 1$ always.
+\item \textbf{Confusing independence with conditional independence} --- neither implies the other.
+\end{enumerate}
+
+\textbf{Intuition.} All three come from treating conditioning as symmetric or cosmetic when it isn't. $P(\text{positive test} \mid \text{disease})$ and $P(\text{disease} \mid \text{positive test})$ differ by orders of magnitude, as the example above shows.
+
+\textbf{Example.} $P(\text{has 4 legs} \mid \text{is a dog}) \approx  1$, but $P(\text{is a dog} \mid \text{has 4 legs})$ is small --- same two events, wildly different conditionals.
+
+\textbf{Notes.} $\to$ \hyperref[sec:conditional-probability]{Conditional probability}, \hyperref[sec:conditional-independence]{Conditional independence}, \hyperref[sec:base-rates-and-the-disease-testing-example]{Base rates and the disease-testing example}.
+
+\subsection{Conditional independence}\label{sec:conditional-independence}
+
+\textbf{Definition.} Events $A$ and $B$ are \textbf{conditionally independent given $C$} if $P(A \cap  B \mid C) = P(A \mid C)\cdot P(B \mid C)$.
+
+\textbf{Intuition.} Two things can be dependent \textit{overall} yet independent \textit{once you know a common cause} --- or the reverse. Independence does \textbf{not} imply conditional independence, and conditional independence does \textbf{not} imply independence.
+
+\textbf{Example (chess opponent).} You play an opponent of unknown strength. Games are \textbf{conditionally independent given} their true strength, but \textbf{not} independent unconditionally: winning the first few games is evidence the opponent is weak, which raises your chance of winning the next. The unknown strength couples the games together.
+
+\textbf{Notes.} The assumption that makes naive Bayes tractable (features independent \textit{within} a class). $\to$ \hyperref[sec:independence]{Independence}, Naive Bayes (stat), \hyperref[sec:common-conditional-probability-mistakes]{Common conditional-probability mistakes}.
+
+\subsection{Monty Hall problem}\label{sec:monty-hall-problem}
+
+\textbf{Definition.} Three doors, one car; you pick a door; the host --- who \textbf{knows} where the car is --- opens a different door revealing a goat, and offers a switch. Switching wins with probability \textbf{2/3}; staying wins with \textbf{1/3}.
+
+\textbf{Intuition.} Your first pick is right 1/3 of the time; that probability doesn't change when the host opens a door, because he \textit{always} can. All the remaining 2/3 collapses onto the single unopened door. Solve it two ways: a \textbf{tree} (enumerate the cases), or the \textbf{law of total probability}, conditioning on where the car actually is.
+
+\textbf{Example.} By total probability, $P(\text{win} \mid \text{switch}) = P(\text{win} \mid \text{switch}, \text{first pick wrong})\cdot P(\text{first pick wrong}) = 1 \cdot  (2/3) = 2/3$ --- if your first pick was wrong (2/3 of the time), switching always wins.
+
+\textbf{Notes.} The host's knowledge is essential: if he opened a door \textit{at random} and happened to reveal a goat, switching would give only 1/2. $\to$ \hyperref[sec:law-of-total-probability]{Law of total probability}, \hyperref[sec:conditional-probability]{Conditional probability}.
+
+\subsection{Simpson's paradox}\label{sec:simpsons-paradox}
+
+\textbf{Definition.} An association that holds in \textbf{every subgroup} can \textbf{reverse} when the subgroups are pooled. Formally, $P(A|B, C) > P(A|B^{c}, C)$ and $P(A|B, C^{c}) > P(A|B^{c}, C^{c})$ can both hold while $P(A|B) < P(A|B^{c})$.
+
+\textbf{Intuition.} A lurking \textbf{confounder} --- here, which \textit{type} of procedure each doctor mostly performs --- makes the pooled comparison misleading. Aggregating destroys the information that one doctor faced far harder cases.
+
+\textbf{Example (worked).} Two doctors, heart surgery (hard) and band-aid removal (easy):
+
+\begin{center}\begin{tabular}{@{}lccc@{}}\toprule
+ & Heart surgery & Band-aid & \textbf{Overall} \\
+\midrule
+\textbf{Dr. A} & 70/90 = \textbf{77.8\%} & 10/10 = \textbf{100\%} & 80/100 = \textbf{80\%} \\
+\textbf{Dr. B} & 2/10 = 20.0\% & 81/90 = 90.0\% & 83/100 = \textbf{83\%} \\
+\bottomrule\end{tabular}\end{center}
+
+Dr. A is better at \textbf{both} procedures, yet worse \textbf{overall} --- because Dr. A did 90 hard surgeries and only 10 easy ones, while Dr. B did the reverse.
+
+\textbf{Notes.} \textit{Correction to the jotted note:} the numbers as written (Dr. 1: heart 70/80, band-aid 10/10, overall 80/90 = 88.9\%; Dr. 2: heart 2/11, band-aid 81/90, overall 83/101 = 82.2\%) make Dr. 1 better in \textbf{both} categories \textit{and} overall --- so they don't exhibit the paradox at all. The table above is adjusted (Dr. A's heart failures raised to 20) so the reversal genuinely appears. The confounder point in the original note is exactly right. $\to$ Confounding (stat), \hyperref[sec:conditional-probability]{Conditional probability}.
+
+\subsection{Gambler's ruin}\label{sec:gamblers-ruin}
+
+\textbf{Definition.} Gamblers $A$ and $B$ bet \$1 per round; $A$ wins each round with probability $p$, loses with $q = 1 - p$. $A$ starts with $\$i$, $B$ with $\$(n - i)$; play continues until someone is broke. Let $p_{i} = P(\text{A wins the whole game} \mid \text{A starts with i})$. \textbf{Conditioning on the first step}:
+$p_{i} = p\cdot p_{i+1} + q\cdot p_{i-1}$ for $1 \leq  i \leq  n-1$, with boundary conditions $p_{0} = 0$, $p_{n} = 1$.
+
+\textbf{Intuition.} The strategy is the lesson: \textbf{condition on the first step}, which reduces the problem to the same problem with a shifted starting fortune --- a recursion (a difference equation) in $i$. This is a \textbf{random walk} with absorbing barriers at 0 and $n$.
+
+\textbf{Example (solution).} Solving the difference equation:
+\begin{itemize}[leftmargin=1.4em]
+\item If $p \neq  q$: $p_{i} = [1 - (q/p)^{i}] / [1 - (q/p)^{n}]$
+\item If $p = q = 1/2$: $p_{i} = i/n$ (fair game --- your win chance is just your share of the money).
+\end{itemize}
+
+With $p = 0.49$, $i = 50$, $n = 100$, $p_{i} \approx  0.12$: a 1\% edge against you turns a 50/50 fortune into an 88\% chance of ruin.
+
+\textbf{Notes.} \textit{Typos in the jotted note:} $q = 1 - p$ (stray slash), and the range is $1 \leq  i \leq  n-1$ (written as $i \leq  i \leq  n-1$). $\to$ \hyperref[sec:conditional-probability]{Conditional probability}, \hyperref[sec:markov-chain-and-transition-matrix]{Markov chain and transition matrix}.
+
+
+\section{Random Variables and Discrete Distributions}
+
+\subsection{Random variable}\label{sec:random-variable}
+
+\textbf{Definition.} A \textbf{random variable} is a \textit{function} from the sample space to the real line, $X : S \to  \mathbb{R}$. It is not a number and not random in itself --- it's a rule assigning a number to each outcome.
+
+\textbf{Intuition.} A summary of one aspect of the experiment. The experiment produces an outcome; $X$ reads a number off it. The distinction that trips people up: $X$ is the function, a \textbf{distribution} is the pattern of probabilities it induces, and $X = 3$ is an \textit{event}.
+
+\textbf{Example.} Flip a coin 3 times; let $X$ = number of heads. Then $X(HHT) = 2$, and $X$ takes values in $\{0,1,2,3\}$. Different r.v.s can share a distribution: ``number of heads'' and ``number of tails'' both follow $\mathrm{Bin}(3, 1/2)$.
+
+\textbf{Notes.} Discrete r.v.s take countably many values (use a PMF); continuous ones take a continuum (use a PDF). $\to$ \hyperref[sec:pmf-and-cdf]{PMF and CDF}, \hyperref[sec:probability-density-function-pdf]{Probability density function (PDF)}.
+
+\subsection{PMF and CDF}\label{sec:pmf-and-cdf}
+
+\textbf{Definition.} For a discrete r.v., the \textbf{probability mass function} is $p_X(x) = P(X = x)$; it is nonnegative and sums to 1. For \textbf{any} r.v., the \textbf{cumulative distribution function} is $F_X(x) = P(X \leq  x)$.
+
+\textbf{Intuition.} The PMF gives the probability \textit{at} each value; the CDF accumulates it left to right. The CDF is universal (it works for discrete and continuous alike), non-decreasing, and runs from 0 to 1. For a discrete variable the CDF is a staircase, jumping by $p_X(x)$ at each value.
+
+\textbf{Example.} $X \sim \mathrm{Bin}(2, 1/2)$: PMF $p(0)=1/4, p(1)=1/2, p(2)=1/4$; CDF $F(0)=1/4, F(1)=3/4, F(2)=1$. And $P(a < X \leq  b) = F(b) - F(a)$.
+
+\textbf{Notes.} The CDF determines the distribution completely --- that's what makes universality of the uniform work. $\to$ \hyperref[sec:random-variable]{Random variable}, \hyperref[sec:universality-of-the-uniform]{Universality of the uniform}.
+
+\subsection{Bernoulli distribution}\label{sec:bernoulli-distribution}
+
+\textbf{Definition.} $X \sim \mathrm{Bern}(p)$ takes value 1 (``success'') with probability $p$ and 0 (``failure'') with probability $q = 1 - p$. \textbf{Mean $E(X) = p$; variance $\mathrm{Var}(X) = p(1-p) = \text{pq}$.}
+
+\textbf{Intuition.} A single trial with two outcomes --- the atom every other discrete distribution here is built from. Its mean is $p$ because $E(X) = 1\cdot p + 0\cdot q = p$.
+
+\textbf{Example.} One flip of a coin biased to heads with $p = 0.7$: $E(X) = 0.7$, $\mathrm{Var}(X) = 0.21$. Variance is largest at $p = 0.5$ (maximum uncertainty) and 0 at $p = 0$ or $1$.
+
+\textbf{Notes.} Any event $A$ yields a Bernoulli via its \textbf{indicator} $I_A$. $\to$ \hyperref[sec:indicator-random-variables-and-the-fundamental-bridge]{Indicator random variables and the fundamental bridge}, \hyperref[sec:binomial-distribution]{Binomial distribution}.
+
+\subsection{Binomial distribution}\label{sec:binomial-distribution}
+
+\textbf{Definition.} $X \sim \mathrm{Bin}(n, p)$ counts successes in $n$ \textbf{independent} $\mathrm{Bern}(p)$ trials:
+$P(X = k) = C(n, k)\cdot p^{k}\cdot q^{n-k}$, for $k = 0, 1, \ldots , n$. \textbf{$E(X) = \text{np}$; $\mathrm{Var}(X) = \text{npq}$.}
+
+\textbf{Intuition.} $p^{k}q^{n-k}$ is the probability of one specific sequence with $k$ successes; $C(n,k)$ counts how many such sequences exist. The mean follows instantly from linearity: a sum of $n$ Bernoullis, each contributing $p$.
+
+\textbf{Example.} 10 flips of a fair coin: $P(\text{exactly 3 heads}) = C(10,3)(0.5)^{3}(0.5)^{7} = 120/1024 \approx  0.117$; $E = 5$, $\mathrm{Var} = 2.5$.
+
+\textbf{Notes.} Requires \textbf{independent} trials with \textbf{constant} $p$ --- sampling \textit{without} replacement breaks that and gives the hypergeometric instead. A sum of independent binomials with the same $p$ is binomial. $\to$ \hyperref[sec:bernoulli-distribution]{Bernoulli distribution}, \hyperref[sec:hypergeometric-distribution]{Hypergeometric distribution}, \hyperref[sec:poisson-approximation-and-the-poisson-process]{Poisson approximation and the Poisson process}.
+
+\subsection{Hypergeometric distribution}\label{sec:hypergeometric-distribution}
+
+\textbf{Definition.} Draw $n$ objects \textbf{without replacement} from $w$ white and $b$ black; let $X$ = number of white drawn:
+$P(X = k) = C(w, k)\cdot C(b, n-k) / C(w + b, n)$. \textbf{$E(X) = n\cdot w/(w+b)$.}
+
+\textbf{Intuition.} The binomial's without-replacement cousin: each draw changes the composition, so trials are \textbf{dependent}. Same mean as the corresponding binomial, but \textit{smaller} variance --- sampling without replacement is more informative, since you can't re-draw the same item.
+
+\textbf{Example.} A deck has 4 aces; draw 5 cards: $P(\text{exactly 2 aces}) = C(4,2)\cdot C(48,3)/C(52,5) \approx  0.0399$.
+
+\textbf{Notes.} As the population grows with the ratio fixed, hypergeometric $\to$ binomial (replacement stops mattering). Its variance calculation is a standard use of covariance. $\to$ \hyperref[sec:binomial-distribution]{Binomial distribution}, \hyperref[sec:variance-of-a-sum]{Variance of a sum}.
+
+\subsection{Geometric and First Success distributions}\label{sec:geometric-and-first-success-distributions}
+
+\textbf{Definition.} Two closely related counts of independent $\mathrm{Bern}(p)$ trials:
+\begin{itemize}[leftmargin=1.4em]
+\item $X \sim \mathrm{Geom}(p)$: the number of \textbf{failures before} the first success. $P(X = k) = q^{k}\cdot p$, $k = 0, 1, 2, \ldots$; \textbf{$E(X) = q/p$, $\mathrm{Var}(X) = q/p^{2}$.}
+\item $Y \sim \mathrm{FS}(p)$: the number of \textbf{trials including} the first success, so $Y = X + 1$; \textbf{$E(Y) = 1/p$.}
+\end{itemize}
+
+\textbf{Intuition.} ``How long until it works?'' The $1/p$ is the memorable one: with probability $1/6$ per roll, you wait 6 rolls on average for a 6. Watch the convention --- Stat 110's $\mathrm{Geom}$ counts \textit{failures}, so its mean is $q/p$, not $1/p$.
+
+\textbf{Example.} Rolling for a 6 ($p = 1/6$): expected \textbf{rolls} $= 1/p = 6$ (FS); expected \textbf{failures} $= q/p = 5$ (Geom). $P(\text{first 6 on roll 3}) = (5/6)^{2}(1/6) \approx  0.116$.
+
+\textbf{Notes.} The only \textbf{memoryless} discrete distribution: past failures don't improve your future odds. $\to$ \hyperref[sec:negative-binomial-distribution]{Negative binomial distribution}, \hyperref[sec:exponential-distribution-and-memorylessness]{Exponential distribution and memorylessness}.
+
+\subsection{Negative binomial distribution}\label{sec:negative-binomial-distribution}
+
+\textbf{Definition.} $X \sim \mathrm{NBin}(r, p)$ is the number of \textbf{failures before the $r$-th success} in independent $\mathrm{Bern}(p)$ trials:
+$P(X = n) = C(n + r - 1, r - 1)\cdot p^{r}\cdot q^{n}$. \textbf{$E(X) = r\cdot q/p$.}
+
+\textbf{Intuition.} The geometric generalized from 1 success to $r$ --- indeed it's a \textbf{sum of $r$ iid Geometrics}, which is why the mean is just $r$ times the geometric mean. The binomial coefficient counts arrangements of the first $n + r - 1$ trials, since the last trial must be the $r$-th success.
+
+\textbf{Example.} Rolling until the third 6 ($p = 1/6$): expected \textbf{rolls} $= r/p = 18$; expected failures $= 3\cdot 5 = 15$.
+
+\textbf{Notes.} Linearity of expectation gives the mean with no summation. $\to$ \hyperref[sec:geometric-and-first-success-distributions]{Geometric and First Success distributions}, \hyperref[sec:linearity-of-expectation]{Linearity of expectation}.
+
+\subsection{Poisson distribution}\label{sec:poisson-distribution}
+
+\textbf{Definition.} $X \sim \mathrm{Pois}(\lambda )$ on $k = 0, 1, 2, \ldots$:
+$P(X = k) = e^{-\lambda }\cdot \lambda ^{k} / k!$. \textbf{$E(X) = \lambda$ and $\mathrm{Var}(X) = \lambda$} --- mean and variance are equal.
+
+\textbf{Intuition.} The distribution of \textbf{counts of rare events in a fixed interval} of time, space, or opportunity: emails per hour, typos per page, earthquakes per year. $\lambda$ is the rate --- the expected count. The $e^{-\lambda }$ is exactly the normalizer that makes the $\lambda ^{k}/k!$ terms (the Taylor series of $e^\lambda$) sum to 1.
+
+\textbf{Example.} A call center gets $\lambda  = 3$ calls per minute: $P(\text{exactly 5 calls}) = e^{-3}\cdot 3^{5}/5! \approx  0.101$; $P(\text{no calls}) = e^{-3} \approx  0.050$.
+
+\textbf{Notes.} Arguably the most important discrete distribution. Mean = variance is a testable signature --- real count data are often \textbf{over-dispersed} (variance > mean), which is when you reach for alternatives. A sum of independent Poissons is Poisson with the rates added. $\to$ \hyperref[sec:poisson-approximation-and-the-poisson-process]{Poisson approximation and the Poisson process}, Poisson regression (stat).
+
+\subsection{Poisson approximation and the Poisson process}\label{sec:poisson-approximation-and-the-poisson-process}
+
+\textbf{Definition.} \textbf{Poisson approximation:} if $n$ is large, $p$ small, and $\lambda  = \text{np}$ moderate, then $\mathrm{Bin}(n, p) \approx  \mathrm{Pois}(\lambda )$. It extends to weakly dependent, non-identical rare events (the \textbf{Poisson paradigm}). A \textbf{Poisson process} of rate $\lambda$ has counts in an interval of length $t$ distributed $\mathrm{Pois}(\lambda t)$, with \textbf{Exponential($\lambda$)} waiting times between events.
+
+\textbf{Intuition.} Many independent opportunities, each individually unlikely --- the exact binomial count becomes unwieldy but converges to the far simpler Poisson. The Poisson process is the continuous-time picture: Poisson \textit{counts} and Exponential \textit{gaps} are two views of the same object.
+
+\textbf{Example.} 1,000 people, each with a $1/1000$ chance of a rare event: $\mathrm{Bin}(1000, 0.001) \approx  \mathrm{Pois}(1)$, so $P(\text{no events}) \approx  e^{-1} \approx  0.368$ (exact binomial: 0.3677).
+
+\textbf{Notes.} This is also the machinery behind the matching problem's $1 - 1/e$. $\to$ \hyperref[sec:poisson-distribution]{Poisson distribution}, \hyperref[sec:exponential-distribution-and-memorylessness]{Exponential distribution and memorylessness}, \hyperref[sec:binomial-distribution]{Binomial distribution}.
+
+\subsection{Multinomial distribution}\label{sec:multinomial-distribution}
+
+\textbf{Definition.} The multivariate generalization of the binomial: $n$ independent trials, each landing in one of $k$ categories with probabilities $p_{1}, \ldots , p_k$ (summing to 1). For counts $(n_{1}, \ldots , n_k)$ summing to $n$:
+$P(X_{1} = n_{1}, \ldots , X_k = n_k) = [n! / (n_{1}!\cdot \ldots \cdot n_k!)]\cdot p_{1}^{n_{1}}\cdot \ldots \cdot p_k^{n_k}$.
+Each \textbf{marginal} is $X_{i} \sim \mathrm{Bin}(n, p_{i})$, so $E(X_{i}) = n\cdot p_{i}$.
+
+\textbf{Intuition.} The binomial with more than two outcomes. Two properties make it pleasant: \textbf{lumping} (merge categories and it's still multinomial, with the merged probabilities added), and marginals that are simply binomial. Counts are \textbf{negatively correlated} --- the total is fixed, so more in one category means fewer elsewhere.
+
+\textbf{Example.} Roll a die 12 times: $P(\text{each face exactly twice}) = [12!/(2!)^{6}]\cdot (1/6)^{12} \approx  0.0034$. Lumping ``1 or 2'' into one category gives $\mathrm{Bin}(12, 1/3)$ for that group.
+
+\textbf{Notes.} The distribution behind softmax classification targets. $\to$ \hyperref[sec:binomial-distribution]{Binomial distribution}, Softmax (ML), \hyperref[sec:covariance-and-correlation]{Covariance and correlation}.
+
+
+\section{Expectation}
+
+\subsection{Expected value}\label{sec:expected-value}
+
+\textbf{Definition.} For a discrete r.v., $E(X) = \sum _x x\cdot P(X = x)$; for a continuous one, $E(X) = \int  x\cdot f(x) dx$. It is the probability-weighted average of the values.
+
+\textbf{Intuition.} The long-run average over many repetitions, and the balance point of the distribution --- where it would sit on a fulcrum. It need \textbf{not} be an attainable value.
+
+\textbf{Example.} One fair die: $E(X) = (1+2+3+4+5+6)/6 = 3.5$ --- never rolled, but the right long-run average.
+
+\textbf{Notes.} Not all r.v.s have a finite mean (the Cauchy has none). $\to$ \hyperref[sec:linearity-of-expectation]{Linearity of expectation}, \hyperref[sec:lotus-law-of-the-unconscious-statistician]{LOTUS (law of the unconscious statistician)}, \hyperref[sec:variance-and-standard-deviation]{Variance and standard deviation}.
+
+\subsection{Linearity of expectation}\label{sec:linearity-of-expectation}
+
+\textbf{Definition.} For \textbf{any} r.v.s $X, Y$ and constants $a, b$: $E(aX + bY) = a\cdot E(X) + b\cdot E(Y)$. This holds \textbf{whether or not $X$ and $Y$ are independent}.
+
+\textbf{Intuition.} The single most useful fact in probability. Independence is \textit{not} required, which is what makes it so powerful --- you can decompose a complicated r.v. into a sum of simple pieces that may be wildly dependent, take each piece's easy expectation, and add. The trick is finding the decomposition.
+
+\textbf{Example.} $X \sim \mathrm{Bin}(n, p)$ is a sum of $n$ dependent-free Bernoullis: $E(X) = n\cdot p$ immediately, with no $\sum  k\cdot C(n,k)p^{k}q^{n-k}$ computation. Likewise the matching problem: $E(\text{matches}) = n\cdot (1/n) = 1$ for every $n$, despite the events being dependent.
+
+\textbf{Notes.} Variance is \textbf{not} linear --- that needs independence (or a covariance term). $\to$ \hyperref[sec:indicator-random-variables-and-the-fundamental-bridge]{Indicator random variables and the fundamental bridge}, \hyperref[sec:variance-of-a-sum]{Variance of a sum}.
+
+\subsection{Indicator random variables and the fundamental bridge}\label{sec:indicator-random-variables-and-the-fundamental-bridge}
+
+\textbf{Definition.} The \textbf{indicator} $I_A$ equals 1 if event $A$ occurs and 0 otherwise. The \textbf{fundamental bridge}: $E(I_A) = P(A)$ --- the expectation of an indicator \textit{is} the probability of its event.
+
+\textbf{Intuition.} This links expectation and probability, letting you convert counting problems into expectation problems and then apply linearity. The standard recipe: write the count as a sum of indicators, take expectations term by term, and add --- the dependence between indicators simply doesn't matter.
+
+\textbf{Example.} Expected number of matches in the de Montmort problem: $X = \sum  I_j$ where $I_j$ indicates card $j$ in position $j$. Then $E(X) = \sum  E(I_j) = \sum  P(A_j) = n\cdot (1/n) = 1$. Similarly, expected number of birthday-sharing \textit{pairs} among $k$ people: $C(k,2)\cdot (1/365)$, which at $k = 23$ is $253/365 \approx  0.69$.
+
+\textbf{Notes.} Also gives $I_A^{2} = I_A$, and $I_{A\cap B} = I_A\cdot I_B$. $\to$ \hyperref[sec:linearity-of-expectation]{Linearity of expectation}, \hyperref[sec:matching-problem-de-montmort]{Matching problem (de Montmort)}, \hyperref[sec:birthday-problem]{Birthday problem}.
+
+\subsection{LOTUS (law of the unconscious statistician)}\label{sec:lotus-law-of-the-unconscious-statistician}
+
+\textbf{Definition.} To find the expectation of a \textit{function} of $X$, you do \textbf{not} need the distribution of $g(X)$:
+$E(g(X)) = \sum _x g(x)\cdot P(X = x)$ (discrete) or $\int  g(x)\cdot f(x) dx$ (continuous).
+
+\textbf{Intuition.} Weight $g(x)$ by the probability of $x$ and sum --- reusing $X$'s own distribution. The ``unconscious'' name is because it's what people naturally write down without realizing it needs justification. Crucially $E(g(X)) \neq  g(E(X))$ in general.
+
+\textbf{Example.} Fair die: $E(X^{2}) = (1+4+9+16+25+36)/6 = 91/6 \approx  15.17$, while $(E X)^{2} = 3.5^{2} = 12.25$ --- different, and their gap $\approx  2.92$ is exactly $\mathrm{Var}(X)$.
+
+\textbf{Notes.} The standard route to variance via $\mathrm{Var}(X) = E(X^{2}) - (E X)^{2}$. A 2-D version handles $E(g(X,Y))$ from a joint distribution. $\to$ \hyperref[sec:variance-and-standard-deviation]{Variance and standard deviation}, \hyperref[sec:four-inequalities-cauchy-schwarz-jensen-markov-chebyshev]{Four inequalities (Cauchy-Schwarz, Jensen, Markov, Chebyshev)}.
+
+\subsection{Variance and standard deviation}\label{sec:variance-and-standard-deviation}
+
+\textbf{Definition.} $\mathrm{Var}(X) = E[(X - E X)^{2}] = E(X^{2}) - (E X)^{2}$. The \textbf{standard deviation} is $\mathrm{SD}(X) = \sqrt{\mathrm{Var}(X)}$. Scaling: $\mathrm{Var}(aX + b) = a^{2}\cdot \mathrm{Var}(X)$ --- shifts don't change spread.
+
+\textbf{Intuition.} The average squared distance from the mean: how spread out the distribution is. Squaring keeps deviations from cancelling and penalizes large ones; the SD undoes the squaring, returning to the original units, which is why it's the reportable quantity.
+
+\textbf{Example.} Fair die: $\mathrm{Var}(X) = E(X^{2}) - (E X)^{2} = 91/6 - 12.25 \approx  2.92$, so $\mathrm{SD} \approx  1.71$.
+
+\textbf{Notes.} Always $\geq  0$, and $= 0$ only if $X$ is constant. $\mathrm{Var}(X + Y) = \mathrm{Var}(X) + \mathrm{Var}(Y)$ requires uncorrelatedness. $\to$ \hyperref[sec:variance-of-a-sum]{Variance of a sum}, \hyperref[sec:covariance-and-correlation]{Covariance and correlation}, Variance (stat).
+
+\subsection{Coupon collector problem}\label{sec:coupon-collector-problem}
+
+\textbf{Definition.} Each purchase yields a uniformly random coupon from $n$ types. The expected number of purchases to collect \textbf{all} $n$ is
+$E(T) = n\cdot (1 + 1/2 + 1/3 + \ldots  + 1/n) = n\cdot H_n \approx  n\cdot \mathrm{ln} n$.
+
+\textbf{Intuition.} Decompose the wait into stages: once you hold $j$ distinct coupons, the chance a new purchase is novel is $(n - j)/n$, so that stage is $\mathrm{FS}((n-j)/n)$ with mean $n/(n - j)$. Linearity adds the stages. The last few coupons dominate --- the final one alone takes $n$ purchases on average.
+
+\textbf{Example.} $n = 10$: $E(T) = 10\cdot (1 + 1/2 + \ldots  + 1/10) \approx  29.3$ purchases for 10 coupons.
+
+\textbf{Notes.} A showcase for chaining linearity with the First Success distribution. $\to$ \hyperref[sec:linearity-of-expectation]{Linearity of expectation}, \hyperref[sec:geometric-and-first-success-distributions]{Geometric and First Success distributions}.
+
+\subsection{St. Petersburg paradox}\label{sec:st-petersburg-paradox}
+
+\textbf{Definition.} Flip a fair coin until the first heads; if it lands on flip $k$, you win $2^{k}$. The expected payout is
+$E = \sum _{k=1}^{\infty } (1/2^{k})\cdot 2^{k} = 1 + 1 + 1 + \ldots  = \infty$.
+
+\textbf{Intuition.} Every term contributes exactly 1, so the sum diverges --- infinite expected value. Yet nobody would pay even \$100 to play, since the probability of a large payout is tiny (a payout above \$1,000 needs 10+ flips, chance $< 0.1\%$). The paradox shows expectation alone is not a complete guide to decisions when the tail is heavy.
+
+\textbf{Example.} Median payout is just \$2; you win \$2 or \$4 about 75\% of the time. The mean is dragged to infinity by vanishingly rare enormous prizes.
+
+\textbf{Notes.} Classic motivation for \textit{utility} over raw expected value (a diminishing-returns utility gives a finite value). $\to$ \hyperref[sec:expected-value]{Expected value}, \hyperref[sec:cauchy-lognormal-chi-square-student-t]{Cauchy, LogNormal, Chi-square, Student-t}.
+
+
+\section{Continuous Distributions}
+
+\subsection{Probability density function (PDF)}\label{sec:probability-density-function-pdf}
+
+\textbf{Definition.} A continuous r.v. has a \textbf{density} $f(x) \geq  0$ with $\int f = 1$, and $P(a \leq  X \leq  b) = \int _{a}^{b} f(x) dx$. The density is the CDF's derivative: $f(x) = F'(x)$.
+
+\textbf{Intuition.} For a continuous r.v., $P(X = x) = 0$ for every single point --- probability lives in \textit{areas}, not at points. The density isn't a probability (it can exceed 1); only its integral over an interval is.
+
+\textbf{Example.} $f(x) = 2x$ on $[0,1]$: $P(X \leq  0.5) = \int _{0}^{0.5} 2x dx = 0.25$. Note $f(1) = 2 > 1$, which is perfectly legal.
+
+\textbf{Notes.} Because points have zero probability, $P(X \leq  a) = P(X < a)$ --- endpoints don't matter. $\to$ \hyperref[sec:pmf-and-cdf]{PMF and CDF}, Integrals and area under the curve (linear algebra notes).
+
+\subsection{Uniform distribution}\label{sec:uniform-distribution}
+
+\textbf{Definition.} $U \sim \mathrm{Unif}(a, b)$ has constant density $f(x) = 1/(b - a)$ on $[a, b]$. \textbf{$E(U) = (a+b)/2$, $\mathrm{Var}(U) = (b-a)^{2}/12$.} The standard case is $\mathrm{Unif}(0,1)$.
+
+\textbf{Intuition.} Complete indifference across an interval --- every equal-length subinterval is equally likely, so probability is proportional to length. $\mathrm{Unif}(0,1)$ is the raw material of simulation: it's what a random-number generator produces.
+
+\textbf{Example.} $U \sim \mathrm{Unif}(0,1)$: $P(0.2 < U < 0.5) = 0.3$; $E(U) = 0.5$, $\mathrm{Var}(U) = 1/12 \approx  0.083$.
+
+\textbf{Notes.} Every other distribution can be generated from it. $\to$ \hyperref[sec:universality-of-the-uniform]{Universality of the uniform}.
+
+\subsection{Universality of the uniform}\label{sec:universality-of-the-uniform}
+
+\textbf{Definition.} If $X$ has a continuous, strictly increasing CDF $F$, then:
+\begin{enumerate}[leftmargin=1.4em]
+\item $F(X) \sim \mathrm{Unif}(0, 1)$ (plugging a r.v. into its own CDF gives a standard uniform), and
+\item $F^{-1}(U) \sim X$ for $U \sim \mathrm{Unif}(0,1)$ (\textbf{inverse-transform sampling}).
+\end{enumerate}
+
+\textbf{Intuition.} The CDF flattens any distribution into a uniform, and its inverse re-inflates a uniform into any distribution you want. This is why one uniform generator suffices to simulate everything --- a beautiful, genuinely practical result.
+
+\textbf{Example.} To simulate $\mathrm{Expo}(\lambda )$: $F(x) = 1 - e^{-\lambda x}$, so $F^{-1}(u) = -\mathrm{ln}(1-u)/\lambda$. Draw $U \sim \mathrm{Unif}(0,1)$, return $-\mathrm{ln}(1-U)/\lambda$, and you have an exponential.
+
+\textbf{Notes.} Also underlies the probability integral transform used in goodness-of-fit testing (Q-Q plots). $\to$ \hyperref[sec:uniform-distribution]{Uniform distribution}, \hyperref[sec:pmf-and-cdf]{PMF and CDF}.
+
+\subsection{Normal distribution and standardization}\label{sec:normal-distribution-and-standardization}
+
+\textbf{Definition.} $X \sim N(\mu , \sigma ^{2})$ has density $f(x) = (1/(\sigma \sqrt{2\pi }))\cdot e^{-(x-\mu )^{2}/(2\sigma ^{2})}$, with \textbf{$E(X) = \mu$, $\mathrm{Var}(X) = \sigma ^{2}$}. \textbf{Standardization:} $Z = (X - \mu )/\sigma  \sim N(0,1)$, the standard normal. Conversely $X = \mu  + \sigma Z$.
+
+\textbf{Intuition.} The bell curve --- symmetric about $\mu$, with $\sigma$ setting the width. \textbf{Location and scale:} shifting by $\mu$ moves it, scaling by $\sigma$ stretches it, and the \textit{shape} never changes, so one standard table serves every normal. Its ubiquity is explained by the CLT: sums of many small independent effects are approximately normal.
+
+\textbf{Example.} The \textbf{68--95--99.7 rule}: $P(|Z| < 1) \approx  0.68$, $P(|Z| < 2) \approx  0.95$, $P(|Z| < 3) \approx  0.997$. If heights are $N(170, 7^{2})$ cm, about 95\% of people fall in $170 \pm  14$ cm.
+
+\textbf{Notes.} Closed under sums: independent normals add to a normal (means and \textit{variances} add). $\to$ \hyperref[sec:central-limit-theorem]{Central limit theorem}, Normal distribution (stat), Z-scores (standardization) (stat).
+
+\subsection{Exponential distribution and memorylessness}\label{sec:exponential-distribution-and-memorylessness}
+
+\textbf{Definition.} $X \sim \mathrm{Expo}(\lambda )$ has density $f(x) = \lambda e^{-\lambda x}$ for $x \geq  0$, CDF $F(x) = 1 - e^{-\lambda x}$. \textbf{$E(X) = 1/\lambda$, $\mathrm{Var}(X) = 1/\lambda ^{2}$.} It is \textbf{memoryless}: $P(X > s + t \mid X > s) = P(X > t)$.
+
+\textbf{Intuition.} The waiting time between events in a Poisson process --- the continuous analogue of the geometric. Memorylessness means ``used'' waiting time is forgotten: a component that has survived 5 years is as good as new. That's a strong (often unrealistic) assumption, and the exponential is the \textbf{only} continuous distribution with it.
+
+\textbf{Example.} Bus arrivals with $\lambda  = 1/10$ per minute: $E(\text{wait}) = 10$ min; $P(\text{wait} > 15) = e^{-1.5} \approx  0.223$. Having already waited 10 minutes, the chance of 15 \textit{more} is still $e^{-1.5}$.
+
+\textbf{Notes.} Aging or wear-in requires a Weibull or gamma instead. $\to$ \hyperref[sec:poisson-approximation-and-the-poisson-process]{Poisson approximation and the Poisson process}, \hyperref[sec:geometric-and-first-success-distributions]{Geometric and First Success distributions}, \hyperref[sec:gamma-distribution]{Gamma distribution}, Hazard function (stat).
+
+\subsection{Beta distribution and conjugate priors}\label{sec:beta-distribution-and-conjugate-priors}
+
+\textbf{Definition.} $X \sim \mathrm{Beta}(a, b)$ lives on $[0,1]$ with density $f(x) \propto  x^{a-1}\cdot (1-x)^{b-1}$. \textbf{$E(X) = a/(a+b)$.} It is the \textbf{conjugate prior} for the binomial: with prior $\mathrm{Beta}(a,b)$ and data of $k$ successes in $n$ trials, the posterior is $\mathrm{Beta}(a + k, b + n - k)$.
+
+\textbf{Intuition.} A flexible distribution \textit{over a probability} --- the natural way to express uncertainty about an unknown $p$. \textbf{Conjugacy} means the posterior stays in the same family, so updating is just adding successes and failures to the parameters: no integration required. $\mathrm{Beta}(1,1)$ is $\mathrm{Unif}(0,1)$, the flat prior.
+
+\textbf{Example.} Start with $\mathrm{Beta}(1,1)$ (know nothing), observe 8 heads in 10 flips $\to$ posterior $\mathrm{Beta}(9, 3)$, with mean $9/12 = 0.75$ --- pulled from the raw 0.8 toward the prior. \textbf{Laplace's rule of succession} is this with a flat prior: after $k$ successes in $n$ trials, $P(\text{next is a success}) = (k+1)/(n+2)$.
+
+\textbf{Notes.} \textit{Bayes' billiards} is the classic story derivation. $\to$ \hyperref[sec:bayes-rule]{Bayes' rule}, \hyperref[sec:gamma-distribution]{Gamma distribution}, \hyperref[sec:uniform-distribution]{Uniform distribution}.
+
+\subsection{Gamma distribution}\label{sec:gamma-distribution}
+
+\textbf{Definition.} $X \sim \mathrm{Gamma}(a, \lambda )$ on $x > 0$ with density $f(x) \propto  x^{a-1}e^{-\lambda x}$. \textbf{$E(X) = a/\lambda$, $\mathrm{Var}(X) = a/\lambda ^{2}$.} A sum of $a$ iid $\mathrm{Expo}(\lambda )$ r.v.s is $\mathrm{Gamma}(a, \lambda )$.
+
+\textbf{Intuition.} The waiting time until the \textbf{$a$-th} event in a Poisson process --- the continuous analogue of the negative binomial, just as the exponential mirrors the geometric. $\mathrm{Gamma}(1, \lambda ) = \mathrm{Expo}(\lambda )$.
+
+\textbf{Example.} With $\lambda  = 2$ events/hour, the wait for the 3rd event is $\mathrm{Gamma}(3, 2)$ with mean $3/2 = 1.5$ hours.
+
+\textbf{Notes.} The \textbf{bank--post office story} connects Beta and Gamma: if $X \sim \mathrm{Gamma}(a,\lambda )$ and $Y \sim \mathrm{Gamma}(b,\lambda )$ independently, then $X + Y \sim \mathrm{Gamma}(a+b, \lambda )$ and $X/(X+Y) \sim \mathrm{Beta}(a,b)$, and the two are \textbf{independent} --- the total time and the fraction spent at the bank carry no information about each other. $\to$ \hyperref[sec:exponential-distribution-and-memorylessness]{Exponential distribution and memorylessness}, \hyperref[sec:beta-distribution-and-conjugate-priors]{Beta distribution and conjugate priors}.
+
+\subsection{Cauchy, LogNormal, Chi-square, Student-t}\label{sec:cauchy-lognormal-chi-square-student-t}
+
+\textbf{Definition.} Four important offshoots:
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{Cauchy:} the ratio $Z_{1}/Z_{2}$ of two independent standard normals; density $f(x) = 1/(\pi (1+x^{2}))$. Has \textbf{no mean and no variance} (the integral diverges).
+\item \textbf{LogNormal:} $Y = e^X$ for $X \sim N(\mu , \sigma ^{2})$ --- positive, right-skewed.
+\item \textbf{Chi-square $\chi ^{2}_n$:} the sum $Z_{1}^{2} + \ldots  + Z_n^{2}$ of $n$ squared standard normals; $E = n$.
+\item \textbf{Student-t:} $Z / \sqrt{V/n}$ with $V \sim \chi ^{2}_n$ independent --- a normal with an estimated (rather than known) standard deviation.
+\end{itemize}
+
+\textbf{Intuition.} The Cauchy is the cautionary tale: so heavy-tailed that the sample mean \textit{never} settles down, so the law of large numbers doesn't apply. The LogNormal fits multiplicative processes (incomes, stock prices). Chi-square and Student-t are the sampling distributions behind real statistical tests --- the t-distribution's heavier tails are exactly the price of estimating $\sigma$ from data, and it approaches the normal as $n$ grows.
+
+\textbf{Example.} Averaging 1,000 Cauchy draws is no more accurate than one draw. A t-test on small $n$ uses Student-t; a variance test uses chi-square.
+
+\textbf{Notes.} The \textbf{multivariate normal} generalizes the normal to vectors, specified by a mean vector and covariance matrix; any linear combination of its components is normal. $\to$ \hyperref[sec:normal-distribution-and-standardization]{Normal distribution and standardization}, t-tests (one-sample, paired, two-sample) (stat), \hyperref[sec:law-of-large-numbers]{Law of large numbers}.
+
+
+\section{Joint Distributions and Dependence}
+
+\subsection{Joint, marginal, and conditional distributions}\label{sec:joint-marginal-and-conditional-distributions}
+
+\textbf{Definition.} For two r.v.s, the \textbf{joint} distribution is $P(X = x, Y = y)$ (or joint density $f(x,y)$). The \textbf{marginal} of $X$ sums/integrates out the other variable: $P(X = x) = \sum _y P(X = x, Y = y)$. The \textbf{conditional} is $P(Y = y \mid X = x) = P(X = x, Y = y) / P(X = x)$.
+
+\textbf{Intuition.} The joint holds all the information; marginals are the shadows cast on each axis (you lose the dependence structure); conditionals are slices through the joint at a fixed value, renormalized. Marginals alone can't reconstruct the joint.
+
+\textbf{Example.} Two dice, $X$ = first, $Y$ = sum. Joint: $P(X=2, Y=5) = 1/36$. Marginal: $P(X=2) = 1/6$. Conditional: $P(Y=5 \mid X=2) = (1/36)/(1/6) = 1/6$.
+
+\textbf{Notes.} The \textbf{2-D LOTUS} computes $E(g(X,Y)) = \sum \sum  g(x,y)\cdot P(X=x, Y=y)$ straight from the joint. $\to$ \hyperref[sec:independence-of-random-variables]{Independence of random variables}, \hyperref[sec:conditional-expectation]{Conditional expectation}.
+
+\subsection{Independence of random variables}\label{sec:independence-of-random-variables}
+
+\textbf{Definition.} $X$ and $Y$ are \textbf{independent} if their joint factors for all values: $P(X \leq  x, Y \leq  y) = P(X \leq  x)\cdot P(Y \leq  y)$ (equivalently $f(x,y) = f_X(x)\cdot f_Y(y)$). A key consequence: \textbf{if $X \perp\!\!\!\perp  Y$ then $E(XY) = E(X)\cdot E(Y)$.}
+
+\textbf{Intuition.} The joint carries no information beyond the two marginals --- knowing $Y$ tells you nothing about $X$. The $E(XY) = E(X)E(Y)$ factorization is what makes covariance vanish under independence.
+
+\textbf{Example.} Two independent dice: $E(XY) = 3.5 \times  3.5 = 12.25$. But $X$ and $X$ are not independent: $E(X\cdot X) = E(X^{2}) = 15.17 \neq  12.25$.
+
+\textbf{Notes.} The converse \textbf{fails}: $E(XY) = E(X)E(Y)$ (uncorrelated) does not imply independence. $\to$ \hyperref[sec:covariance-and-correlation]{Covariance and correlation}, \hyperref[sec:independence]{Independence}.
+
+\subsection{Covariance and correlation}\label{sec:covariance-and-correlation}
+
+\textbf{Definition.} $\mathrm{Cov}(X, Y) = E[(X - E X)(Y - E Y)] = E(XY) - E(X)E(Y)$. The \textbf{correlation} normalizes it:
+$\mathrm{Corr}(X, Y) = \mathrm{Cov}(X, Y) / (\mathrm{SD}(X)\cdot \mathrm{SD}(Y)) \in  [-1, 1]$.
+
+\textbf{Intuition.} Covariance measures whether the two tend to be above their means together (positive) or in opposition (negative), but its magnitude depends on units, so it's hard to read. Correlation divides that out, giving a unit-free number where $\pm 1$ is perfect linear dependence and $0$ means uncorrelated. Both capture \textbf{linear} association only.
+
+\textbf{Example.} Independent $\Rightarrow$ $\mathrm{Cov} = 0$. The converse fails: let $X \sim N(0,1)$ and $Y = X^{2}$. Then $\mathrm{Cov}(X,Y) = E(X^{3}) - E(X)E(X^{2}) = 0$, yet $Y$ is a \textit{function} of $X$ --- maximal dependence, zero correlation.
+
+\textbf{Notes.} $\mathrm{Cov}(X,X) = \mathrm{Var}(X)$, and covariance is bilinear. $\to$ \hyperref[sec:variance-of-a-sum]{Variance of a sum}, \hyperref[sec:independence-of-random-variables]{Independence of random variables}, R-squared and correlation (stat).
+
+\subsection{Variance of a sum}\label{sec:variance-of-a-sum}
+
+\textbf{Definition.} $\mathrm{Var}(X + Y) = \mathrm{Var}(X) + \mathrm{Var}(Y) + 2\cdot \mathrm{Cov}(X, Y)$. If $X$ and $Y$ are uncorrelated (in particular, independent), the covariance term drops: $\mathrm{Var}(X + Y) = \mathrm{Var}(X) + \mathrm{Var}(Y)$. Generally, $\mathrm{Var}(\sum  X_{i}) = \sum  \mathrm{Var}(X_{i}) + 2\cdot \sum _{i<j} \mathrm{Cov}(X_{i}, X_{j})$.
+
+\textbf{Intuition.} Unlike expectation, variance is \textbf{not} linear --- it needs uncorrelatedness. Positively correlated variables reinforce each other's swings (variance grows); negatively correlated ones partially cancel (variance shrinks), which is exactly the diversification effect in finance.
+
+\textbf{Example.} This is how the hypergeometric's variance is derived: write it as a sum of dependent indicators and account for the (negative) covariances --- which is why it's \textit{smaller} than the corresponding binomial's.
+
+\textbf{Notes.} $\mathrm{Var}(X - Y) = \mathrm{Var}(X) + \mathrm{Var}(Y) - 2\mathrm{Cov}(X,Y)$; note the \textbf{plus} on the variances even when subtracting. $\to$ \hyperref[sec:covariance-and-correlation]{Covariance and correlation}, \hyperref[sec:linearity-of-expectation]{Linearity of expectation}, \hyperref[sec:hypergeometric-distribution]{Hypergeometric distribution}.
+
+\subsection{Transformations (change of variables)}\label{sec:transformations-change-of-variables}
+
+\textbf{Definition.} If $Y = g(X)$ for a strictly monotonic, differentiable $g$, the density transforms as
+$f_Y(y) = f_X(x)\cdot |dx/dy|$, where $x = g^{-1}(y)$.
+
+\textbf{Intuition.} Stretching or compressing the axis changes how densely probability packs in, so you must multiply by the Jacobian $|dx/dy|$ to keep the total area at 1. Probability is conserved; density is not.
+
+\textbf{Example.} $X \sim N(\mu ,\sigma ^{2})$ and $Y = e^{x}$ gives the \textbf{LogNormal}, with $f_Y(y) = f_X(\mathrm{ln} y)\cdot (1/y)$ for $y > 0$.
+
+\textbf{Notes.} The multivariate version uses the Jacobian determinant. $\to$ \hyperref[sec:cauchy-lognormal-chi-square-student-t]{Cauchy, LogNormal, Chi-square, Student-t}, Determinant (linear algebra notes).
+
+\subsection{Convolutions (sums of random variables)}\label{sec:convolutions-sums-of-random-variables}
+
+\textbf{Definition.} The distribution of $T = X + Y$ for independent $X, Y$:
+$P(T = t) = \sum _x P(X = x)\cdot P(Y = t - x)$ (discrete), or $f_T(t) = \int  f_X(x)\cdot f_Y(t - x) dx$ (continuous).
+
+\textbf{Intuition.} To land on total $t$, enumerate every way to split it between the two variables and add up those probabilities. Some families are \textbf{closed} under this --- sums stay in the family --- which is what makes them so convenient.
+
+\textbf{Example.} Closure results worth memorizing: $\mathrm{Bin}(n,p) + \mathrm{Bin}(m,p) = \mathrm{Bin}(n+m, p)$; $\mathrm{Pois}(\lambda _{1}) + \mathrm{Pois}(\lambda _{2}) = \mathrm{Pois}(\lambda _{1}+\lambda _{2})$; $N(\mu _{1},\sigma _{1}^{2}) + N(\mu _{2},\sigma _{2}^{2}) = N(\mu _{1}+\mu _{2}, \sigma _{1}^{2}+\sigma _{2}^{2})$; $\mathrm{Expo}(\lambda )$ summed $a$ times $= \mathrm{Gamma}(a, \lambda )$. All require independence.
+
+\textbf{Notes.} MGFs prove these in one line, since the MGF of a sum is the product of the MGFs. $\to$ \hyperref[sec:moment-generating-functions-mgfs]{Moment generating functions (MGFs)}, \hyperref[sec:gamma-distribution]{Gamma distribution}.
+
+\subsection{Order statistics}\label{sec:order-statistics}
+
+\textbf{Definition.} For $X_{1}, \ldots , X_{n}$, the \textbf{order statistics} $X_{(1)} \leq  X_{(2)} \leq  \ldots  \leq  X_{(n)}$ are the values sorted ascending --- the minimum, second smallest, \ldots{}, maximum. For iid continuous $X$ with CDF $F$:
+$P(X_{(n)} \leq  x) = F(x)^{n}$ (max) and $P(X_{(1)} > x) = (1 - F(x))^{n}$ (min).
+
+\textbf{Intuition.} The max is $\leq  x$ exactly when \textit{all} are, hence the $n$-th power; the min exceeds $x$ exactly when all do. Sorting makes the values \textbf{dependent} even when the originals were independent --- $X_{(1)} \leq  X_{(2)}$ always.
+
+\textbf{Example.} $n$ iid $\mathrm{Unif}(0,1)$: $E(X_{(k)}) = k/(n+1)$, so the values spread evenly. The order statistics of the uniform are $\mathrm{Beta}$ distributed: $X_{(k)} \sim \mathrm{Beta}(k, n-k+1)$.
+
+\textbf{Notes.} The basis of medians, quantiles, and the range. $\to$ \hyperref[sec:beta-distribution-and-conjugate-priors]{Beta distribution and conjugate priors}, \hyperref[sec:uniform-distribution]{Uniform distribution}.
+
+
+\section{Conditional Expectation and Its Laws}
+
+\subsection{Conditional expectation}\label{sec:conditional-expectation}
+
+\textbf{Definition.} $E(Y \mid X = x) = \sum _y y\cdot P(Y = y \mid X = x)$ is a \textit{number} for each $x$. Writing $E(Y \mid X)$ (without a value) gives a \textbf{random variable} --- the function of $X$ whose value at $X = x$ is $E(Y \mid X = x)$.
+
+\textbf{Intuition.} The crucial mental step: $E(Y|X)$ is \textit{itself random}, because it depends on the random $X$. This makes it something you can take an expectation or variance of, which is exactly what Adam's and Eve's laws do. \textbf{Taking out what's known:} $E(h(X)\cdot Y \mid X) = h(X)\cdot E(Y \mid X)$ --- once you condition on $X$, any function of $X$ acts as a constant.
+
+\textbf{Example.} Roll a die ($X$); let $Y = X$ if $X$ is even and $0$ otherwise. $E(Y \mid X = 4) = 4$, $E(Y \mid X = 3) = 0$. As a r.v., $E(Y|X) = X\cdot I(\text{X even})$.
+
+\textbf{Notes.} If $X \perp\!\!\!\perp  Y$, then $E(Y \mid X) = E(Y)$ (a constant). $\to$ \hyperref[sec:adams-law-tower-property]{Adam's law (tower property)}, \hyperref[sec:eves-law-law-of-total-variance]{Eve's law (law of total variance)}.
+
+\subsection{Adam's law (tower property)}\label{sec:adams-law-tower-property}
+
+\textbf{Definition.} $E(E(Y \mid X)) = E(Y)$ --- averaging the conditional expectation over $X$ recovers the unconditional expectation. (Also called the tower property or law of iterated expectation.)
+
+\textbf{Intuition.} The expectation version of the law of total probability: break the problem into cases via $X$, take the mean in each case, then average those means weighted by how likely each case is. It's the main tool for computing a hard $E(Y)$ by conditioning on something convenient.
+
+\textbf{Example.} A hen lays $N \sim \mathrm{Pois}(\lambda )$ eggs, each hatching independently with probability $p$. Then $E(\text{hatched} \mid N) = N\cdot p$, so $E(\text{hatched}) = E(N\cdot p) = \lambda p$ --- no messy double sum. (This is the ``chicken--egg'' problem; remarkably, the hatched and unhatched counts turn out to be independent Poissons.)
+
+\textbf{Notes.} Also handles a \textbf{random sum} $S = X_{1} + \ldots  + X_N$ with random $N$: $E(S) = E(N)\cdot E(X)$. $\to$ \hyperref[sec:conditional-expectation]{Conditional expectation}, \hyperref[sec:eves-law-law-of-total-variance]{Eve's law (law of total variance)}, \hyperref[sec:law-of-total-probability]{Law of total probability}.
+
+\subsection{Eve's law (law of total variance)}\label{sec:eves-law-law-of-total-variance}
+
+\textbf{Definition.} $\mathrm{Var}(Y) = E[\mathrm{Var}(Y \mid X)] + \mathrm{Var}[E(Y \mid X)]$ --- ``the mean of the conditional variance plus the variance of the conditional mean.''
+
+\textbf{Intuition.} Total variability decomposes into \textbf{within-group} variability (average scatter inside each group) plus \textbf{between-group} variability (how much the group means themselves differ). This is precisely the decomposition ANOVA tests, and the same split that LDA optimizes.
+
+\textbf{Example.} Test scores across schools: total variance = the average variance within schools + the variance among school averages. If all schools had identical means, only the first term would survive.
+
+\textbf{Notes.} The mnemonic pairing: \textbf{Adam's law} for means, \textbf{Eve's law} for variances. $\to$ \hyperref[sec:adams-law-tower-property]{Adam's law (tower property)}, ANOVA (analysis of variance) (stat), Linear discriminant analysis (LDA) (stat).
+
+\subsection{Waiting for HH vs HT}\label{sec:waiting-for-hh-vs-ht}
+
+\textbf{Definition.} Flipping a fair coin, the expected number of flips to first see \textbf{HH} is \textbf{6}, but to first see \textbf{HT} is only \textbf{4} --- even though each pattern has probability $1/4$ in any two given flips.
+
+\textbf{Intuition.} The asymmetry is about \textbf{overlap and restarting}. For $HT$: once you get a head, you simply wait for the next tail, and every intervening head keeps you ``in position.'' For $HH$: a head followed by a tail destroys your progress entirely and you start over. Patterns that can overlap themselves take longer to appear.
+
+\textbf{Example.} Solve by conditioning on the first flip(s) and setting up equations in the expected waits --- the same first-step conditioning as gambler's ruin.
+
+\textbf{Notes.} A sharp reminder that ``equally likely in a fixed window'' $\neq$ ``equally quick to arrive.'' $\to$ \hyperref[sec:conditional-expectation]{Conditional expectation}, \hyperref[sec:gamblers-ruin]{Gambler's ruin}.
+
+\subsection{Two envelope paradox}\label{sec:two-envelope-paradox}
+
+\textbf{Definition.} Two envelopes, one holding twice the other. You open one and find $X$. The tempting argument: the other holds $2X$ or $X/2$ with probability 1/2 each, so its expected value is $1.25X > X$ --- so always switch. But the same argument applies to the other envelope, which is absurd.
+
+\textbf{Intuition.} The flaw is conditioning sloppily: $P(\text{other} = 2X \mid X = x)$ is generally \textbf{not} 1/2, because the amount you observed is itself evidence about which envelope you hold. Writing the argument with a genuine prior over the amounts makes the paradox dissolve --- and for any proper prior the switching advantage can't hold for every $x$. Unconditionally, by symmetry, both envelopes have the same expectation.
+
+\textbf{Example.} With no prior at all (an ``improper uniform over all amounts''), expectations are infinite and the arithmetic is meaningless --- the paradox rests on a distribution that can't exist.
+
+\textbf{Notes.} A cautionary example about mixing conditional and unconditional reasoning. $\to$ \hyperref[sec:conditional-expectation]{Conditional expectation}, \hyperref[sec:common-conditional-probability-mistakes]{Common conditional-probability mistakes}.
+
+
+\section{Inequalities and Limit Theorems}
+
+\subsection{Moment generating functions (MGFs)}\label{sec:moment-generating-functions-mgfs}
+
+\textbf{Definition.} $M_X(t) = E(e^{tX})$, when finite in an interval around $t = 0$. Two key properties: the \textbf{$n$-th derivative at 0 gives the $n$-th moment}, $M^{n}(0) = E(X^{n})$; and the MGF \textbf{determines the distribution} uniquely.
+
+\textbf{Intuition.} A transform that packages all the moments into one function. Its superpower is sums: for independent $X, Y$, $M_{X+Y}(t) = M_X(t)\cdot M_Y(t)$ --- convolution becomes multiplication, which turns hard distribution-of-a-sum problems into easy algebra.
+
+\textbf{Example.} $X \sim \mathrm{Expo}(\lambda )$ has $M(t) = \lambda /(\lambda  - t)$ for $t < \lambda$; differentiating at 0 gives $E(X) = 1/\lambda$ and $E(X^{2}) = 2/\lambda ^{2}$, so $\mathrm{Var} = 1/\lambda ^{2}$. Multiplying two Poisson MGFs immediately shows $\mathrm{Pois}(\lambda _{1}) + \mathrm{Pois}(\lambda _{2}) = \mathrm{Pois}(\lambda _{1}+\lambda _{2})$.
+
+\textbf{Notes.} Not every distribution has one (the Cauchy and LogNormal don't); the characteristic function always exists. $\to$ \hyperref[sec:convolutions-sums-of-random-variables]{Convolutions (sums of random variables)}, \hyperref[sec:central-limit-theorem]{Central limit theorem}.
+
+\subsection{Four inequalities (Cauchy-Schwarz, Jensen, Markov, Chebyshev)}\label{sec:four-inequalities-cauchy-schwarz-jensen-markov-chebyshev}
+
+\textbf{Definition.} Four bounds that hold with minimal assumptions:
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{Cauchy-Schwarz:} $|E(XY)| \leq  \sqrt{E(X^{2})\cdot E(Y^{2})}$ --- equivalently $|\mathrm{Corr}| \leq  1$.
+\item \textbf{Jensen:} for \textbf{convex} $g$, $E(g(X)) \geq  g(E(X))$ (reversed for concave $g$).
+\item \textbf{Markov:} for $X \geq  0$ and $a > 0$, $P(X \geq  a) \leq  E(X)/a$.
+\item \textbf{Chebyshev:} $P(|X - \mu | \geq  a) \leq  \sigma ^{2}/a^{2}$ --- equivalently $P(|X - \mu | \geq  k\sigma ) \leq  1/k^{2}$.
+\end{itemize}
+
+\textbf{Intuition.} Markov needs only the mean, Chebyshev only mean and variance --- so they apply to \textit{any} distribution, at the cost of being loose. Jensen explains why $E(X^{2}) \geq  (E X)^{2}$ (hence $\mathrm{Var} \geq  0$) and why $E(1/X) \geq  1/E(X)$.
+
+\textbf{Example.} Chebyshev with $k = 2$: \textbf{at least 75\%} of any distribution's mass lies within 2 SDs of the mean --- compare the normal's 95\%. The gap shows how much the bound gives up for full generality.
+
+\textbf{Notes.} Chebyshev is the standard route to proving the weak law of large numbers. $\to$ \hyperref[sec:law-of-large-numbers]{Law of large numbers}, \hyperref[sec:variance-and-standard-deviation]{Variance and standard deviation}.
+
+\subsection{Law of large numbers}\label{sec:law-of-large-numbers}
+
+\textbf{Definition.} For iid $X_{1}, X_{2}, \ldots$ with mean $\mu$, the sample mean $\bar{X}_{n} = (1/n)\sum X_{i}$ converges to $\mu$ as $n \to  \infty$ (weak law: in probability; strong law: almost surely).
+
+\textbf{Intuition.} Averaging washes out noise --- the guarantee that empirical averages approach true means, which is what licenses estimating anything from data at all. Note it governs the \textbf{average}, not the total: the \textit{count} of heads drifts ever further from $n/2$ in absolute terms even as the \textit{proportion} homes in on 1/2 (there's no ``law of averages'' correcting a run of bad luck).
+
+\textbf{Example.} Flip a fair coin 10,000 times: the proportion of heads will be very near 0.5, though the absolute surplus of heads may well be in the dozens.
+
+\textbf{Notes.} Requires a finite mean --- it \textbf{fails} for the Cauchy. $\to$ \hyperref[sec:central-limit-theorem]{Central limit theorem}, \hyperref[sec:four-inequalities-cauchy-schwarz-jensen-markov-chebyshev]{Four inequalities (Cauchy-Schwarz, Jensen, Markov, Chebyshev)}, The bootstrap (stat).
+
+\subsection{Central limit theorem}\label{sec:central-limit-theorem}
+
+\textbf{Definition.} For iid $X_{1}, \ldots , X_{n}$ with mean $\mu$ and finite variance $\sigma ^{2}$, the standardized sample mean converges in distribution to a standard normal:
+$(\bar{X}_{n} - \mu ) / (\sigma /\sqrt{n}) \to  N(0, 1)$. Equivalently, $\bar{X}_{n} \approx  N(\mu , \sigma ^{2}/n)$ for large $n$.
+
+\textbf{Intuition.} The reason the normal distribution is everywhere: sums and averages of many independent contributions are approximately normal \textbf{regardless of the original distribution's shape}. The LLN says the average converges to $\mu$; the CLT says \textit{how} it converges --- the error shrinks like $1/\sqrt{n}$ and has a normal shape.
+
+\textbf{Example.} Average 30 rolls of a fair die ($\mu  = 3.5$, $\sigma ^{2} = 2.92$): $\bar{X} \approx  N(3.5, 2.92/30) = N(3.5, 0.097)$, $\mathrm{SD} \approx  0.31$ --- bell-shaped, even though a single die is uniform.
+
+\textbf{Notes.} The $\sigma /\sqrt{n}$ here is exactly the \textbf{standard error}, which is why confidence intervals and t-tests work. Needs finite variance --- it fails for the Cauchy. $\to$ \hyperref[sec:normal-distribution-and-standardization]{Normal distribution and standardization}, \hyperref[sec:law-of-large-numbers]{Law of large numbers}, Standard error and the sampling distribution of the mean (stat), Confidence interval (stat).
+
+
+\section{Markov Chains}
+
+\subsection{Markov chain and transition matrix}\label{sec:markov-chain-and-transition-matrix}
+
+\textbf{Definition.} A sequence of r.v.s $X_{0}, X_{1}, X_{2}, \ldots$ on a state space with the \textbf{Markov property}: $P(X_{n+1} = j \mid X_{n} = i, \text{past}) = P(X_{n+1} = j \mid X_{n} = i) = q_{ij}$. The $q_{ij}$ form the \textbf{transition matrix} $Q$, whose rows are probability distributions (each row sums to 1).
+
+\textbf{Intuition.} ``Given the present, the future is independent of the past'' --- the current state is a sufficient summary of history. That memorylessness is what makes chains tractable. Matrix powers give multi-step behavior: the $(i,j)$ entry of $Q^{n}$ is the probability of going from $i$ to $j$ in $n$ steps.
+
+\textbf{Example.} Weather with states \{sunny, rainy\} and $Q = [[0.9, 0.1], [0.5, 0.5]]$: from sunny, tomorrow is sunny with probability 0.9. Two days out, read off $Q^{2}$.
+
+\textbf{Notes.} Random walks and gambler's ruin are Markov chains (with absorbing states). $\to$ \hyperref[sec:stationary-distribution]{Stationary distribution}, \hyperref[sec:gamblers-ruin]{Gambler's ruin}, Matrix multiplication (composition) (linear algebra notes).
+
+\subsection{Stationary distribution}\label{sec:stationary-distribution}
+
+\textbf{Definition.} A distribution $s$ (a row vector) is \textbf{stationary} if $s\cdot Q = s$ --- applying one step leaves it unchanged. For an irreducible chain with finite state space, a unique stationary distribution exists, and $Q^{n}$ converges so the chain's long-run fraction of time in state $i$ is $s_{i}$.
+
+\textbf{Intuition.} Equilibrium: once the chain is distributed according to $s$, it stays there forever, and from \textit{any} start it converges toward $s$ (given aperiodicity). This is the chain's long-run behavior --- where it spends its time regardless of where it began.
+
+\textbf{Example.} For $Q = [[0.9, 0.1], [0.5, 0.5]]$, solving $s\cdot Q = s$ with $s_{1} + s_{2} = 1$ gives $s = (5/6, 1/6)$ --- sunny about 83\% of days in the long run.
+
+\textbf{Notes.} $s$ is a \textbf{left eigenvector of $Q$ with eigenvalue 1} --- the linear-algebra view of equilibrium. The basis of MCMC. $\to$ \hyperref[sec:markov-chain-and-transition-matrix]{Markov chain and transition matrix}, Eigenvectors and eigenvalues (linear algebra notes), \hyperref[sec:pagerank-as-a-markov-chain]{PageRank as a Markov chain}.
+
+\subsection{Irreducibility, recurrence, and transience}\label{sec:irreducibility-recurrence-and-transience}
+
+\textbf{Definition.} A chain is \textbf{irreducible} if every state can reach every other state (in some number of steps). A state is \textbf{recurrent} if the chain returns to it with probability 1, and \textbf{transient} if there's positive probability of never returning.
+
+\textbf{Intuition.} Irreducibility means the chain doesn't get stuck in a subset of states --- it's the condition guaranteeing a \textit{unique} stationary distribution. In a finite irreducible chain every state is recurrent (it will be revisited infinitely often); transient states leak probability away to somewhere they can't come back from.
+
+\textbf{Example.} Random walk on a line: in \textbf{1-D and 2-D} it is recurrent (returns to the origin with probability 1); in \textbf{3-D and above} it is transient (positive probability of never returning) --- ``a drunk man finds his way home, a drunk bird may not.''
+
+\textbf{Notes.} An \textbf{absorbing} state (like broke in gambler's ruin) makes the chain reducible. $\to$ \hyperref[sec:stationary-distribution]{Stationary distribution}, \hyperref[sec:gamblers-ruin]{Gambler's ruin}.
+
+\subsection{Reversibility}\label{sec:reversibility}
+
+\textbf{Definition.} A chain is \textbf{reversible} with respect to $s$ if it satisfies \textbf{detailed balance}: $s_{i}\cdot q_{ij} = s_{j}\cdot q_{ji}$ for all states $i, j$. Detailed balance \textbf{implies} $s$ is stationary.
+
+\textbf{Intuition.} The flow of probability from $i$ to $j$ exactly balances the flow back --- run the chain backwards and it looks statistically identical. It's a much easier condition to \textit{check or construct} than solving $sQ = s$, which is why MCMC algorithms (Metropolis-Hastings) are built to satisfy it by design.
+
+\textbf{Example (random walk on a network).} On an undirected graph where each step moves to a uniformly random neighbor, the chain is reversible with $s_{i} \propto  \mathrm{deg}(i)$ --- the stationary probability of a node is proportional to its degree. Well-connected nodes are visited more.
+
+\textbf{Notes.} Reversibility is sufficient but not necessary for stationarity --- some chains have a stationary distribution without detailed balance. $\to$ \hyperref[sec:stationary-distribution]{Stationary distribution}, \hyperref[sec:pagerank-as-a-markov-chain]{PageRank as a Markov chain}.
+
+\subsection{PageRank as a Markov chain}\label{sec:pagerank-as-a-markov-chain}
+
+\textbf{Definition.} Model web surfing as a Markov chain: from a page, follow a uniformly random outgoing link. \textbf{PageRank} is the stationary distribution of a modified chain that with probability $\alpha$ follows a link and with probability $1 - \alpha$ teleports to a uniformly random page.
+
+\textbf{Intuition.} A page's rank is the long-run fraction of time a random surfer spends there --- importance defined recursively, since links from important pages count for more. The \textbf{teleportation} term is the fix that makes the chain irreducible and aperiodic (real web graphs have dangling pages and disconnected pieces), guaranteeing a unique stationary distribution.
+
+\textbf{Example.} With $\alpha  \approx  0.85$, PageRank is computed by repeatedly multiplying a distribution vector by the transition matrix until it converges --- the power method finding the leading eigenvector.
+
+\textbf{Notes.} A famous industrial application of the eigenvector/stationary-distribution idea. $\to$ \hyperref[sec:stationary-distribution]{Stationary distribution}, Eigenvectors and eigenvalues (linear algebra notes), \hyperref[sec:irreducibility-recurrence-and-transience]{Irreducibility, recurrence, and transience}.
+
+
+\section{Glossary}
+
+\begin{description}[leftmargin=0pt,style=unboxed]
+\item[\textbf{Adam's law (tower property)}]\hfill\\ $E(E(Y|X)) = E(Y)$. $\to$ \hyperref[sec:adams-law-tower-property]{Adam's law (tower property)}.
+\item[\textbf{Bayes' rule}]\hfill\\ reverses a conditional: $P(A|B) = P(B|A)P(A)/P(B)$. $\to$ \hyperref[sec:bayes-rule]{Bayes' rule}.
+\item[\textbf{Base rate neglect}]\hfill\\ ignoring a rare prior, inflating the posterior. $\to$ \hyperref[sec:base-rates-and-the-disease-testing-example]{Base rates and the disease-testing example}.
+\item[\textbf{Bernoulli distribution}]\hfill\\ single 0/1 trial; $E = p$, $\mathrm{Var} = \text{pq}$. $\to$ \hyperref[sec:bernoulli-distribution]{Bernoulli distribution}.
+\item[\textbf{Beta distribution}]\hfill\\ distribution on $[0,1]$; conjugate prior for the binomial. $\to$ \hyperref[sec:beta-distribution-and-conjugate-priors]{Beta distribution and conjugate priors}.
+\item[\textbf{Binomial coefficient}]\hfill\\ $C(n,k) = n!/((n-k)!k!)$; unordered subsets. $\to$ \hyperref[sec:binomial-coefficient]{Binomial coefficient}.
+\item[\textbf{Binomial distribution}]\hfill\\ successes in $n$ iid trials; $E = \text{np}$, $\mathrm{Var} = \text{npq}$. $\to$ \hyperref[sec:binomial-distribution]{Binomial distribution}.
+\item[\textbf{Birthday problem}]\hfill\\ 23 people give ~50.7\% chance of a shared birthday. $\to$ \hyperref[sec:birthday-problem]{Birthday problem}.
+\item[\textbf{Cauchy distribution}]\hfill\\ ratio of two normals; no mean or variance. $\to$ \hyperref[sec:cauchy-lognormal-chi-square-student-t]{Cauchy, LogNormal, Chi-square, Student-t}.
+\item[\textbf{CDF}]\hfill\\ $F(x) = P(X \leq  x)$; works for discrete and continuous alike. $\to$ \hyperref[sec:pmf-and-cdf]{PMF and CDF}.
+\item[\textbf{Central limit theorem}]\hfill\\ standardized sample means $\to$ $N(0,1)$. $\to$ \hyperref[sec:central-limit-theorem]{Central limit theorem}.
+\item[\textbf{Chebyshev's inequality}]\hfill\\ $P(|X-\mu | \geq  k\sigma ) \leq  1/k^{2}$, for any distribution. $\to$ \hyperref[sec:four-inequalities-cauchy-schwarz-jensen-markov-chebyshev]{Four inequalities (Cauchy-Schwarz, Jensen, Markov, Chebyshev)}.
+\item[\textbf{Chi-square / Student-t}]\hfill\\ sums of squared normals; normal with estimated SD. $\to$ \hyperref[sec:cauchy-lognormal-chi-square-student-t]{Cauchy, LogNormal, Chi-square, Student-t}.
+\item[\textbf{Conditional expectation}]\hfill\\ $E(Y|X)$ is itself a random variable. $\to$ \hyperref[sec:conditional-expectation]{Conditional expectation}.
+\item[\textbf{Conditional independence}]\hfill\\ independence given $C$; neither implies plain independence. $\to$ \hyperref[sec:conditional-independence]{Conditional independence}.
+\item[\textbf{Conditional probability}]\hfill\\ $P(A|B) = P(A\cap B)/P(B)$; renormalize on $B$. $\to$ \hyperref[sec:conditional-probability]{Conditional probability}.
+\item[\textbf{Convolution}]\hfill\\ distribution of a sum of independent r.v.s. $\to$ \hyperref[sec:convolutions-sums-of-random-variables]{Convolutions (sums of random variables)}.
+\item[\textbf{Coupon collector}]\hfill\\ $E = n\cdot H_n \approx  n \mathrm{ln} n$ draws to collect all $n$. $\to$ \hyperref[sec:coupon-collector-problem]{Coupon collector problem}.
+\item[\textbf{Covariance / correlation}]\hfill\\ $E(XY) - E(X)E(Y)$; normalized to $[-1,1]$. $\to$ \hyperref[sec:covariance-and-correlation]{Covariance and correlation}.
+\item[\textbf{Eve's law (total variance)}]\hfill\\ $\mathrm{Var}(Y) = E[\mathrm{Var}(Y|X)] + \mathrm{Var}[E(Y|X)]$. $\to$ \hyperref[sec:eves-law-law-of-total-variance]{Eve's law (law of total variance)}.
+\item[\textbf{Expected value}]\hfill\\ probability-weighted average of a r.v.'s values. $\to$ \hyperref[sec:expected-value]{Expected value}.
+\item[\textbf{Exponential distribution}]\hfill\\ waiting time in a Poisson process; memoryless. $\to$ \hyperref[sec:exponential-distribution-and-memorylessness]{Exponential distribution and memorylessness}.
+\item[\textbf{Fundamental bridge}]\hfill\\ $E(I_A) = P(A)$; links expectation and probability. $\to$ \hyperref[sec:indicator-random-variables-and-the-fundamental-bridge]{Indicator random variables and the fundamental bridge}.
+\item[\textbf{Gambler's ruin}]\hfill\\ first-step conditioning gives $p_{i} = i/n$ in a fair game. $\to$ \hyperref[sec:gamblers-ruin]{Gambler's ruin}.
+\item[\textbf{Gamma distribution}]\hfill\\ wait for the $a$-th Poisson event; sum of exponentials. $\to$ \hyperref[sec:gamma-distribution]{Gamma distribution}.
+\item[\textbf{Geometric / First Success}]\hfill\\ failures before (or trials until) the first success. $\to$ \hyperref[sec:geometric-and-first-success-distributions]{Geometric and First Success distributions}.
+\item[\textbf{Hypergeometric distribution}]\hfill\\ sampling without replacement; dependent trials. $\to$ \hyperref[sec:hypergeometric-distribution]{Hypergeometric distribution}.
+\item[\textbf{Inclusion-exclusion}]\hfill\\ alternate adding and subtracting overlaps. $\to$ \hyperref[sec:inclusion-exclusion]{Inclusion-exclusion}.
+\item[\textbf{Independence (events)}]\hfill\\ $P(A\cap B) = P(A)P(B)$; not the same as disjoint. $\to$ \hyperref[sec:independence]{Independence}.
+\item[\textbf{Indicator r.v.}]\hfill\\ $I_A \in  \{0,1\}$; the workhorse of linearity arguments. $\to$ \hyperref[sec:indicator-random-variables-and-the-fundamental-bridge]{Indicator random variables and the fundamental bridge}.
+\item[\textbf{Jensen's inequality}]\hfill\\ $E(g(X)) \geq  g(E(X))$ for convex $g$. $\to$ \hyperref[sec:four-inequalities-cauchy-schwarz-jensen-markov-chebyshev]{Four inequalities (Cauchy-Schwarz, Jensen, Markov, Chebyshev)}.
+\item[\textbf{Joint / marginal / conditional}]\hfill\\ full distribution, its shadows, its slices. $\to$ \hyperref[sec:joint-marginal-and-conditional-distributions]{Joint, marginal, and conditional distributions}.
+\item[\textbf{Law of large numbers}]\hfill\\ sample means converge to the true mean. $\to$ \hyperref[sec:law-of-large-numbers]{Law of large numbers}.
+\item[\textbf{Law of total probability}]\hfill\\ $P(A) = \sum  P(A|B_{i})P(B_{i})$ over a partition. $\to$ \hyperref[sec:law-of-total-probability]{Law of total probability}.
+\item[\textbf{Linearity of expectation}]\hfill\\ $E(aX+bY) = aE(X)+bE(Y)$, independence not required. $\to$ \hyperref[sec:linearity-of-expectation]{Linearity of expectation}.
+\item[\textbf{LOTUS}]\hfill\\ $E(g(X)) = \sum  g(x)P(X=x)$; no need for $g(X)$'s distribution. $\to$ \hyperref[sec:lotus-law-of-the-unconscious-statistician]{LOTUS (law of the unconscious statistician)}.
+\item[\textbf{Markov chain}]\hfill\\ future depends on the past only through the present. $\to$ \hyperref[sec:markov-chain-and-transition-matrix]{Markov chain and transition matrix}.
+\item[\textbf{Markov's inequality}]\hfill\\ $P(X \geq  a) \leq  E(X)/a$ for $X \geq  0$. $\to$ \hyperref[sec:four-inequalities-cauchy-schwarz-jensen-markov-chebyshev]{Four inequalities (Cauchy-Schwarz, Jensen, Markov, Chebyshev)}.
+\item[\textbf{Matching problem}]\hfill\\ $P(\text{at least one match}) \to  1 - 1/e \approx  0.632$. $\to$ \hyperref[sec:matching-problem-de-montmort]{Matching problem (de Montmort)}.
+\item[\textbf{Memorylessness}]\hfill\\ $P(X > s+t \mid X > s) = P(X > t)$; exponential and geometric only. $\to$ \hyperref[sec:exponential-distribution-and-memorylessness]{Exponential distribution and memorylessness}.
+\item[\textbf{MGF}]\hfill\\ $M(t) = E(e^{tX})$; generates moments, turns sums into products. $\to$ \hyperref[sec:moment-generating-functions-mgfs]{Moment generating functions (MGFs)}.
+\item[\textbf{Monty Hall}]\hfill\\ switching wins with probability 2/3. $\to$ \hyperref[sec:monty-hall-problem]{Monty Hall problem}.
+\item[\textbf{Multinomial distribution}]\hfill\\ binomial with $k$ categories; lumping property. $\to$ \hyperref[sec:multinomial-distribution]{Multinomial distribution}.
+\item[\textbf{Multiplication (chain) rule}]\hfill\\ $P(A_{1}\ldots A_{n}) = P(A_{1})P(A_{2}|A_{1})P(A_{3}|A_{1},A_{2})\ldots$. $\to$ \hyperref[sec:multiplication-chain-rule]{Multiplication (chain) rule}.
+\item[\textbf{Multiplication rule (counting)}]\hfill\\ choices compound: $n_{1}\cdot n_{2}\cdot \ldots \cdot n_r$. $\to$ \hyperref[sec:multiplication-rule-counting]{Multiplication rule (counting)}.
+\item[\textbf{Naive definition}]\hfill\\ favorable / total, assuming equally likely finite outcomes. $\to$ \hyperref[sec:naive-definition-of-probability]{Naive definition of probability}.
+\item[\textbf{Negative binomial}]\hfill\\ failures before the $r$-th success; sum of geometrics. $\to$ \hyperref[sec:negative-binomial-distribution]{Negative binomial distribution}.
+\item[\textbf{Newton-Pepys}]\hfill\\ at least one 6 in 6 dice is likeliest, not three in 18. $\to$ \hyperref[sec:newton-pepys-dice-problem]{Newton-Pepys dice problem}.
+\item[\textbf{Normal distribution}]\hfill\\ bell curve $N(\mu ,\sigma ^{2})$; standardize via $Z = (X-\mu )/\sigma$. $\to$ \hyperref[sec:normal-distribution-and-standardization]{Normal distribution and standardization}.
+\item[\textbf{Order statistics}]\hfill\\ the sorted values $X_{(1)} \leq  \ldots  \leq  X_{(n)}$. $\to$ \hyperref[sec:order-statistics]{Order statistics}.
+\item[\textbf{PageRank}]\hfill\\ stationary distribution of a random surfer with teleportation. $\to$ \hyperref[sec:pagerank-as-a-markov-chain]{PageRank as a Markov chain}.
+\item[\textbf{PDF}]\hfill\\ density; probability is area under it, not height. $\to$ \hyperref[sec:probability-density-function-pdf]{Probability density function (PDF)}.
+\item[\textbf{PMF}]\hfill\\ $p(x) = P(X = x)$ for a discrete r.v. $\to$ \hyperref[sec:pmf-and-cdf]{PMF and CDF}.
+\item[\textbf{Poisson distribution}]\hfill\\ rare-event counts; $E = \mathrm{Var} = \lambda$. $\to$ \hyperref[sec:poisson-distribution]{Poisson distribution}.
+\item[\textbf{Poisson process}]\hfill\\ $\mathrm{Pois}(\lambda t)$ counts with $\mathrm{Expo}(\lambda )$ gaps. $\to$ \hyperref[sec:poisson-approximation-and-the-poisson-process]{Poisson approximation and the Poisson process}.
+\item[\textbf{Probability space}]\hfill\\ $(S, P)$ with the two axioms. $\to$ \hyperref[sec:probability-space-and-axioms]{Probability space and axioms}.
+\item[\textbf{Random variable}]\hfill\\ a function from the sample space to the reals. $\to$ \hyperref[sec:random-variable]{Random variable}.
+\item[\textbf{Recurrence / transience}]\hfill\\ returns with probability 1, or may never return. $\to$ \hyperref[sec:irreducibility-recurrence-and-transience]{Irreducibility, recurrence, and transience}.
+\item[\textbf{Reversibility (detailed balance)}]\hfill\\ $s_{i}q_{ij} = s_{j}q_{ji}$ implies stationarity. $\to$ \hyperref[sec:reversibility]{Reversibility}.
+\item[\textbf{Sample space / event}]\hfill\\ all outcomes; a subset of them. $\to$ \hyperref[sec:sample-space-and-events]{Sample space and events}.
+\item[\textbf{Sampling table}]\hfill\\ four counts by replacement $\times$ order. $\to$ \hyperref[sec:sampling-table-four-cases]{Sampling table (four cases)}.
+\item[\textbf{Simpson's paradox}]\hfill\\ subgroup associations reverse when pooled. $\to$ \hyperref[sec:simpsons-paradox]{Simpson's paradox}.
+\item[\textbf{St. Petersburg paradox}]\hfill\\ infinite expected value, trivial real-world worth. $\to$ \hyperref[sec:st-petersburg-paradox]{St. Petersburg paradox}.
+\item[\textbf{Stationary distribution}]\hfill\\ $sQ = s$; the chain's long-run equilibrium. $\to$ \hyperref[sec:stationary-distribution]{Stationary distribution}.
+\item[\textbf{Story proof}]\hfill\\ prove an identity by counting the same set two ways. $\to$ \hyperref[sec:story-proofs]{Story proofs}.
+\item[\textbf{Transformations (change of variables)}]\hfill\\ $f_Y(y) = f_X(x)|dx/dy|$. $\to$ \hyperref[sec:transformations-change-of-variables]{Transformations (change of variables)}.
+\item[\textbf{Two envelope paradox}]\hfill\\ sloppy conditioning makes switching look free. $\to$ \hyperref[sec:two-envelope-paradox]{Two envelope paradox}.
+\item[\textbf{Uniform distribution}]\hfill\\ flat density; the basis of simulation. $\to$ \hyperref[sec:uniform-distribution]{Uniform distribution}.
+\item[\textbf{Universality of the uniform}]\hfill\\ $F(X) \sim \mathrm{Unif}(0,1)$ and $F^{-1}(U) \sim X$. $\to$ \hyperref[sec:universality-of-the-uniform]{Universality of the uniform}.
+\item[\textbf{Variance / SD}]\hfill\\ $E(X^{2}) - (E X)^{2}$; spread about the mean. $\to$ \hyperref[sec:variance-and-standard-deviation]{Variance and standard deviation}.
+\item[\textbf{Variance of a sum}]\hfill\\ $\mathrm{Var}(X+Y) = \mathrm{Var}(X)+\mathrm{Var}(Y)+2\mathrm{Cov}(X,Y)$. $\to$ \hyperref[sec:variance-of-a-sum]{Variance of a sum}.
+\item[\textbf{Waiting for HH vs HT}]\hfill\\ 6 flips vs 4; overlap makes HH slower. $\to$ \hyperref[sec:waiting-for-hh-vs-ht]{Waiting for HH vs HT}.
+\end{description}
+
+
+\end{document}

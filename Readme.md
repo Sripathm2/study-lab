@@ -126,7 +126,7 @@ Listed by title only (links move over time and are easy to find by name). Checke
 - [x] **StatQuest** (Josh Starmer) — videos
 - [ ] **Ian Goodfellow et al. — Deep Learning**
 - [x] **Ron Kohavi et al. — Trustworthy Online Controlled Experiments**
-- [ ] **Harvard Stat 110 — Probability** (Joe Blitzstein) — ch. 1–4 & 6–8
+- [x] **Harvard Stat 110 — Probability** (Joe Blitzstein) — ch. 1–4 & 6–8
 - [x] **3Blue1Brown — Essence of Linear Algebra**
 - [x] **3Blue1Brown — Essence of Calculus**
 - [x] **3Blue1Brown — Differential Equations**

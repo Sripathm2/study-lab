@@ -49,10 +49,12 @@
   {\end{longtable}}
 
 \newcommand{\T}{\mathsf{T}}
+\newcommand{\indep}{\perp\!\!\!\perp}
 
 \title{\vspace{-2em}\textbf{Notations — Cheat Sheet}\\[0.3em]
-       \large\normalfont Symbols used across the Linear Algebra, Statistics,
-       Machine Learning, Algorithms, Data Structures and Problems notes}
+       \large\normalfont Symbols used across the Linear Algebra, Probability,
+       Statistics, Machine Learning, Algorithms, Data Structures and Problems
+       notes}
 \author{}
 \date{}
 
@@ -88,7 +90,8 @@ $\mathbb{1}(\cdot)$ & Indicator: $1$ when the condition holds, $0$ otherwise. \\
 $\approx,\ \propto,\ \equiv$ & Approximately; proportional to; identically equal / defined as. \\
 $\ll,\ \gg$ & Much less than; much greater than. \\
 $n!$ & Factorial, $n\cdot(n-1)\cdots 1$. \\
-$\binom{n}{k}$ & Binomial coefficient, ``$n$ choose $k$''. \\
+$\binom{n}{k}$ & Binomial coefficient, ``$n$ choose $k$''. Written $C(n,k)$ in the probability notes. \\
+$H_n$ & Harmonic number, $1 + \tfrac12 + \dots + \tfrac1n \approx \ln n$. Appears in the coupon-collector bound. \\
 $\log,\ \ln,\ \log_2$ & Logarithm (base implied by context); natural log; base-2 log. \\
 $e^{x},\ \exp(x)$ & The exponential function. \\
 $\to$ & In the notes' prose, ``see also'' (a cross-reference to another concept), \emph{not} a limit or a mapping. \\
@@ -113,7 +116,7 @@ $I$ & Identity matrix (the transformation that does nothing). \\
 $\operatorname{rank}(A)$ & Dimension of the column space — how many dimensions survive $A$. \\
 $\operatorname{null}(A)$ & Null space / kernel: all $\mathbf{x}$ with $A\mathbf{x}=\mathbf{0}$. \\
 $\operatorname{span}\{\mathbf{v},\mathbf{w}\}$ & All linear combinations $a\mathbf{v}+b\mathbf{w}$. \\
-$\lambda$ & Eigenvalue: the stretch factor along an eigenvector, $A\mathbf{v}=\lambda\mathbf{v}$. (Also used for the regularisation strength — see \S\ref{sec:modelsel}.) \\
+$\lambda$ & Eigenvalue: the stretch factor along an eigenvector, $A\mathbf{v}=\lambda\mathbf{v}$. (Also used for the regularisation strength — see \S\ref{sec:modelsel} — and for the Poisson/exponential rate — see \S\ref{sec:dists}.) \\
 $\Sigma$ & Covariance matrix (uppercase sigma). Distinguish from $\sum$, the summation sign. \\
 $\Sigma^{-1}$ & Precision matrix — appears in the LDA/QDA discriminants. \\
 $\begin{bmatrix}a & b\\ c & d\end{bmatrix}$ & A $2\times2$ matrix; its \emph{columns} $[a,c]$ and $[b,d]$ are where $\hat{\imath}$ and $\hat{\jmath}$ land. \\
@@ -131,33 +134,124 @@ $f^{(n)}(a)$ & The $n$-th derivative evaluated at $a$ (Taylor series). \\
 $\displaystyle\int_a^b f(x)\,dx$ & Definite integral — signed area under $f$ from $a$ to $b$. \\
 $\lim_{h\to 0}$ & Limit as $h$ approaches $0$. \\
 $dx,\ \Delta x$ & An infinitesimal / a finite step in $x$. \\
+$|dx/dy|$ & Jacobian factor in a change of variables; keeps total probability at $1$ when a density is transformed. \\
 $\epsilon$ (in calculus) & An arbitrarily small positive quantity. Distinguish from $\varepsilon$, the error term. \\
 \end{symtab}
 
 % ===========================================================================
-\section{Probability and distributions}
+\section{Probability: events and conditioning}
+\label{sec:events}
 
 \begin{symtab}
+$S$ & Sample space — the set of all possible outcomes of an experiment. \\
+$A \subseteq S$ & An event. It \emph{occurs} when the realised outcome lies in $A$. \\
+$A^{c}$ & Complement, ``not $A$''. $\Pr(A^c) = 1-\Pr(A)$ — the workhorse behind every ``at least one'' calculation. \\
+$A \cap B,\ A \cup B$ & Both occur; at least one occurs. \\
+$A \cap B = \emptyset$ & Disjoint (mutually exclusive). \\
 $\Pr(A),\ P(A)$ & Probability of event $A$. \\
-$\Pr(A \mid B)$ & Conditional probability of $A$ \emph{given} $B$. \\
-$X \sim \mathcal{D}$ & The random variable $X$ is distributed according to $\mathcal{D}$. \\
-$\mathcal{N}(\mu,\sigma^2)$ & Normal (Gaussian) distribution with mean $\mu$, variance $\sigma^2$. \\
-$\mathcal{N}(x \mid \mu_k,\Sigma_k)$ & Multivariate normal density evaluated at $x$ — a GMM component. \\
-$\mathbb{E}[X]$ & Expected value (mean) of $X$. \\
-$\operatorname{Var}(X),\ \sigma^2$ & Variance; $\sigma$ is the standard deviation. \\
-$\operatorname{Cov}(X,Y)$ & Covariance. \\
+$\Pr(A, B)$ & Joint probability; shorthand for $\Pr(A \cap B)$. \\
+$\Pr(A \mid B)$ & Conditional probability of $A$ \emph{given} $B$, $= \Pr(A,B)/\Pr(B)$. Read the bar as ``restrict to $B$, then renormalise''. \\
+$A \indep B$ & Independent: $\Pr(A,B) = \Pr(A)\Pr(B)$. \textbf{Not} the same as disjoint — disjoint events with nonzero probability are maximally \emph{dependent}. \\
+$A \indep B \mid C$ & Conditionally independent given $C$. Neither independence nor conditional independence implies the other. \\
+$B_1,\dots,B_n$ & A partition of $S$ used by the law of total probability, $\Pr(A) = \sum_i \Pr(A \mid B_i)\Pr(B_i)$. \\
+prior, posterior & $\Pr(A)$ before evidence; $\Pr(A \mid B)$ after. Bayes' rule converts one into the other. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Probability: random variables and moments}
+\label{sec:rvs}
+
+\begin{symtab}
+$X : S \to \mathbb{R}$ & A random variable — a \emph{function} from outcomes to numbers. Not a number, and not itself random. \\
+$X \sim \mathcal{D}$ & $X$ is distributed according to $\mathcal{D}$. \\
+$p_X(x)$ & Probability mass function (discrete), $\Pr(X = x)$. \\
+$f(x)$ & Probability density function (continuous). A density, \emph{not} a probability — it may exceed $1$; only its integral is a probability. \\
+$F(x)$ & Cumulative distribution function, $\Pr(X \le x)$. Defined for discrete and continuous alike. \\
+$F^{-1}(u)$ & Quantile / inverse CDF. Universality of the uniform: $F(X)\sim\mathrm{Unif}(0,1)$ and $F^{-1}(U)\sim X$ — the basis of inverse-transform sampling. \\
+$I_A$ & Indicator random variable, $1$ if $A$ occurs else $0$. \emph{Fundamental bridge:} $\mathbb{E}[I_A] = \Pr(A)$. \\
+$X_{(k)}$ & The $k$-th order statistic — the $k$-th smallest of $X_1,\dots,X_n$. Sorting makes them dependent even if the originals were not. \\
+$\bar X_n$ & Sample mean of $n$ draws, $\tfrac1n\sum_i X_i$. \\
+$\mathbb{E}[X]$ & Expected value. Need not be an attainable value (a fair die has $\mathbb{E}=3.5$). \\
+$\mathbb{E}[aX+bY]$ & Linearity: $= a\mathbb{E}[X]+b\mathbb{E}[Y]$, \textbf{whether or not} $X$ and $Y$ are independent. \\
+$\mathbb{E}[g(X)]$ & LOTUS: computed as $\sum_x g(x)p_X(x)$ or $\int g(x)f(x)\,dx$, without deriving the distribution of $g(X)$. Note $\mathbb{E}[g(X)] \ne g(\mathbb{E}[X])$ in general. \\
+$\operatorname{Var}(X),\ \sigma^2$ & Variance, $\mathbb{E}[X^2]-(\mathbb{E}[X])^2$. \\
+$\operatorname{SD}(X),\ \sigma$ & Standard deviation, $\sqrt{\operatorname{Var}(X)}$. \\
+$\operatorname{Cov}(X,Y)$ & Covariance, $\mathbb{E}[XY]-\mathbb{E}[X]\mathbb{E}[Y]$. \\
+$\operatorname{Corr}(X,Y)$ & Correlation, $\operatorname{Cov}/(\operatorname{SD}(X)\operatorname{SD}(Y)) \in [-1,1]$. Captures \emph{linear} association only; zero correlation does not imply independence. \\
+$\operatorname{Var}(X+Y)$ & $=\operatorname{Var}(X)+\operatorname{Var}(Y)+2\operatorname{Cov}(X,Y)$. Unlike expectation, variance is \emph{not} linear. \\
+$\mathbb{E}[Y \mid X]$ & Conditional expectation. Written without a value it is \textbf{itself a random variable} (a function of $X$) — which is what lets you take its mean or variance. \\
+$\operatorname{Var}(Y \mid X)$ & Conditional variance. \\
+Adam's law & $\mathbb{E}[\mathbb{E}[Y\mid X]] = \mathbb{E}[Y]$ (tower property / iterated expectation). \\
+Eve's law & $\operatorname{Var}(Y) = \mathbb{E}[\operatorname{Var}(Y\mid X)] + \operatorname{Var}(\mathbb{E}[Y\mid X])$ — within-group plus between-group variability. \\
+$M_X(t)$ & Moment generating function, $\mathbb{E}[e^{tX}]$. $M^{(n)}(0)=\mathbb{E}[X^n]$; determines the distribution; turns sums into products, $M_{X+Y}=M_X M_Y$. \\
 $\mu$ & Population mean. \\
-$f(x),\ F(x)$ & Probability density function; cumulative distribution function. \\
-$f_k(x)$ & Density of the predictors \emph{within} class $k$ (generative classifiers). \\
-$\pi_k$ & Prior probability that an observation belongs to class $k$. \\
-$\lambda$ (Poisson) & Rate / expected count, $\Pr(Y=k)=e^{-\lambda}\lambda^k / k!$. \\
 $\varepsilon$ & Irreducible error term — the part of $Y$ that $X$ can never explain. \\
 $\ell(\theta),\ \log\ell(\theta)$ & Likelihood; log-likelihood. \\
 $\theta$ & A generic parameter (or the full parameter vector of a model). \\
 \end{symtab}
 
 % ===========================================================================
+\section{Named distributions}
+\label{sec:dists}
+
+\begin{symtab}
+$p,\ q = 1-p$ & Success and failure probability of a single trial. (Clashes with $p$ = number of predictors and the $p$-value — see \S\ref{sec:inference}.) \\
+$\lambda$ & Rate: expected count per interval (Poisson) or inverse mean waiting time (exponential, gamma). \\
+$\mathrm{Bern}(p)$ & Bernoulli — one $0/1$ trial. $\mathbb{E}=p$, $\operatorname{Var}=pq$. \\
+$\mathrm{Bin}(n,p)$ & Binomial — successes in $n$ independent trials. $\mathbb{E}=np$, $\operatorname{Var}=npq$. \\
+Hypergeometric & Sampling \emph{without} replacement, so trials are dependent. Same mean as the binomial, smaller variance. \\
+$\mathrm{Geom}(p)$ & Geometric — failures \emph{before} the first success. $\mathbb{E}=q/p$. \\
+$\mathrm{FS}(p)$ & First Success — trials \emph{including} the first success. $\mathbb{E}=1/p$. Watch which convention a source uses. \\
+$\mathrm{NBin}(r,p)$ & Negative binomial — failures before the $r$-th success; a sum of $r$ iid geometrics. \\
+$\mathrm{Pois}(\lambda)$ & Poisson — counts of rare events. $\mathbb{E}=\operatorname{Var}=\lambda$; real count data are often over-dispersed. \\
+Multinomial & Binomial with $K$ categories. Marginals are binomial; counts are negatively correlated. \\
+$\mathrm{Unif}(a,b)$ & Uniform. $\mathbb{E}=(a+b)/2$, $\operatorname{Var}=(b-a)^2/12$. \\
+$\mathcal{N}(\mu,\sigma^2)$ & Normal (Gaussian). Standardise with $Z=(X-\mu)/\sigma \sim \mathcal{N}(0,1)$. \\
+$\mathcal{N}(x \mid \mu_k,\Sigma_k)$ & Multivariate normal density evaluated at $x$ — a GMM component. \\
+$\mathrm{Expo}(\lambda)$ & Exponential — waiting time in a Poisson process. $\mathbb{E}=1/\lambda$. The only \emph{memoryless} continuous distribution. \\
+$\mathrm{Beta}(a,b)$ & Beta — a distribution \emph{over a probability}, on $[0,1]$. Conjugate prior for the binomial: $\mathrm{Beta}(a+k,\,b+n-k)$. \\
+$\mathrm{Gamma}(a,\lambda)$ & Gamma — waiting time until the $a$-th Poisson event; a sum of $a$ exponentials. \\
+$\chi^2_n$ & Chi-square — sum of $n$ squared standard normals. \\
+$t_n$ & Student-$t$ — a normal with an \emph{estimated} standard deviation; heavier tails, $\to\mathcal{N}$ as $n$ grows. \\
+Cauchy & Ratio of two standard normals. \textbf{No mean and no variance} — the LLN and CLT both fail for it. \\
+LogNormal & $e^{X}$ for normal $X$; fits multiplicative processes. \\
+$f_k(x)$ & Density of the predictors \emph{within} class $k$ (generative classifiers). \\
+$\pi_k$ & Prior probability that an observation belongs to class $k$. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Limit theorems and inequalities}
+
+\begin{symtab}
+LLN & Law of large numbers: $\bar X_n \to \mu$. Governs the \emph{average}, not the running total — there is no ``law of averages'' correcting a bad streak. \\
+CLT & Central limit theorem: $(\bar X_n - \mu)/(\sigma/\sqrt{n}) \to \mathcal{N}(0,1)$, whatever the original shape. Needs finite variance. \\
+$\sigma/\sqrt{n}$ & Standard error — the CLT's scaling, and the reason confidence intervals shrink like $1/\sqrt{n}$. \\
+Markov & $\Pr(X \ge a) \le \mathbb{E}[X]/a$ for $X \ge 0$. Needs only the mean. \\
+Chebyshev & $\Pr(|X-\mu| \ge k\sigma) \le 1/k^2$ — at least $75\%$ of \emph{any} distribution lies within $2$ SDs. \\
+Jensen & $\mathbb{E}[g(X)] \ge g(\mathbb{E}[X])$ for convex $g$; reversed for concave. \\
+Cauchy--Schwarz & $|\mathbb{E}[XY]| \le \sqrt{\mathbb{E}[X^2]\mathbb{E}[Y^2]}$; equivalently $|\operatorname{Corr}| \le 1$. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Markov chains}
+
+\begin{symtab}
+$X_0, X_1, X_2,\dots$ & The chain — a sequence of random variables on a state space. \\
+Markov property & $\Pr(X_{n+1}=j \mid X_n=i,\ \text{past}) = \Pr(X_{n+1}=j \mid X_n=i)$. Given the present, the future is independent of the past. \\
+$Q,\ q_{ij}$ & Transition matrix and its entries. Each \emph{row} is a probability distribution and sums to $1$. \\
+$Q^{n}$ & $n$-step transition matrix: entry $(i,j)$ is the probability of reaching $j$ from $i$ in $n$ steps. \\
+$s$ & Stationary distribution (a row vector), defined by $sQ = s$. It is the left eigenvector of $Q$ with eigenvalue $1$. (Clashes with $s$ = sample standard deviation, \S\ref{sec:inference}.) \\
+Irreducible & Every state can reach every other; guarantees a \emph{unique} stationary distribution. \\
+Recurrent / transient & Returns with probability $1$ / may never return. A random walk is recurrent in 1D and 2D, transient in 3D and above. \\
+Absorbing state & A state that cannot be left (broke, in gambler's ruin); makes the chain reducible. \\
+Detailed balance & $s_i q_{ij} = s_j q_{ji}$ — reversibility. Implies stationarity, and is far easier to construct than solving $sQ=s$; this is how Metropolis--Hastings is built. \\
+$\alpha$ (PageRank) & Damping factor ($\approx 0.85$): follow a link with probability $\alpha$, teleport otherwise. The teleport term is what makes the chain irreducible and aperiodic. \\
+MCMC & Markov chain Monte Carlo — sample from a target by building a chain whose stationary distribution \emph{is} the target. \\
+\end{symtab}
+
+% ===========================================================================
 \section{Statistics: estimation and inference}
+\label{sec:inference}
 
 \begin{symtab}
 $n$ & Number of observations (sample size). \\
@@ -175,9 +269,9 @@ $H_0,\ H_a$ & Null hypothesis; alternative hypothesis. \\
 $t$ & $t$-statistic, $(\hat\beta - 0)/\mathrm{SE}(\hat\beta)$. \\
 $z$ & Z-score, $(x-\mu)/\sigma$ — how many standard deviations from the mean. \\
 $F$ & $F$-statistic — tests whether \emph{any} predictor is useful. \\
-$p$-value & $\Pr(\text{a statistic this extreme} \mid H_0 \text{ true})$. Note the clash with $p$ = number of predictors. \\
+$p$-value & $\Pr(\text{a statistic this extreme} \mid H_0 \text{ true})$. Note the clash with $p$ = number of predictors, and with $p$ = success probability in \S\ref{sec:dists}. \\
 $\alpha$ & Significance level (typically $0.05$); also the FWER budget. \\
-$q$ & Target false discovery rate (Benjamini--Hochberg). \\
+$q$ & Target false discovery rate (Benjamini--Hochberg). Distinct from $q=1-p$ in \S\ref{sec:dists}. \\
 $m$ & Number of simultaneous hypothesis tests. \\
 $p_{(j)}$ & The $j$-th smallest $p$-value (order statistic). \\
 $\mathrm{TP},\ \mathrm{FP},\ \mathrm{TN},\ \mathrm{FN}$ & True / false positives and negatives. \\
@@ -218,6 +312,7 @@ Specificity & $\mathrm{TN}/(\mathrm{TN}+\mathrm{FP})$. \\
 FPR & $\mathrm{FP}/(\mathrm{FP}+\mathrm{TN})$; the $x$-axis of an ROC curve. \\
 $F_1$ & Harmonic mean of precision and recall, $2PR/(P+R)$. \\
 AUC & Area under the ROC curve; $0.5$ is random, $1.0$ is perfect. \\
+Base rate & The prior class prevalence. A ``$95\%$ accurate'' test on a $1\%$ disease still yields $\Pr(\text{disease}\mid+)\approx 0.16$ — precision collapses when the positive class is rare. \\
 \end{symtab}
 
 % ===========================================================================
@@ -251,9 +346,9 @@ OOB & Out-of-bag: the $\approx\!1/3$ of observations left out of a given bootstr
 $m_{\text{try}}$ & Number of predictors considered at each split in a random forest ($\approx\sqrt{p}$). \\
 $\lambda$ (boosting) & Learning rate / shrinkage, typically $0.01$--$0.1$. \\
 $r_i$ & Working residual that boosting fits at each round. \\
-$M$ & Margin width — the distance from the separating hyperplane to the nearest point. \\
+$M$ & Margin width — the distance from the separating hyperplane to the nearest point. Distinct from the MGF $M_X(t)$ in \S\ref{sec:rvs}. \\
 $\epsilon_i$ & Slack variable: how far observation $i$ is allowed to violate the margin. \\
-$C$ & Total slack budget. Large $C$ $=$ wide, soft margin (more bias, less variance). \\
+$C$ & Total slack budget. Large $C$ $=$ wide, soft margin (more bias, less variance). Distinct from $C(n,k)$, the binomial coefficient. \\
 $\mathcal{S}$ & The set of support vectors — the only points that affect the fit. \\
 $K(x,x')$ & Kernel: an inner product in an implicit high-dimensional space. \\
 $\gamma$ & RBF kernel width, $K = e^{-\gamma\|x-x'\|^2}$. Large $\gamma$ $=$ very local. \\
@@ -277,7 +372,7 @@ $\gamma,\ \beta$ (norm layers) & Learned scale and shift in batch/layer norm. Un
 $\mu_{\mathcal{B}},\ \sigma^2_{\mathcal{B}}$ & Batch mean and variance. \\
 $\epsilon$ (norm layers) & Tiny constant added for numerical stability. \\
 NLL & Negative log-likelihood, $-\frac{1}{n}\sum_i \log p_\theta(y_i \mid x_i)$; equals cross-entropy. \\
-$\mathrm{softmax}(z)_k$ & $e^{z_k}/\sum_j e^{z_j}$ — turns logits into a probability distribution. \\
+$\mathrm{softmax}(z)_k$ & $e^{z_k}/\sum_j e^{z_j}$ — turns logits into a probability distribution. Its targets are multinomial (\S\ref{sec:dists}). \\
 $F,\ P,\ S$ (conv) & Filter size, padding, stride. Output size $=\lfloor (H+2P-F)/S \rfloor + 1$. \\
 $n_{\text{in}},\ n_{\text{out}}$ & Fan-in and fan-out, used in He / Xavier initialisation. \\
 $y = x + F(x)$ & A residual (skip) connection. \\
@@ -287,7 +382,7 @@ $y = x + F(x)$ & A residual (skip) connection. \\
 \section{Transformers and language models}
 
 \begin{symtab}
-$Q,\ K,\ V$ & Query, key and value matrices. Note the clash: $K$ here is \emph{not} the number of classes. \\
+$Q,\ K,\ V$ & Query, key and value matrices. Note the clash: $K$ here is \emph{not} the number of classes, and $Q$ is \emph{not} a transition matrix (\S\ref{sec:events}). \\
 $d_k$ & Key dimension; the $\sqrt{d_k}$ divisor keeps dot products from saturating the softmax. \\
 $d_{\text{model}}$ & The residual-stream width of the transformer. \\
 $h$ & Number of attention heads. \\
@@ -318,8 +413,8 @@ $\|x_i - x_{i'}\|^2$ & Squared Euclidean distance — the within-cluster dissimi
 
 \begin{symtab}
 $T$ & Survival time (the event time). \\
-$S(t) = \Pr(T>t)$ & Survival function — probability of surviving past $t$. \\
-$h(t)$ & Hazard: instantaneous event rate \emph{given} survival to $t$; equals $f(t)/S(t)$. \\
+$S(t) = \Pr(T>t)$ & Survival function — probability of surviving past $t$. (Clashes with $S$ = sample space, \S\ref{sec:events}.) \\
+$h(t)$ & Hazard: instantaneous event rate \emph{given} survival to $t$; equals $f(t)/S(t)$. A constant hazard is exactly the memoryless exponential. \\
 $h_0(t)$ & Baseline hazard, left unspecified in the Cox model. \\
 $d_j,\ r_j$ & Events at time $t_j$; individuals still at risk just before $t_j$ (Kaplan--Meier). \\
 Censoring & The event was not observed by the end of the study — the observation is a lower bound, not a missing value. \\
@@ -344,6 +439,7 @@ $O(n^2),\ O(n^3)$ & Quadratic, cubic (nested loops; naive matrix multiply). \\
 $O(2^n),\ O(n!)$ & Exponential, factorial — subset enumeration, permutation search. \\
 $O(2^n n^2)$ & Held--Karp bitmask DP for TSP. \\
 Amortised $O(f)$ & Average cost per operation over a long sequence, even if one operation is occasionally expensive (e.g. dynamic-array growth). \\
+Expected $O(f)$ & Average over the algorithm's \emph{own} randomness (randomised quicksort, hashing) — a probabilistic statement, unlike amortised, which is a worst-case average. \\
 Pseudo-polynomial & Polynomial in the \emph{numeric value} of an input, not its bit length — e.g. knapsack's $O(nW)$. \\
 \end{symtab}
 
@@ -354,6 +450,7 @@ Pseudo-polynomial & Polynomial in the \emph{numeric value} of an input, not its 
 $G=(V,E)$ & Graph with vertex set $V$ and edge set $E$. \\
 $|V|,\ |E|$ & Number of vertices and edges; often written plainly as $V$ and $E$ inside complexity bounds. \\
 $w(u,v)$ & Weight (cost) of the edge from $u$ to $v$. \\
+$\deg(v)$ & Degree of $v$. A uniform random walk on an undirected graph has stationary probability $s_v \propto \deg(v)$. \\
 $d[v]$ & Current best known distance from the source to $v$. \\
 $\operatorname{relax}(u,v)$ & $d[v] \leftarrow \min(d[v],\, d[u]+w(u,v))$ — the single operation behind Dijkstra, Bellman--Ford and DAG shortest paths. \\
 $\operatorname{adj}(v)$ & Adjacency list of $v$. \\
@@ -383,6 +480,7 @@ Tabulation & Bottom-up iteration filling the table in dependency order. \\
 Rolling array & Keeping only the last one or two rows, cutting space from $O(nW)$ to $O(W)$. \\
 $W$ & Knapsack capacity. \\
 $v_i,\ w_i$ & Value and weight of item $i$. \\
+First-step conditioning & Recursing on what happens on step one ($p_i = p\,p_{i+1} + q\,p_{i-1}$ in gambler's ruin) — the probabilistic cousin of a DP transition. \\
 Recursion depth & Number of stack frames alive at once — the memory risk, separate from the time cost. \\
 \end{symtab}
 
@@ -396,15 +494,15 @@ Recursion depth & Number of stack frames alive at once — the memory risk, sepa
 \textbf{Example.} & A small worked case, usually $2\times2$ or a short array. \\
 \textbf{Notes.} & Caveats, connections, and cross-references. \\
 $\to$ & At the end of a \textbf{Notes} block: ``see also \dots''. \\
-\emph{(ISL ch. N)} & Source tag on a section: \emph{An Introduction to Statistical Learning}, chapter N. Other tags name their book (\emph{Hands-On ML}, \emph{Karpathy}, \emph{3Blue1Brown}). \\
+\emph{(ISL ch. N)} & Source tag on a section: \emph{An Introduction to Statistical Learning}, chapter N. Other tags name their book (\emph{Hands-On ML}, \emph{Karpathy}, \emph{3Blue1Brown}, \emph{Stat 110}). \\
 \emph{(ML)}, \emph{(stat)} & Cross-reference to the Machine Learning or Statistics notes. \\
 \textbf{Idea} / \textbf{Complexity} / \textbf{Notes} & The three-part structure of each entry in the Algorithms, Data Structures and Problems notes. \\
 \end{symtab}
 
 \vfill
 {\footnotesize\itshape
-Where one symbol carries several meanings across topics ($K$, $\lambda$, $p$, $d$, $\alpha$,
-$\beta$, $\epsilon$, $\Sigma$), the clash is noted in the entry. Context — which
-document you are reading — resolves all of them.\par}
+Where one symbol carries several meanings across topics ($K$, $\lambda$, $p$, $q$, $s$, $d$,
+$\alpha$, $\beta$, $\epsilon$, $\Sigma$, $S$, $T$, $M$, $C$, $Q$, $F$), the clash is noted in the
+entry. Context — which document you are reading — resolves all of them.\par}
 
 \end{document}
