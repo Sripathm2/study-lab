@@ -1,0 +1,1668 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  10pt,
+  letterpaper,
+  onecolumn]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  % fontspec, NOT unicode-math: unicode-math makes math glyphs math-active,
+  % which breaks \newunicodechar mappings in text mode.
+  \usepackage{fontspec}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\IfFileExists{lmodern.sty}{\ifPDFTeX\usepackage{lmodern}\fi}{}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Latin Modern Roman}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=0.85in]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\newcommand{\notestitle}{Problems --- Implementation Notes}
+% ---------------------------------------------------------------------------
+%  Study-notes preamble (inlined by pandoc -H, so each .tex is standalone).
+%  Engine: XeLaTeX.  Class: article, 10pt, one column.
+% ---------------------------------------------------------------------------
+\usepackage{amsmath,amssymb}
+\usepackage{newunicodechar}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{microtype}
+
+% --- fonts ------------------------------------------------------------------
+% Latin Modern for text/math; DejaVu Sans Mono for code (wide Unicode coverage).
+\setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]
+
+% --- Unicode the text font cannot draw -> real math glyphs ------------------
+\newunicodechar{−}{\ensuremath{-}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{÷}{\ensuremath{\div}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{≅}{\ensuremath{\cong}}
+\newunicodechar{≇}{\ensuremath{\ncong}}
+\newunicodechar{∞}{\ensuremath{\infty}}
+\newunicodechar{√}{\ensuremath{\sqrt{\;}}}
+\newunicodechar{Σ}{\ensuremath{\Sigma}}
+\newunicodechar{∫}{\ensuremath{\int}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{∘}{\ensuremath{\circ}}
+\newunicodechar{‖}{\ensuremath{\|}}
+\newunicodechar{ℓ}{\ensuremath{\ell}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{⇐}{\ensuremath{\Leftarrow}}
+\newunicodechar{⇔}{\ensuremath{\Leftrightarrow}}
+\newunicodechar{⌈}{\ensuremath{\lceil}}
+\newunicodechar{⌉}{\ensuremath{\rceil}}
+\newunicodechar{⌊}{\ensuremath{\lfloor}}
+\newunicodechar{⌋}{\ensuremath{\rfloor}}
+\newunicodechar{°}{\ensuremath{{}^{\circ}}}
+\newunicodechar{✓}{\ensuremath{\checkmark}}
+% greek
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{β}{\ensuremath{\beta}}
+\newunicodechar{γ}{\ensuremath{\gamma}}
+\newunicodechar{ε}{\ensuremath{\epsilon}}
+\newunicodechar{η}{\ensuremath{\eta}}
+\newunicodechar{θ}{\ensuremath{\theta}}
+\newunicodechar{λ}{\ensuremath{\lambda}}
+\newunicodechar{μ}{\ensuremath{\mu}}
+\newunicodechar{π}{\ensuremath{\pi}}
+\newunicodechar{ρ}{\ensuremath{\rho}}
+\newunicodechar{σ}{\ensuremath{\sigma}}
+\newunicodechar{φ}{\ensuremath{\phi}}
+\newunicodechar{ω}{\ensuremath{\omega}}
+% super/subscripts
+\newunicodechar{¹}{\ensuremath{{}^{1}}}
+\newunicodechar{²}{\ensuremath{{}^{2}}}
+\newunicodechar{³}{\ensuremath{{}^{3}}}
+\newunicodechar{⁴}{\ensuremath{{}^{4}}}
+\newunicodechar{⁵}{\ensuremath{{}^{5}}}
+\newunicodechar{⁶}{\ensuremath{{}^{6}}}
+\newunicodechar{⁷}{\ensuremath{{}^{7}}}
+\newunicodechar{⁸}{\ensuremath{{}^{8}}}
+\newunicodechar{ⁿ}{\ensuremath{{}^{n}}}
+\newunicodechar{ˣ}{\ensuremath{{}^{x}}}
+\newunicodechar{ᵀ}{\ensuremath{{}^{\mathsf{T}}}}
+\newunicodechar{ᵇ}{\ensuremath{{}^{b}}}
+\newunicodechar{⁻}{\ensuremath{{}^{-}}}
+\newunicodechar{⁺}{\ensuremath{{}^{+}}}
+\newunicodechar{₀}{\ensuremath{{}_{0}}}
+\newunicodechar{₁}{\ensuremath{{}_{1}}}
+\newunicodechar{₂}{\ensuremath{{}_{2}}}
+\newunicodechar{₃}{\ensuremath{{}_{3}}}
+\newunicodechar{ᵢ}{\ensuremath{{}_{i}}}
+\newunicodechar{ₐ}{\ensuremath{{}_{a}}}
+% accented letters
+\newunicodechar{î}{\ensuremath{\hat{\imath}}}
+\newunicodechar{ĵ}{\ensuremath{\hat{\jmath}}}
+\newunicodechar{ŷ}{\ensuremath{\hat{y}}}
+\newunicodechar{Ŷ}{\ensuremath{\hat{Y}}}
+\newunicodechar{ȳ}{\ensuremath{\bar{y}}}
+% private-use slots written by prep.py for combining-accent sequences
+\newunicodechar{}{\ensuremath{\hat{f}}}
+\newunicodechar{}{\ensuremath{\hat{\beta}}}
+\newunicodechar{}{\ensuremath{\hat{\sigma}}}
+\newunicodechar{}{\ensuremath{\hat{k}}}
+\newunicodechar{}{\ensuremath{\hat{\mu}}}
+\newunicodechar{}{\ensuremath{\bar{x}}}
+
+% --- layout -----------------------------------------------------------------
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,parsep=0.15em,topsep=0.3em}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{2.0ex plus .6ex minus .2ex}{1.0ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.6ex plus .5ex minus .2ex}{0.7ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{1.2ex plus .4ex minus .2ex}{0.5ex plus .2ex}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\footnotesize\nouppercase\leftmark}
+\fancyhead[R]{\footnotesize\textit{\notestitle}}
+\fancyfoot[C]{\footnotesize\thepage}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[C]{\footnotesize\thepage}}
+
+% keep display math from being torn off its paragraph too eagerly
+\allowdisplaybreaks
+\setlength{\abovedisplayskip}{0.6em}
+\setlength{\belowdisplayskip}{0.6em}
+\setlength{\emergencystretch}{3em}
+\sloppy
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Problems ��� Implementation Notes},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={NavyBlue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Problems ��� Implementation Notes}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+Idea, complexity, and notes for each named problem in the
+\texttt{Problems/} package --- the recursion exercises, the DP problems,
+grid shortest path, Held-Karp TSP, and the bipartite max-flow problems.
+Reconciled against the code; \textbf{Code flag} lines mark
+implementation deviations and known bugs (details in
+\texttt{01\_Mismatch\_report.md}).
+
+\emph{(The five recursion/divide-and-conquer exercise files ---
+\texttt{Recursive\_multiplication}, \texttt{Recursive\_list\_sum},
+\texttt{Recursive\_string\_reversal}, \texttt{Recursive\_max\_2d},
+\texttt{Three\_way\_min} --- are documented here per the reorganization:
+they are exercise-style leaf files, recommended to move from
+\texttt{Algorithms/} to \texttt{Problems/}.)}
+
+\hypertarget{recursion}{%
+\subsection{Recursion}\label{recursion}}
+
+A function that calls itself, used when a problem can be broken into
+smaller subproblems of the same shape. Each call solves a smaller
+instance until the problem is small enough to answer directly.
+
+\begin{equation*}
+T(n)=a\,T(n/b)+f(n)
+\qquad\text{or}\qquad
+T(n)=T(n-1)+f(n)
+\end{equation*}
+
+\begin{equation*}
+\text{total work}=\sum_{\text{levels}}(\text{work per level});\quad
+\text{stack depth}=\text{recursion depth}
+\end{equation*}
+
+\hypertarget{idea}{%
+\subsubsection{Idea}\label{idea}}
+
+Every recursive function has three pieces:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Base case} --- the terminating condition that stops the
+  recursion. It can be implicit (e.g.~falling through when the input is
+  empty). Without a reachable base case you get infinite recursion →
+  stack overflow.
+\item
+  \textbf{Recursive call} --- the function calls itself on a
+  \textbf{strictly smaller} subproblem, moving closer to the base case.
+  This shrink is the crucial part: if the subproblem doesn't get smaller
+  each time, the recursion never terminates.
+\item
+  \textbf{Body / work} --- the actual computation at each level:
+  whatever this step contributes, combined with the result(s) of the
+  recursive call(s).
+\end{itemize}
+
+\hypertarget{complexity}{%
+\subsubsection{Complexity}\label{complexity}}
+
+Time = (number of recursive calls) × (work per call); a recurrence like
+\texttt{T(n)\ =\ a·T(n/b)\ +\ f(n)} captures it, and the Master Theorem
+solves the common divide-and-conquer shapes. Space is O(maximum
+recursion depth) for the call stack --- every pending call holds a frame
+until it returns, so space can be significant even when total work is
+small. Deep or unbounded recursion risks stack overflow; a
+tail-recursive or iterative rewrite (or an explicit stack) reduces the
+stack cost --- though Java has no tail-call optimization, so even a
+tail-recursive form keeps its frames.
+
+\hypertarget{applications}{%
+\subsubsection{Applications}\label{applications}}
+
+Divide and conquer (merge sort, quicksort, binary search), tree and
+graph traversal (DFS), backtracking, memoized recursion / dynamic
+programming, generating permutations and combinations, and problems
+defined recursively by nature (factorial, Fibonacci, GCD). The four
+\texttt{Recursive\_*} exercises below practice the pattern; merge sort
+and DFS (see \texttt{Algorithms\_notes.md}) are where it graduates into
+real algorithms.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{recursive_multiplication}{%
+\subsection{Recursive\_multiplication}\label{recursive_multiplication}}
+
+Multiply two integers using recursion, without the \texttt{*} operator.
+
+\begin{equation*}
+a\times b=\underbrace{a+a+\dots+a}_{b\text{ times}}
+\;\Longrightarrow\;
+T(b)=T(b-1)+O(1)=O(b)
+\end{equation*}
+
+\hypertarget{idea-1}{%
+\subsubsection{Idea}\label{idea-1}}
+
+\textbf{As implemented, the recursion is on \texttt{a} (the first
+operand), and the workhorse is the doubling form:}
+
+\begin{itemize}
+\tightlist
+\item
+  Base case: \texttt{a\ ==\ 0\ →\ 0}.
+\item
+  Positive \texttt{a}:
+  \texttt{multiply(a,\ b)\ =\ 2·multiply(a/2,\ b)\ +\ (a\ odd\ ?\ b\ :\ 0)}
+  --- where the doubling itself is written as \texttt{m\ +\ m} (an
+  addition, keeping the ``no \texttt{*}'' rule honest). Each call halves
+  \texttt{a}, so the depth is \texttt{log₂(a)}.
+\item
+  Negative \texttt{a}: peel toward zero one step at a time ---
+  \texttt{multiply(a,\ b)\ =\ multiply(a+1,\ b)\ −\ b}. Correct for any
+  sign of \texttt{b}, but \textbf{linear}: depth is
+  \texttt{\textbar{}a\textbar{}}.
+\end{itemize}
+
+\texttt{b} is never recursed on and never restricted --- it just rides
+along and gets added/subtracted.
+
+\hypertarget{complexity-1}{%
+\subsubsection{Complexity}\label{complexity-1}}
+
+Positive \texttt{a}: O(log a) time and stack depth. Negative \texttt{a}:
+O(\textbar a\textbar) time and depth --- a large negative first operand
+overflows the call stack. Returns \texttt{long} so \texttt{int\ ×\ int}
+results don't wrap.
+
+\hypertarget{notes}{%
+\subsubsection{Notes}\label{notes}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The asymmetry is the real lesson:} the doubling trick was
+  applied to the positive branch only. The clean fix is to normalize the
+  sign first (recurse on \texttt{\textbar{}a\textbar{}}, apply the sign
+  at the top) so \emph{both} signs get the O(log) form --- or recurse on
+  \texttt{min(\textbar{}a\textbar{},\ \textbar{}b\textbar{})} if you
+  also want protection against a huge second operand in a linear form.
+\item
+  Doubling works because of binary decomposition:
+  \texttt{a·b\ =\ (a/2)·b\ +\ (a/2)·b\ +\ (a\ odd\ ?\ b\ :\ 0)} is just
+  reading \texttt{a}'s bits high-to-low.
+\item
+  The runner cross-checks against real \texttt{*} over a grid of signed
+  values, which is what pinned down the negative-branch behavior.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{recursive_list_sum}{%
+\subsection{Recursive\_list\_sum}\label{recursive_list_sum}}
+
+Iterate an array with recursion instead of a loop --- sum all elements,
+or sum only the odd-valued ones.
+
+\hypertarget{idea-2}{%
+\subsubsection{Idea}\label{idea-2}}
+
+Recurse first, then contribute:
+\texttt{f(arr,\ i)\ =\ f(arr,\ i+1)\ +\ g(arr{[}i{]})}, with base case
+\texttt{i\ ==\ arr.length\ →\ 0} (an empty tail contributes nothing).
+The index \texttt{i} is how the problem shrinks --- one step toward the
+end per call; the additions happen on the unwind, so the sum accumulates
+right-to-left (irrelevant for \texttt{+}, worth noticing for
+non-commutative folds). A public method with no index wraps a private
+helper that carries \texttt{i}, starting at 0.
+
+The only thing that changes between ``sum all'' and ``sum odds'' is
+\texttt{g}: for the total, \texttt{g(x)\ =\ x}; for odds, skip when
+\texttt{x\ \%\ 2\ ==\ 0}, else add. Same traversal skeleton, different
+per-element contribution.
+
+\hypertarget{complexity-2}{%
+\subsubsection{Complexity}\label{complexity-2}}
+
+O(n) time and O(n) stack depth --- one frame per element until the base
+case returns and the additions unwind. Sums accumulate in \texttt{long}.
+
+\hypertarget{notes-1}{%
+\subsubsection{Notes}\label{notes-1}}
+
+\begin{itemize}
+\tightlist
+\item
+  Skipping on \texttt{x\ \%\ 2\ ==\ 0} keeps negative odds
+  (\texttt{−3\ \%\ 2\ ==\ −1\ ≠\ 0}) correctly included.
+\item
+  Because depth equals the array length, very large arrays overflow the
+  stack --- this pattern is for learning the recursion shape, not
+  production traversal. The two standard shapes are \textbf{head
+  recursion} (recurse, then combine --- what this code does) and
+  \textbf{tail recursion} (pass an accumulator down); Java keeps O(n)
+  frames either way.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{recursive_string_reversal}{%
+\subsection{Recursive\_string\_reversal}\label{recursive_string_reversal}}
+
+Reverse a string using recursion.
+
+\hypertarget{idea-3}{%
+\subsubsection{Idea}\label{idea-3}}
+
+\textbf{As implemented, each call peels \emph{both} ends:} take the last
+character, the first character, and reverse the middle between them ---
+
+\begin{verbatim}
+reverse(s) = s[last] + reverse(s[1 .. last-1]) + s[0]
+\end{verbatim}
+
+Base case: a string of length 0 or 1 is its own reverse. Each call
+shrinks the string by \textbf{two} characters, so the depth is ⌈n/2⌉ ---
+half the frames of the classic peel-one-character forms
+(\texttt{reverse(s{[}1:{]})\ +\ s{[}0{]}} or
+\texttt{s{[}last{]}\ +\ reverse(s{[}:last{]})}), same idea.
+
+\hypertarget{complexity-3}{%
+\subsubsection{Complexity}\label{complexity-3}}
+
+O(n) depth-wise? No --- \textbf{O(n²) time and memory}, because Java
+strings are immutable: every \texttt{substring} and every \texttt{+}
+copies a fresh string at each of the n/2 levels. Stack depth is ⌈n/2⌉.
+To make it O(n): recurse over a \texttt{char{[}{]}} with two indices,
+swap the ends, recurse inward (\texttt{reverse(arr,\ lo+1,\ hi−1)}, base
+\texttt{lo\ \textgreater{}=\ hi}) --- O(1) work per level, no copying.
+That two-pointer form is the array twin of exactly the both-ends peel
+this code already does.
+
+\hypertarget{notes-2}{%
+\subsubsection{Notes}\label{notes-2}}
+
+\begin{itemize}
+\tightlist
+\item
+  The quadratic \texttt{substring}+\texttt{+} cost is the same
+  immutability trap that makes string concatenation in a loop slow ---
+  fine for learning, call it out.
+\item
+  Double-reversing any string returns the original --- a cheap invariant
+  the runner tests.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{recursive_max_2d}{%
+\subsection{Recursive\_max\_2d}\label{recursive_max_2d}}
+
+Find the maximum value in a 2D array along with its \texttt{(row,\ col)}
+position, recursively --- the ``bundle multiple returns into a result
+object'' idea extended to a grid.
+
+\hypertarget{idea-4}{%
+\subsubsection{Idea}\label{idea-4}}
+
+\textbf{As implemented:} recurse with an explicit \texttt{(i,\ j)} pair
+that advances in row-major order --- bump the column; when it hits
+\texttt{grid{[}0{]}.length}, wrap to column 0 of the next row. Each call
+computes the best \texttt{Result} of the \textbf{suffix} (all cells
+after \texttt{(i,\ j)}), then compares the current cell against it:
+
+\begin{itemize}
+\tightlist
+\item
+  Base case: \texttt{i} past the last row → return a sentinel
+  \texttt{Result(Integer.MIN\_VALUE,\ −1,\ −1)} (an empty suffix can't
+  win against any real cell).
+\item
+  Combine: keep the current cell when
+  \texttt{suffixBest.value\ \textless{}=\ grid{[}i{]}{[}j{]}} --- the
+  \texttt{\textless{}=} means the \textbf{current (earlier) cell wins
+  ties}, so the earliest cell in row-major order is reported: lowest row
+  first, then lowest column. That's the same answer a
+  \texttt{\textgreater{}}-based nested-loop brute force produces, which
+  is what the runner cross-checks.
+\end{itemize}
+
+This is one frame per cell --- neither the flattened single-index form
+(\texttt{k\ →\ (k/C,\ k\%C)}) nor the two-level row/column recursion,
+though it's closest in spirit to the flattened one with the decode
+replaced by explicit carry logic.
+
+\hypertarget{complexity-4}{%
+\subsubsection{Complexity}\label{complexity-4}}
+
+O(R·C) time --- every cell visited once. Stack depth is O(R·C) (one
+frame per cell), so big grids will exhaust the stack; the two-level
+row/column form would cut depth to O(R + C). One small \texttt{Result}
+allocation per level.
+
+\hypertarget{notes-3}{%
+\subsubsection{Notes}\label{notes-3}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Rectangular grids only:} the column wrap uses
+  \texttt{grid{[}0{]}.length}, so a jagged array with rows shorter than
+  row 0 indexes out of bounds (and longer rows are only partially
+  scanned). The validation rejects empty grids and null rows but not
+  jaggedness --- a two-level recursion would handle jagged rows
+  naturally.
+\item
+  \textbf{Fix the tie-break policy explicitly} (first vs last, in which
+  scan order) and test it --- here it's earliest-in-row-major, enforced
+  by that single \texttt{\textless{}=}.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{three_way_min}{%
+\subsection{Three\_way\_min}\label{three_way_min}}
+
+Find the minimum of an array with a \textbf{three-way}
+divide-and-conquer split --- the k-way-split exercise from the
+divide-and-conquer primer (see \texttt{Algorithms\_notes.md}).
+
+\hypertarget{idea-5}{%
+\subsubsection{Idea}\label{idea-5}}
+
+Split \texttt{{[}l,\ r{]}} into three roughly equal segments at
+\texttt{m1\ =\ l\ +\ len/3} and \texttt{m2\ =\ l\ +\ 2·len/3}, recurse
+into each, and combine by returning the smallest of the three
+sub-minimums (a chain of \texttt{≤} comparisons that also happens to
+favor the leftmost segment on ties --- irrelevant for a value-only min,
+but the kind of thing that matters the moment you also return an index).
+
+Base cases: one element returns itself; two elements return the smaller
+--- needed because a 3-way split of a 2-element range would produce an
+empty middle segment.
+
+\hypertarget{complexity-5}{%
+\subsubsection{Complexity}\label{complexity-5}}
+
+\texttt{T(n)\ =\ 3T(n/3)\ +\ O(1)} → \textbf{O(n)} time (all n leaves
+are visited --- no split count avoids that for min). Stack depth O(log₃
+n).
+
+\hypertarget{notes-4}{%
+\subsubsection{Notes}\label{notes-4}}
+
+\begin{itemize}
+\tightlist
+\item
+  The point of the exercise is the recurrence shape, not speed --- a
+  loop is obviously simpler and faster in constants.
+\item
+  \textbf{Code flag (C8):} the right recursion starts at
+  \texttt{m2\ −\ 1}, so the middle and right segments overlap by one
+  element. Harmless for min (overlap can't change a minimum, and no
+  element is \emph{skipped}), but the split isn't a clean partition ---
+  \texttt{min(m2,\ r)} is the intended boundary.
+\item
+  Null throws; an empty array is rejected with
+  \texttt{IllegalArgumentException} --- min of nothing has no answer.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{dynamic-programming}{%
+\subsection{Dynamic programming}\label{dynamic-programming}}
+
+A technique for problems that break into \textbf{overlapping}
+subproblems: solve each distinct subproblem once, store its answer, and
+reuse it instead of recomputing. It applies when a problem has
+\emph{optimal substructure} (the answer is built from answers to smaller
+instances) and \emph{overlapping subproblems} (the same smaller
+instances recur many times). That overlap is what separates DP from
+divide-and-conquer --- D\&C subproblems are independent, so caching buys
+nothing; DP subproblems repeat, so caching is the whole point.
+
+\begin{equation*}
+\text{runtime}\;=\;\underbrace{\#\text{states}}_{\text{size of the table}}\times\underbrace{\text{work per state}}_{\text{transitions}}
+\end{equation*}
+
+\hypertarget{idea-6}{%
+\subsubsection{Idea}\label{idea-6}}
+
+Four things to pin down: - \textbf{State} --- the parameters that
+uniquely identify a subproblem (e.g.~``index \texttt{i}, remaining
+capacity \texttt{w}''). - \textbf{Transition / recurrence} --- how a
+state's answer is built from smaller states. - \textbf{Base cases} ---
+the smallest states, answered directly. - \textbf{Evaluation order} ---
+either \textbf{top-down} (write the natural recursion, add a memo table
+so each state computes once --- how Mountain\_scenes,
+Narrow\_art\_gallery, and Domino\_tromino\_tiling are written here) or
+\textbf{bottom-up} (tabulation in dependency order --- how the tilings,
+knapsacks, Magical\_cows, and TSP are written here).
+
+\hypertarget{complexity-6}{%
+\subsubsection{Complexity}\label{complexity-6}}
+
+Roughly (number of distinct states) × (work per transition). Memory is
+the table size, but it can often shrink: if a state only depends on the
+previous row/day, keep just that (a \textbf{rolling array}) and drop the
+full table.
+
+\hypertarget{applications-1}{%
+\subsubsection{Applications}\label{applications-1}}
+
+Fibonacci, 0/1 knapsack, longest common subsequence, edit distance, coin
+change, matrix-chain multiplication, and DP-flavored graph algorithms
+(Bellman-Ford, Floyd-Warshall, Held-Karp TSP).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{magical_cows}{%
+\subsection{Magical\_cows}\label{magical_cows}}
+
+\textbf{Problem.} Farms hold cows, up to a capacity \texttt{C}. Every
+night a farm with \texttt{v} cows doubles to \texttt{2v}; if
+\texttt{2v\ \textless{}=\ C} it becomes one farm of \texttt{2v},
+otherwise it splits into two farms of \texttt{v} cows each. Given the
+initial farms and a list of query days, report the total number of farms
+after each queried number of nights.
+
+\hypertarget{idea-7}{%
+\subsubsection{Idea}\label{idea-7}}
+
+Simulating individual farms explodes --- farms can double every night,
+so after \texttt{D} nights you may have up to \texttt{N·2\^{}D} of them.
+The unlock: \textbf{individual farms don't matter, only how many cows
+each holds}, and cow counts only ever range over \texttt{1..C}. So track
+\texttt{cnt{[}v{]}} = number of farms currently holding \texttt{v} cows,
+and advance the whole distribution one night at a time:
+
+\begin{itemize}
+\tightlist
+\item
+  for each \texttt{v} with \texttt{2v\ \textless{}=\ C}: those farms
+  grow --- \texttt{next{[}2v{]}\ +=\ cnt{[}v{]}} (one farm each, now at
+  \texttt{2v}).
+\item
+  for each \texttt{v} with \texttt{2v\ \textgreater{}\ C}: those farms
+  split --- \texttt{next{[}v{]}\ +=\ 2\ *\ cnt{[}v{]}} (two farms each,
+  still at \texttt{v}).
+\end{itemize}
+
+That's an O(C) step regardless of how many farms exist.
+
+\textbf{As implemented:} the code builds the \textbf{full table}
+\texttt{farm\_count{[}day{]}{[}v{]}} for every day from 0 up to the
+largest query day (day 0 seeded from the initial farms, each next row
+derived from the previous by the two rules above). A query is then
+answered by \textbf{summing that day's row} --- O(C) per query, a plain
+table lookup of the distribution rather than a precomputed total.
+
+\hypertarget{complexity-7}{%
+\subsubsection{Complexity}\label{complexity-7}}
+
+O(C · D\_max) to build the table (D\_max = largest query day), then
+\textbf{O(C) per query} (row sum). Space is \textbf{O(C · D\_max)} for
+the full table. Both are easy to tighten if you ever care: keep only two
+rolling rows (O(C) space) and record the running total per day as you go
+(O(1) per query) --- the note-worthy optimizations, not what the code
+currently does. Farm totals grow up to
+\textasciitilde{}\texttt{N·2\^{}D}; counts are \texttt{long} (fits
+comfortably for the usual constraints \texttt{D\ ≤\ 50},
+\texttt{N,\ C\ ≤\ 1000}).
+
+\hypertarget{notes-5}{%
+\subsubsection{Notes}\label{notes-5}}
+
+\begin{itemize}
+\tightlist
+\item
+  The two transition cases are the crux: \texttt{2v\ \textless{}=\ C} →
+  one farm at \texttt{2v}; \texttt{2v\ \textgreater{}\ C} → \textbf{two}
+  farms at \texttt{v} (the split doubles that bucket's count).
+\item
+  Day 0 is just the initial distribution --- a query of 0 nights reads
+  row 0 directly, which the table layout handles for free.
+\item
+  Validation: capacity ≥ 1, no negative query days, every initial herd
+  in \texttt{{[}1,\ C{]}}.
+\item
+  Overflow is the lurking bug --- the table and sums are \texttt{long},
+  not \texttt{int}.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{tiling}{%
+\subsection{Tiling}\label{tiling}}
+
+\textbf{Problem.} Count the number of ways to completely fill a 1×n
+strip of slots using tiles of length 1 and length 2.
+
+\begin{equation*}
+f(n)=f(n-1)+f(n-2),
+\qquad f(1)=1,\ f(2)=2
+\qquad\text{(Fibonacci; }O(n)\text{ time, }O(1)\text{ space rolling)}
+\end{equation*}
+
+\hypertarget{idea-8}{%
+\subsubsection{Idea}\label{idea-8}}
+
+Look at how the \textbf{last slot} gets covered --- there are exactly
+two disjoint, exhaustive possibilities: - a size-1 tile sits in the last
+slot, leaving \texttt{n\ −\ 1} slots to fill → \texttt{ways(n\ −\ 1)}
+ways, or - a size-2 tile covers the last two slots, leaving
+\texttt{n\ −\ 2} slots → \texttt{ways(n\ −\ 2)} ways.
+
+Since those cases don't overlap and cover everything,
+\texttt{ways(n)\ =\ ways(n\ −\ 1)\ +\ ways(n\ −\ 2)}. Base cases:
+\texttt{ways(0)\ =\ 1} (the empty strip has exactly one tiling --- place
+nothing) and \texttt{ways(1)\ =\ 1}. That's the Fibonacci recurrence; in
+fact \texttt{ways(n)\ =\ Fib(n\ +\ 1)}.
+
+The subproblems overlap heavily --- plain recursion recomputes
+\texttt{ways(n−2)}, \texttt{ways(n−3)}, \ldots{} exponentially many
+times. \textbf{As implemented:} bottom-up tabulation in a
+\texttt{long{[}n+3{]}} table (padded so tiny n never under-allocates),
+seeded with \texttt{ways(0)=1,\ ways(1)=1,\ ways(2)=2}, filled left to
+right.
+
+\hypertarget{complexity-8}{%
+\subsubsection{Complexity}\label{complexity-8}}
+
+O(n) time, O(n) space for the table as written. Since each value depends
+only on the previous two, two rolling variables would make it O(1) space
+--- the table is kept for clarity. Values grow like Fibonacci (≈ φⁿ),
+overflowing \texttt{long} around n = 91 --- \texttt{BigInteger} beyond
+that.
+
+\hypertarget{notes-6}{%
+\subsubsection{Notes}\label{notes-6}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\texttt{ways(0)\ =\ 1} is the load-bearing base case.} An
+  empty strip has one tiling (do nothing); setting it to 0 makes every
+  larger answer wrong --- the empty-product/empty-sum convention again.
+\item
+  \textbf{It's Fibonacci in disguise.} Recognizing that unlocks
+  fast-doubling or matrix exponentiation for O(log n) if inputs get
+  huge.
+\item
+  \textbf{Generalizes.} Tiles of sizes \texttt{\{1..k\}} give
+  \texttt{ways(n)\ =\ ways(n−1)\ +\ …\ +\ ways(n−k)} --- which is
+  exactly \texttt{Tiling\_general} with unit color counts.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{tiling_general}{%
+\subsection{Tiling\_general}\label{tiling_general}}
+
+\textbf{Problem.} Count the ways to fill a 1×n strip using tiles of
+various lengths, where a given length may come in several colors. Tiles
+arrive as parallel arrays: \texttt{lengths{[}i{]}} is an available
+length, \texttt{colors{[}i{]}} how many distinct colors it comes in. A
+tiling is a left-to-right sequence of colored tiles that exactly fills
+n.
+
+\hypertarget{idea-9}{%
+\subsubsection{Idea}\label{idea-9}}
+
+Same last-piece reasoning as basic tiling, generalized. Look at the
+\textbf{last tile} placed: it has some length \texttt{L} and some color,
+and it covers the final \texttt{L} slots, leaving \texttt{n\ −\ L}
+before it. Sum over every way to choose that last tile:
+
+\begin{verbatim}
+ways(0) = 1
+ways(m) = sum over i of  colors[i] * ways(m - lengths[i])   for lengths[i] <= m
+\end{verbatim}
+
+Two dimensions of choice fall out naturally: - \textbf{Different
+lengths} → separate terms in the sum, each reaching back a different
+distance. - \textbf{Different colors of the same length} → the
+\texttt{colors{[}i{]}} multiplier: each color is a distinct way to place
+that tile.
+
+The basic 1-and-2 tiling is the special case
+\texttt{lengths\ =\ \{1,\ 2\}}, \texttt{colors\ =\ \{1,\ 1\}}
+(Fibonacci). A single length-1 tile with \texttt{k} colors gives
+\texttt{k\^{}n}. Unit-color \texttt{\{1,\ 2,\ 3\}} gives Tribonacci.
+
+\textbf{As implemented:} bottom-up over a \texttt{long{[}n+3{]}} table,
+inner loop over tile types with the
+\texttt{lengths{[}i{]}\ \textless{}=\ m} guard; inputs validated
+(equal-length arrays, lengths and color counts ≥ 1, n ≥ 0).
+
+\hypertarget{complexity-9}{%
+\subsubsection{Complexity}\label{complexity-9}}
+
+O(n · t) time, \texttt{t} = number of tile types. O(n) space for the
+table (a rolling window of \texttt{maxLength} entries would suffice ---
+the recurrence never reaches further back --- but the full table is
+clearer).
+
+\hypertarget{notes-7}{%
+\subsubsection{Notes}\label{notes-7}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\texttt{ways(0)\ =\ 1}} is still the anchor --- one way to
+  tile nothing.
+\item
+  \textbf{The color count is a multiplier, not a new term.} Two colors
+  of length 1 turn \texttt{+\ ways(m−1)} into \texttt{+\ 2·ways(m−1)}.
+\item
+  \textbf{Skip out-of-range tiles.} A tile longer than the remaining
+  strip can't be the last piece --- the
+  \texttt{lengths{[}i{]}\ \textless{}=\ m} guard.
+\item
+  \textbf{Watch overflow.} Up to \texttt{k\^{}n} growth; sums are
+  \texttt{long}, \texttt{BigInteger} if the numbers can exceed it.
+\item
+  Representing colors as counts (rather than listing each colored tile
+  separately) keeps the sum compact --- listing them would be
+  arithmetically identical, just wasteful.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{domino_tiling_3xn}{%
+\subsection{Domino\_tiling\_3xn}\label{domino_tiling_3xn}}
+
+\textbf{Problem.} Count the ways to completely tile a 3×n board with 1×2
+dominoes (horizontal or vertical).
+
+\begin{equation*}
+f(n)=4f(n-2)-f(n-4),
+\qquad f(0)=1,\ f(2)=3
+\qquad (f(n)=0 \text{ for odd } n)
+\end{equation*}
+
+\hypertarget{idea-10}{%
+\subsubsection{Idea}\label{idea-10}}
+
+\textbf{As implemented, this is a broken-profile (bitmask) column DP
+with 8 states} --- the general technique, not the height-3 shortcut.
+
+Fill the board column by column. The only thing the future needs to know
+about the past is the \textbf{profile}: which of the 3 cells at the
+current column boundary are already covered by dominoes sticking out of
+the previous column. Three cells → a 3-bit mask → 8 states.
+\texttt{dp{[}i{]}{[}s{]}} = number of ways to tile everything left of
+column \texttt{i} such that column \texttt{i} has exactly the cells in
+mask \texttt{s} pre-filled\ldots{} read at the answer end as:
+\texttt{dp{[}i{]}{[}7{]}} = ways to tile the first \texttt{i} columns
+flush (all 3 bits set = column fully covered, nothing protruding).
+
+Transitions (hand-enumerated in the code, one line per legal way to
+complete a column): - \textbf{Complement pairs} --- a cell left open in
+the previous column's profile must be covered by a horizontal domino
+poking into this column, so state \texttt{s} at column \texttt{i} draws
+from state \texttt{7−s} at column \texttt{i−1}:
+\texttt{0←7,\ 1←6,\ 2←5,\ 3←4,\ 4←3,\ 5←2,\ 6←1,\ 7←0}. -
+\textbf{Vertical placements} --- within a column, a vertical domino can
+cover two adjacent cells, adding the extra transitions: \texttt{3←7} and
+\texttt{6←7} (a flush previous column plus one vertical pair in this
+column, bottom-pair or top-pair) and \texttt{7←3,\ 7←6} (a protruding
+pair completed by a vertical domino on the remaining two\ldots{}
+i.e.~the mask gains two adjacent bits at once). The middle-plus-edge
+combinations that would need a ``vertical'' over non-adjacent cells
+simply have no transition --- that's how illegal placements are
+excluded.
+
+Base: \texttt{dp{[}0{]}{[}7{]}\ =\ 1} (zero columns, flush boundary ---
+one way: do nothing). Answer: \texttt{dp{[}n{]}{[}7{]}}.
+
+\hypertarget{complexity-10}{%
+\subsubsection{Complexity}\label{complexity-10}}
+
+O(n · 8) time and, as written, O(n · 8) space (a full table; two rolling
+rows would be O(1)). Values grow
+\textasciitilde{}\texttt{(2+√3)\^{}(n/2)} --- \texttt{long} overflows
+eventually; \texttt{BigInteger} for large n.
+
+\hypertarget{notes-8}{%
+\subsubsection{Notes}\label{notes-8}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Parity is automatic.} A 3×n board has \texttt{3n} cells, so
+  odd n → 0; the mask DP produces those zeros on its own (no flush
+  completion exists), no special-casing needed. The answer sequence runs
+  \texttt{1,\ 0,\ 3,\ 0,\ 11,\ 0,\ 41,\ …}.
+\item
+  \textbf{Equivalent formulations} worth knowing: the two-state coupled
+  form \texttt{f(n)\ =\ f(n−2)\ +\ 2g(n−1)},
+  \texttt{g(n)\ =\ f(n−1)\ +\ g(n−2)} (f = flush, g = one-cell bump, the
+  \texttt{2} = mirror-image bumps), and the even-n closed form
+  \texttt{f(n)\ =\ 4f(n−2)\ −\ f(n−4)} with \texttt{f(0)=1,\ f(2)=3}.
+  The 8-state mask version implemented here is the one that generalizes
+  to any board height --- the profile just grows to \texttt{2\^{}height}
+  states.
+\item
+  Independent check: exhaustive backtracking confirms small n --- kept
+  in the runner, since hand-coded transition tables are easy to
+  mis-transcribe.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{domino_tromino_tiling}{%
+\subsection{Domino\_tromino\_tiling}\label{domino_tromino_tiling}}
+
+\textbf{Problem.} Count the ways to fully tile a 2×n board using 2×1
+dominoes and L-shaped trominoes (a 2×2 square minus one corner, any of 4
+orientations). LeetCode 790; answers mod 1e9+7.
+
+\hypertarget{idea-11}{%
+\subsubsection{Idea}\label{idea-11}}
+
+Trominoes let a column boundary be \emph{ragged} --- one cell of a
+column filled while the other still waits on a piece from the next
+column. \textbf{As implemented: top-down memoized recursion over the
+state \texttt{(column\ i,\ top\ cell\ free?,\ bottom\ cell\ free?)}} ---
+the profile DP directly, with a \texttt{dp{[}n{]}{[}4{]}} memo (−1 =
+uncomputed) and the two booleans encoding the current column's
+raggedness:
+
+\begin{itemize}
+\tightlist
+\item
+  Both cells free (state ``full choice''): place a vertical domino (→
+  next column untouched), two horizontal dominoes (→ next column both
+  cells taken\ldots{} expressed as recursing with the next column's
+  flags), or one of two mirror-image trominoes (→ next column has one
+  cell taken, top or bottom).
+\item
+  Exactly one cell free (two mirror states): finish with a horizontal
+  domino into the next column, or a tromino that also bites one cell of
+  the next column.
+\item
+  No cells free: this column is done --- advance with the next column
+  fully free.
+\end{itemize}
+
+Base case: \texttt{i\ ==\ n} with a clean boundary → 1 tiling. Each
+branch is guarded so nothing pokes past column n−1. Results are stored
+mod 1e9+7; each state's sum is at most a handful of sub-results, so
+\texttt{long} never overflows before the mod.
+
+\hypertarget{complexity-11}{%
+\subsubsection{Complexity}\label{complexity-11}}
+
+O(n) states × O(1) transitions → O(n) time, O(n) memo space (the closed
+form below runs in O(1) space, kept as a cross-check).
+
+\hypertarget{notes-9}{%
+\subsubsection{Notes}\label{notes-9}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The closed recurrence \texttt{f(n)\ =\ 2f(n−1)\ +\ f(n−3)}}
+  with \texttt{f(0)=1,\ f(1)=1,\ f(2)=2} (sequence
+  \texttt{1,\ 1,\ 2,\ 5,\ 11,\ 24,\ 53,\ 117,\ …}) is what the state
+  recursion collapses to --- useful for verifying, and what you'd
+  hand-roll once you trust it. It is \emph{not} what the code runs; the
+  state form is the one that transfers to wider boards and other tile
+  sets.
+\item
+  \textbf{No parity shortcut here.} Unlike 3×n dominoes, a 2×n board
+  with trominoes is tileable for every n ≥ 0.
+\item
+  \textbf{Mod discipline:} mod on store; all terms non-negative, so no
+  wrap-around fix needed.
+\item
+  Independent check: exhaustive backtracking that lays each piece
+  covering the first empty cell confirms small n --- the branch set and
+  its guards are easy to mis-enumerate.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{mountain_scenes}{%
+\subsection{Mountain\_scenes}\label{mountain_scenes}}
+
+\textbf{Problem} (Kattis ``scenes'', NAIPC 2016). A ribbon of length
+\texttt{n} is cut into \texttt{w} columns, each filled bottom-up to an
+integer height in \texttt{{[}0,\ h{]}}. Total ribbon used (sum of
+heights) must be ≤ \texttt{n} --- she needn't use it all. A
+\textbf{mountain} scene must be \emph{uneven}: all-equal columns make a
+``plain,'' not a mountain. Count distinct mountain scenes, mod 1e9+7.
+
+\hypertarget{idea-12}{%
+\subsubsection{Idea}\label{idea-12}}
+
+Count everything, then subtract the non-mountains --- cleaner than
+counting mountains directly.
+
+\textbf{Total scenes} = height assignments \texttt{(c\_1,\ …,\ c\_w)},
+each \texttt{c\_i\ ∈\ {[}0,\ h{]}}, with \texttt{sum\ ≤\ n}. \textbf{As
+implemented: top-down memoized recursion}
+\texttt{count(column,\ ribbonLeft)} --- at each column try every height
+\texttt{0..h}, recursing with the ribbon reduced; base cases: negative
+ribbon → 0, past the last column → 1. Memo table
+\texttt{dp{[}w+1{]}{[}n+1{]}}, −1 sentinel, mod on every addition.
+
+\textbf{Flat scenes} (the ones to remove): every column equal to some
+height \texttt{k}, using \texttt{w·k} ribbon, valid while
+\texttt{w·k\ ≤\ n} --- there are \texttt{min(h,\ ⌊n/w⌋)\ +\ 1} of them
+(computed in the code as \texttt{min(w·h,\ n)/w\ +\ 1}, same value).
+
+\textbf{Answer} = \texttt{(total\ −\ flats\ +\ MOD)\ mod\ 1e9+7} --- the
+\texttt{+\ MOD} before the final mod keeps the subtraction non-negative
+after wrapping.
+
+\hypertarget{complexity-12}{%
+\subsubsection{Complexity}\label{complexity-12}}
+
+\textbf{O(w · n · h)} time as written --- \texttt{w·n} states, each
+summing over \texttt{h+1} heights --- and \textbf{O(w · n)} memo space.
+Two standard tightenings, noted but not implemented: cap the ribbon
+dimension at \texttt{min(n,\ w·h)} (the frame can't hold more, so larger
+\texttt{n} only bloats the table), and replace the inner height loop
+with a prefix sum over the previous column's row (each column reads a
+contiguous window), dropping the time to O(w · min(n, w·h)).
+
+\hypertarget{notes-10}{%
+\subsubsection{Notes}\label{notes-10}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{``Uneven'' means subtract \emph{all} flats, not just the empty
+  scene} --- every constant-height configuration, including all-zero and
+  completely-full. The samples pin this down:
+  \texttt{25\ 5\ 5\ →\ 6\^{}5\ −\ 6\ =\ 7770}.
+\item
+  \textbf{\texttt{w\ =\ 1} is always 0} --- a single column is trivially
+  uniform. Good sanity check.
+\item
+  Sample checks (all in the runner): \texttt{25\ 5\ 5\ →\ 7770},
+  \texttt{15\ 5\ 5\ →\ 6050}, \texttt{10\ 10\ 1\ →\ 1022},
+  \texttt{4\ 2\ 2\ →\ 6}.
+\item
+  Implementation notes: state lives in static fields (memo, W/H/N) ---
+  fine solo, not reentrant; validation requires \texttt{w,\ h\ ≥\ 1},
+  \texttt{n\ ≥\ 0}.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{narrow_art_gallery}{%
+\subsection{Narrow\_art\_gallery}\label{narrow_art_gallery}}
+
+\textbf{Problem} (Kattis ``narrowartgallery'', 2014 NAQ). A gallery has
+N rows of 2 rooms (left, right), each with a value. Exactly \texttt{k}
+rooms must be closed. To keep the gallery walkable top-to-bottom you may
+\textbf{not} close two rooms in the same row, nor two
+diagonally-touching rooms in adjacent rows (left in one row and right in
+the next, or vice versa). Choose closures leaving the \textbf{maximum
+total value open}.
+
+\hypertarget{idea-13}{%
+\subsubsection{Idea}\label{idea-13}}
+
+\textbf{As implemented: minimize the value \emph{closed}, then
+complement} --- \texttt{answer\ =\ totalValue\ −\ minLost}. (Maximizing
+open value directly is the equivalent framing; the complement is what
+this code --- like Fiset's --- does, and it makes the recursion's
+contribution per step a single room value instead of a row sum.)
+
+Top-down recursion \texttt{minLost(row,\ closuresLeft,\ prevSide)} where
+\texttt{prevSide\ ∈\ \{left-closed,\ free,\ right-closed\}} --- the only
+fact about the past the no-diagonal rule cares about. Per row, three
+moves: - \textbf{Close nothing} → lose 0 here, \texttt{k} unchanged,
+next side = free. Allowed after anything. - \textbf{Close left} → lose
+\texttt{rooms{[}row{]}{[}0{]}}, spend a closure, next side = left.
+Allowed only when prevSide is free or left (left-after-right is the
+forbidden diagonal). - \textbf{Close right} → symmetric, allowed when
+prevSide is free or right.
+
+Base cases: \texttt{closuresLeft\ ==\ 0} → 0 (the remaining rows all
+stay open --- this is what makes it \emph{exactly} k, since the count
+can't go below zero); rows exhausted with closures still owed → an
+infeasibility sentinel so that branch never wins. Memo
+\texttt{dp{[}row{]}{[}k{]}{[}side{]}} with −1 sentinel.
+
+\hypertarget{complexity-13}{%
+\subsubsection{Complexity}\label{complexity-13}}
+
+O(N · k · 3) states, O(1) work each → \textbf{O(N·k)} time and memo
+space. Values are small ints.
+
+\hypertarget{notes-11}{%
+\subsubsection{Notes}\label{notes-11}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{``At most one per row'' + ``no diagonal'' is the whole
+  constraint} --- both fall out of the three-way side state; you never
+  look back more than one row.
+\item
+  \textbf{Feasibility:} any \texttt{0\ ≤\ k\ ≤\ N} is achievable (close
+  the same side in k rows), so a valid answer always exists in range ---
+  enforced by the \texttt{k\ ≤\ rooms.length} validation.
+\item
+  \textbf{Code flag (C7):} the infeasibility sentinel is the literal
+  \textbf{10000}. A legitimate closed-sum above 10000 (e.g.~200 rows of
+  \textasciitilde100-value rooms) would lose to the ``infeasible''
+  branch and inflate the answer. Use a large sentinel
+  (\texttt{Integer.MAX\_VALUE/2}) --- the fix is one constant.
+\item
+  Sample checks (verified against an independent subset brute force in
+  the runner): \texttt{17}, \texttt{17}, \texttt{102}.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{knapsack_01}{%
+\subsection{Knapsack\_01}\label{knapsack_01}}
+
+\textbf{Problem.} Given \texttt{n} items, each with a weight and a
+value, and a knapsack of capacity \texttt{W}, pick a subset with total
+weight ≤ \texttt{W} and maximal total value. Each item is taken
+\textbf{at most once} (0/1 --- no fractions, no duplicates).
+
+\begin{equation*}
+dp[i][w]=\max\bigl(dp[i-1][w],\;\;v_i+dp[i-1][w-w_i]\bigr)
+\qquad O(nW)\text{ time — \emph{pseudo}-polynomial}
+\end{equation*}
+
+\hypertarget{idea-14}{%
+\subsubsection{Idea}\label{idea-14}}
+
+The decision for each item is binary: take it or leave it. Process items
+one at a time and track, for every capacity budget, the best value
+achievable so far.
+
+\texttt{dp{[}i{]}{[}w{]}} = best value using the first \texttt{i} items
+with budget \texttt{w}. For item \texttt{i} (1-indexed, so
+\texttt{weights{[}i-1{]}}):
+
+\begin{verbatim}
+dp[0][w] = 0                                     (no items -> no value)
+dp[i][w] = dp[i-1][w]                            if weights[i-1] > w   (can't fit -> must skip)
+         = max( dp[i-1][w],                      skip item i
+                values[i-1] + dp[i-1][w - weights[i-1]] )   take item i
+\end{verbatim}
+
+Answer: \texttt{dp{[}n{]}{[}W{]}}. \textbf{As implemented:} the full 2D
+table, filled row by row with \texttt{w} ascending --- safe with two
+rows in play, because ``take'' always reads the \emph{previous} row.
+Inputs are validated (equal-length arrays, non-negative
+weights/values/capacity); zero items short-circuits to 0.
+
+\hypertarget{complexity-14}{%
+\subsubsection{Complexity}\label{complexity-14}}
+
+O(n·W) time and O(n·W) space as written. The classic space squeeze ---
+one rolling row, \textbf{capacity loop descending} --- gets O(W);
+descending is what keeps each item single-use
+(\texttt{dp{[}w\ −\ weight{]}} still means the previous item's row),
+while ascending on one row would silently become \emph{unbounded}
+knapsack. Worth internalizing even though this file keeps the 2D table
+(its sibling needs the table anyway for reconstruction).
+
+Note this is ``pseudo-polynomial'': \texttt{W} is a value, not an input
+length, so the cost is exponential in \texttt{W}'s bit-length. Knapsack
+is NP-hard; the DP is efficient only when \texttt{W} is modest.
+
+\hypertarget{notes-12}{%
+\subsubsection{Notes}\label{notes-12}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The one-line 0/1-vs-unbounded switch} (rolling-row loop
+  direction) is the interview classic riding on this problem.
+\item
+  \textbf{Fractional knapsack is a different problem} --- greedy by
+  value/weight ratio is optimal there; for 0/1, greedy fails and you
+  need the DP.
+\item
+  Sample checks (independently verified):
+  \texttt{w\{1,3,4,5\}\ v\{1,4,5,7\}\ cap7\ →\ 9},
+  \texttt{w\{2,3,4,5\}\ v\{3,4,5,6\}\ cap5\ →\ 7}.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{knapsack_01_items}{%
+\subsection{Knapsack\_01\_items}\label{knapsack_01_items}}
+
+\textbf{Problem.} Same as 0/1 knapsack, but return \textbf{both} the
+maximum value and \emph{which items} achieve it.
+
+\hypertarget{idea-15}{%
+\subsubsection{Idea}\label{idea-15}}
+
+Build the identical full 2D table, then walk it backward to recover the
+choices:
+
+\begin{verbatim}
+w = W
+for i from n down to 1:
+    if dp[i][w] != dp[i-1][w]:      # value changed => item i-1 was taken
+        record index i-1
+        w -= weights[i-1]           # give back its weight
+    # else: skipped, budget unchanged
+\end{verbatim}
+
+\texttt{dp{[}i{]}{[}w{]}} differs from \texttt{dp{[}i-1{]}{[}w{]}}
+exactly when including item \texttt{i−1} beat excluding it --- the
+optimum at this cell \emph{used} the item. \textbf{As implemented:}
+indices are collected during the walk (descending) and then
+\texttt{Arrays.sort}ed ascending --- same result as the
+push-front/reverse approach. Value and items are returned together in a
+small immutable \texttt{Result} (with \texttt{equals}/\texttt{hashCode},
+so runners can compare directly).
+
+\hypertarget{complexity-15}{%
+\subsubsection{Complexity}\label{complexity-15}}
+
+O(n·W) time and O(n·W) space --- the table is now mandatory (the O(W)
+rolling row forgets the per-item history the walk needs). The backward
+walk adds O(n), the sort O(n log n) --- noise.
+
+\hypertarget{notes-13}{%
+\subsubsection{Notes}\label{notes-13}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The ``equal ⇒ skipped'' rule is a tie-break.} When taking and
+  skipping tie, this convention skips --- producing one specific optimal
+  set. The item set isn't unique in general, only the value is; so the
+  runner validates the returned set (distinct indices, fits capacity,
+  sums to the optimal value) rather than demanding one exact answer,
+  except where the optimum is provably unique.
+\item
+  \textbf{Value-only vs items:} \texttt{Knapsack\_01.maxValue} and this
+  method must agree on the value for every input --- a cheap consistency
+  check the runner performs.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{job_sequencing_deadlines}{%
+\subsection{Job\_sequencing\_deadlines}\label{job_sequencing_deadlines}}
+
+\emph{(Skeleton stage --- written for the intended algorithm; reconcile
+against the code once implemented.)}
+
+\textbf{Problem.} n jobs, each taking exactly 1 time unit, each with a
+deadline \texttt{d{[}i{]}\ \textgreater{}=\ 1} and profit
+\texttt{p{[}i{]}}. One machine, one job per slot \texttt{1,\ 2,\ 3,\ …};
+a job pays only if scheduled in a slot ≤ its deadline. Maximize total
+profit (the Abdul Bari greedy classic).
+
+\hypertarget{idea-16}{%
+\subsubsection{Idea}\label{idea-16}}
+
+Two greedy decisions, both provable by exchange arguments: -
+\textbf{Order: profit descending.} If an optimal schedule skips a
+higher-profit job in favor of a lower-profit one competing for the same
+slots, swapping them can't decrease profit. - \textbf{Placement: the
+LATEST free slot ≤ the deadline.} Placing a job as late as legally
+possible keeps early slots open for jobs with tighter deadlines. The
+\texttt{d\{4,1,1,1\}\ p\{50,10,40,30\}} case is the demonstration: put
+50 in slot 4 (not slot 1) and slot 1 stays free for 40 → 90; greedily
+grabbing slot 1 for the 50 strands every deadline-1 job → 60.
+
+A job finding no free slot ≤ its deadline is simply dropped (it can
+never pay).
+
+Feasibility fact worth knowing (it powers the brute-force verifier): a
+\emph{set} of unit jobs is schedulable iff, after sorting its deadlines
+ascending, the i-th deadline (1-based) is ≥ i --- Hall's condition
+specialized to intervals \texttt{{[}1,\ d{]}}.
+
+\hypertarget{complexity-16}{%
+\subsubsection{Complexity}\label{complexity-16}}
+
+O(n log n) sort + O(n · maxD) slot probing with a plain free-slot array
+(each job scans backward from its deadline). The classic upgrade: a
+\textbf{union-find over slots} where \texttt{find(d)} returns the latest
+free slot ≤ d and placing unions it with slot−1 --- O(n log n + n·α)
+total, and a nice reuse of the repo's \texttt{Union\_find\_compressed}.
+Cap slot bookkeeping at \texttt{min(maxDeadline,\ n)} --- no schedule
+ever uses more than n slots (deadlines can be huge; the runner's
+million-deadline case guards this).
+
+\hypertarget{notes-14}{%
+\subsubsection{Notes}\label{notes-14}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Contrast with 0/1 knapsack:} near-identical flavor (``pick
+  items for profit under a constraint'') but here greedy is
+  \emph{optimal} while knapsack's greedy fails and needs DP. The
+  difference is the matroid structure of the schedulable sets --- the
+  interview-grade observation.
+\item
+  The maximum \textbf{profit} is unique; the chosen job \emph{set} is
+  not (equal profits swap freely) --- assert profit, and assert counts
+  only where they're forced (all-deadline-1 → exactly one job runs).
+\item
+  Weighted variants with unequal job lengths lose the matroid structure
+  and go NP-hard --- this problem lives right on the tractability
+  boundary.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{grid_shortest_path}{%
+\subsection{Grid\_shortest\_path}\label{grid_shortest_path}}
+
+\textbf{Problem.} Given a rectangular grid where \texttt{0} is open and
+\texttt{1} is a wall, find the fewest 4-directional moves from a start
+cell to a target cell, stepping only on open cells. Return the move
+count, or \texttt{-1} if unreachable. (Lives in \texttt{Problems/} ---
+it's a named problem built on the BFS idea.)
+
+\begin{equation*}
+dp[r][c]=\text{cost}(r,c)+\min\bigl(dp[r-1][c],\;dp[r][c-1]\bigr)
+\qquad O(RC)
+\end{equation*}
+
+\hypertarget{idea-17}{%
+\subsubsection{Idea}\label{idea-17}}
+
+The grid \emph{is} a graph, just implicit: each open cell is a vertex,
+each pair of orthogonally adjacent open cells an edge. Every move costs
+1, so this is unweighted shortest path → \textbf{BFS}, generating
+neighbors on the fly from coordinates instead of building a graph.
+
+\textbf{As implemented} --- the same mark-on-dequeue style as the graph
+BFS (see \texttt{Breadth\_first\_search} in
+\texttt{Algorithms\_notes.md}), with a \texttt{dist} grid instead of
+parents:
+
+\begin{verbatim}
+if start or target is a wall: return -1
+dist[*][*] = -1;  dist[start] = 0;  enqueue start
+while queue not empty:
+    (r, c) = dequeue                       # two parallel Queues carry r and c
+    if not visited[r][c]:
+        mark visited
+        for each of the 4 directions:
+            (nr, nc) = neighbor
+            if in bounds, open:
+                if dist[nr][nc] == -1: dist[nr][nc] = dist[r][c] + 1   # first sight wins
+                enqueue (nr, nc)
+return dist[tr][tc]        # still -1 if never reached
+\end{verbatim}
+
+\texttt{dist} is set at \textbf{first discovery} (guarded by
+\texttt{==\ -1}), which preserves shortest distances for the same reason
+the graph BFS's first-parent-wins does. The \texttt{-1} initialization
+doubles as the unreachable sentinel, so the final read needs no special
+case. There is no early exit on reaching the target --- the BFS runs to
+completion and the answer is read out of the table (an
+\texttt{if\ (r,c)==target\ return} on dequeue is a valid optimization,
+just not taken).
+
+\hypertarget{complexity-17}{%
+\subsubsection{Complexity}\label{complexity-17}}
+
+O(R·C) time and space --- each cell expands once, ≤ 4 neighbors each;
+the duplicate-tolerant queue holds at most O(R·C) redundant entries
+(constant-degree grid, so no blowup).
+
+\hypertarget{notes-15}{%
+\subsubsection{Notes}\label{notes-15}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Reject wall endpoints up front} --- the code returns −1
+  immediately if start or target is a wall (the BFS would conclude the
+  same, the explicit check is clearer), after validating bounds and
+  rectangularity.
+\item
+  \textbf{Bounds check every neighbor} before indexing --- edge cells
+  are where the out-of-bounds access hides.
+\item
+  \textbf{Coordinates travel as two parallel queues} (\texttt{r\_index},
+  \texttt{c\_index}) dequeued in lockstep --- the third option next to
+  encoding \texttt{r*C\ +\ c} or a small cell object.
+\item
+  \textbf{Variants} slot in cleanly: 8-directional movement (extend the
+  direction arrays), multiple sources (enqueue all at distance 0),
+  weighted terrain (breaks the unit-cost assumption → Dijkstra / 0-1
+  BFS). Path reconstruction would add a parent grid exactly like the
+  graph BFS.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{traveling_salesman}{%
+\subsection{Traveling\_salesman}\label{traveling_salesman}}
+
+\textbf{Problem.} Given \texttt{n} cities and an \texttt{n\ ×\ n} cost
+matrix, find the cheapest tour that starts at a city, visits every city
+exactly once, and returns to the start (minimum-cost Hamiltonian cycle).
+Works for asymmetric costs (\texttt{dist{[}i{]}{[}j{]}} may differ from
+\texttt{dist{[}j{]}{[}i{]}}).
+
+\begin{equation*}
+dp[S][j]=\min_{i\in S\setminus\{j\}}\bigl(dp[S\setminus\{j\}][i]+w(i,j)\bigr)
+\qquad O(2^{n}n^{2})\ \text{time},\ O(2^{n}n)\ \text{space}
+\end{equation*}
+
+\hypertarget{idea-18}{%
+\subsubsection{Idea}\label{idea-18}}
+
+Brute force tries all \texttt{(n−1)!} orderings --- hopeless past
+\textasciitilde12 cities. \textbf{Held-Karp} memoizes over \emph{sets}
+of visited cities: the cost of finishing depends only on which cities
+are visited and where you stand, not the order behind you.
+
+State: \texttt{memo{[}i{]}{[}mask{]}} = minimum cost of a path that
+starts at city 0, has visited exactly the bitmask \texttt{mask} (bit
+\texttt{i} set), and currently stands at \texttt{i}.
+
+\textbf{As implemented --- bottom-up by subset size:}
+
+\begin{verbatim}
+base:  memo[i][ {0, i} ] = dist[0][i]   for each i != 0
+for r = 3..n:                            # subset sizes
+    for each mask with bitCount r containing city 0:
+        for each next in mask (not 0):
+            memo[next][mask] = min over end in mask\{0,next} of
+                               memo[end][mask ^ (1<<next)] + dist[end][next]
+answer: min over end != 0 of memo[end][fullMask] + dist[end][0]
+\end{verbatim}
+
+Iterating masks in increasing subset size guarantees every predecessor
+state is finished before it's read. \texttt{notIN(i,\ mask)} is the
+bit-test helper; \texttt{fullMask\ =\ (1\textless{}\textless{}n)\ −\ 1};
+INF = \texttt{Integer.MAX\_VALUE/2} so \texttt{INF\ +\ dist} can't
+overflow.
+
+\hypertarget{complexity-18}{%
+\subsubsection{Complexity}\label{complexity-18}}
+
+O(2ⁿ · n²) time, O(2ⁿ · n) space --- practical to n ≈ 18--20. Still
+exponential (TSP is NP-hard); just vastly better than factorial.
+
+\hypertarget{notes-16}{%
+\subsubsection{Notes}\label{notes-16}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Fix the start at city 0.} A tour's cost is rotation-invariant;
+  pinning the start removes the n-fold symmetry and anchors the base
+  case. \texttt{n\ =\ 1} short-circuits to 0; \texttt{n\ =\ 2} falls out
+  as \texttt{dist{[}0{]}{[}1{]}\ +\ dist{[}1{]}{[}0{]}}.
+\item
+  \textbf{Sentinel discipline:} halved MAX\_VALUE keeps
+  \texttt{INF\ +\ dist} finite; unvisited memo cells default to 0 but
+  are never read thanks to the subset-size ordering and the in-mask
+  guards.
+\item
+  The table size is allocated via \texttt{(int)\ Math.pow(2,\ n)} ---
+  works, but \texttt{1\ \textless{}\textless{}\ n} is the exact,
+  idiomatic form.
+\item
+  \textbf{Code flag (B10):} after computing the cost, the method also
+  runs a \textbf{tour reconstruction} loop --- whose comparison is
+  inverted (it replaces the candidate when the incumbent is strictly
+  \emph{better}, building a worst tour) --- and then \textbf{discards
+  the result} (the \texttt{tour} array is never returned). Dead code
+  hiding a bug no test can reach: either fix the comparison and return
+  the tour, or delete the loop.
+\item
+  Sample checks (independently verified): symmetric 4-city →
+  \texttt{80}, asymmetric 3-city → \texttt{3}.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{n_queens}{%
+\subsection{N\_queens}\label{n_queens}}
+
+\emph{(Skeleton stage --- written for the intended algorithm; reconcile
+against the code once implemented.)}
+
+\begin{equation*}
+\text{two queens }(r_1,c_1),(r_2,c_2)\text{ conflict}\iff
+c_1=c_2 \ \lor\ r_1-c_1=r_2-c_2 \ \lor\ r_1+c_1=r_2+c_2
+\end{equation*}
+
+\textbf{Problem.} Place n queens on an n×n board with no two sharing a
+row, column, or diagonal. Count all distinct placements, and produce
+one.
+
+\hypertarget{idea-19}{%
+\subsubsection{Idea}\label{idea-19}}
+
+\textbf{Backtracking} --- the exhaustive search that prunes instead of
+enumerating. One queen per row is forced, so search row by row: at row
+r, try each column c that is unattacked, place, recurse to r+1,
+\textbf{undo}, try the next c.~Reaching row n is one complete solution.
+The undo is the essence: state must be bit-identical before and after
+each attempt, or ``solutions'' leak between branches.
+
+O(1) attack tests via three occupancy sets --- the observation that
+makes the search fast: - \texttt{cols{[}c{]}} --- columns are just c; -
+\texttt{diag1{[}r\ +\ c{]}} --- every ``/'' anti-diagonal has constant
+r+c (2n−1 of them); - \texttt{diag2{[}r\ −\ c\ +\ n\ −\ 1{]}} --- every
+``" diagonal has constant r−c, shifted non-negative.
+
+Place = set three booleans; undo = clear them. Without these, each
+attack check is an O(n) rescan of placed queens.
+
+For \texttt{oneSolution}, the same recursion short-circuits on the first
+success (return/flag up the stack); n = 2 and n = 3 are the only
+unsolvable sizes ≥ 1 --- return empty, and keep
+\texttt{countSolutions\ ==\ 0\ ⇔\ oneSolution\ empty} as a consistency
+invariant (the runner checks it).
+
+\hypertarget{complexity-19}{%
+\subsubsection{Complexity}\label{complexity-19}}
+
+Worst-case O(n!) branching (row r has ≤ n−r viable columns), heavily
+pruned in practice; counting n = 9 (352) is instant, n ≈ 15 is where it
+starts to breathe hard. Space O(n) for the sets + recursion.
+
+\hypertarget{notes-17}{%
+\subsubsection{Notes}\label{notes-17}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Counting convention:} rotations/reflections count separately
+  (n = 8 → 92 total, vs 12 ``fundamental'' solutions). The count
+  sequence 1, 0, 0, 2, 10, 4, 40, 92, 352 is OEIS A000170 --- the
+  runner's independently established constants.
+\item
+  The classic halving optimization: first-row symmetry (mirror pairs)
+  lets you search half the columns and double --- worth doing only after
+  the plain version is trusted.
+\item
+  Backtracking vs DP: subproblems here (partial boards) don't repeat, so
+  there's nothing to memoize --- this is exhaustive search with pruning,
+  the third technique next to D\&C and DP, and the template for Sudoku,
+  subset-sum search, and graph coloring. Bitmask sets (\texttt{int}
+  instead of \texttt{boolean{[}{]}}) are the constant-factor upgrade.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{bipartite-matching-via-max-flow-notes}{%
+\section{Bipartite Matching via Max Flow ---
+Notes}\label{bipartite-matching-via-max-flow-notes}}
+
+Two problems that look unrelated but share one shape: model them as a
+bipartite graph, add a super-source and super-sink, and the maximum flow
+\emph{is} the maximum matching. The pattern:
+\texttt{source\ →\ left\ nodes\ (cap\ 1)\ →\ right\ nodes\ (edge\ where\ allowed)\ →\ sink\ (cap\ 1\ or\ a\ limit)}.
+
+\hypertarget{mice_and_owls}{%
+\subsection{Mice\_and\_owls}\label{mice_and_owls}}
+
+\textbf{Problem.} Mice are scattered on a plane; owls will strike. Each
+mouse can run at most a fixed distance and must reach a hole to survive.
+Each hole has a capacity. Maximize mice saved (equivalently, minimize
+eaten).
+
+\begin{equation*}
+\text{max matching} = \text{max flow with unit capacities}
+\qquad
+O(E\sqrt{V})\ \text{via Dinic's (Hopcroft--Karp bound)}
+\end{equation*}
+
+\hypertarget{idea-20}{%
+\subsubsection{Idea}\label{idea-20}}
+
+Bipartite max flow with capacities on the right side. \textbf{As
+implemented:} one capacity matrix of size \texttt{mice\ +\ holes\ +\ 2},
+with mice at indices \texttt{0..m−1}, holes at \texttt{m..m+h−1}, source
+at \texttt{m+h}, sink at \texttt{m+h+1}: - \textbf{Source → each mouse},
+capacity 1 (each mouse is one unit to route). - \textbf{Mouse → hole},
+capacity 1, whenever
+\texttt{distance(mouse,\ hole)\ \textless{}=\ maxDistance} (the
+\texttt{canReach} predicate --- Euclidean, and \texttt{\textless{}=} so
+a mouse exactly at its limit still makes it). - \textbf{Hole → sink},
+capacity = the hole's capacity.
+
+Max flow (computed with the repo's \texttt{Ford\_fulkerson}) = mice
+simultaneously routable to holes without exceeding any hole =
+\textbf{mice saved}. Mice eaten = total − flow.
+
+\hypertarget{why-it-works}{%
+\subsubsection{Why it works}\label{why-it-works}}
+
+Each flow unit is one mouse traveling source → mouse → hole → sink. Unit
+capacity on \texttt{source\ →\ mouse} uses each mouse once; the hole's
+limit sits on its sink edge; integer capacities guarantee an integral
+max flow, i.e.~an actual assignment. This is the classic reduction of
+capacity-constrained matching to max flow.
+
+\hypertarget{notes-18}{%
+\subsubsection{Notes}\label{notes-18}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Hole capacity lives on the hole → sink edge, not the mouse →
+  hole edges} --- that's what caps a hole's intake no matter how many
+  mice can reach it.
+\item
+  Comparing squared distances would avoid the \texttt{sqrt} for exact
+  integer inputs; doubles are fine here.
+\item
+  Any max-flow routine works; the networks are small, so the DFS
+  Ford-Fulkerson is plenty.
+\end{itemize}
+
+\hypertarget{elementary-math-variant-notes-only-no-implementation}{%
+\subsection{Elementary Math (variant --- notes only, no
+implementation)}\label{elementary-math-variant-notes-only-no-implementation}}
+
+\textbf{Problem.} Given \texttt{N} expressions, each a pair
+\texttt{(a,\ b)}, choose one operation per pair --- \texttt{a\ +\ b},
+\texttt{a\ −\ b}, or \texttt{a\ ×\ b} --- so that all \texttt{N} results
+are \textbf{distinct}. Decide feasibility (and, in the full problem,
+output the choices).
+
+\hypertarget{idea-21}{%
+\subsubsection{Idea}\label{idea-21}}
+
+This is \textbf{pure bipartite matching}, not a capacity problem: -
+\textbf{Left nodes = the N expressions.} \textbf{Right nodes = the
+candidate result values} --- each expression contributes at most 3, so ≤
+3N distinct values; dedupe them. - \textbf{Edge expression → value} for
+each result that expression can produce. - \textbf{Source → expression}
+cap 1; \textbf{value → sink} cap 1 (each result value usable by at most
+one expression).
+
+A \textbf{perfect matching} --- max flow = N --- means every expression
+gets a distinct result; flow \textless{} N means impossible. The matched
+edges name the operations for constructive output.
+
+\hypertarget{why-its-the-same-family-as-mice-and-owls}{%
+\subsubsection{Why it's the same family as Mice and
+Owls}\label{why-its-the-same-family-as-mice-and-owls}}
+
+Both are ``assign each left item to a right slot, each slot used a
+limited number of times, respecting an allowed-pairs relation.''
+Mice/holes has capacities \textgreater{} 1 on the sink edges; Elementary
+Math is capacity 1 everywhere (a pure matching). Same
+source→left→right→sink skeleton; only the meaning of the right nodes and
+the sink capacities differ.
+
+\hypertarget{notes-19}{%
+\subsubsection{Notes}\label{notes-19}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Distinctness = unit capacity on the value → sink edge.} That
+  single-use constraint \emph{is} ``all results distinct.''
+\item
+  The value set is small (≤ 3N): enumerate each expression's three
+  results, dedupe, map each distinct value to an index. Watch
+  \texttt{a\ −\ b} signs and \texttt{a\ ×\ b} magnitudes when hashing
+  --- negative and large products are legitimately distinct values (use
+  \texttt{long}).
+\end{itemize}
+
+\end{document}

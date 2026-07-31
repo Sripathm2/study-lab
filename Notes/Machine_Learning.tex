@@ -1,0 +1,3932 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  10pt,
+  letterpaper,
+  onecolumn]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  % fontspec, NOT unicode-math: unicode-math makes math glyphs math-active,
+  % which breaks \newunicodechar mappings in text mode.
+  \usepackage{fontspec}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\IfFileExists{lmodern.sty}{\ifPDFTeX\usepackage{lmodern}\fi}{}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Latin Modern Roman}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=0.85in]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\newcommand{\notestitle}{ML Notes}
+% ---------------------------------------------------------------------------
+%  Study-notes preamble (inlined by pandoc -H, so each .tex is standalone).
+%  Engine: XeLaTeX.  Class: article, 10pt, one column.
+% ---------------------------------------------------------------------------
+\usepackage{amsmath,amssymb}
+\usepackage{newunicodechar}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{microtype}
+
+% --- fonts ------------------------------------------------------------------
+% Latin Modern for text/math; DejaVu Sans Mono for code (wide Unicode coverage).
+\setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]
+
+% --- Unicode the text font cannot draw -> real math glyphs ------------------
+\newunicodechar{−}{\ensuremath{-}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{÷}{\ensuremath{\div}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{≅}{\ensuremath{\cong}}
+\newunicodechar{≇}{\ensuremath{\ncong}}
+\newunicodechar{∞}{\ensuremath{\infty}}
+\newunicodechar{√}{\ensuremath{\sqrt{\;}}}
+\newunicodechar{Σ}{\ensuremath{\Sigma}}
+\newunicodechar{∫}{\ensuremath{\int}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{∘}{\ensuremath{\circ}}
+\newunicodechar{‖}{\ensuremath{\|}}
+\newunicodechar{ℓ}{\ensuremath{\ell}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{⇐}{\ensuremath{\Leftarrow}}
+\newunicodechar{⇔}{\ensuremath{\Leftrightarrow}}
+\newunicodechar{⌈}{\ensuremath{\lceil}}
+\newunicodechar{⌉}{\ensuremath{\rceil}}
+\newunicodechar{⌊}{\ensuremath{\lfloor}}
+\newunicodechar{⌋}{\ensuremath{\rfloor}}
+\newunicodechar{°}{\ensuremath{{}^{\circ}}}
+\newunicodechar{✓}{\ensuremath{\checkmark}}
+% greek
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{β}{\ensuremath{\beta}}
+\newunicodechar{γ}{\ensuremath{\gamma}}
+\newunicodechar{ε}{\ensuremath{\epsilon}}
+\newunicodechar{η}{\ensuremath{\eta}}
+\newunicodechar{θ}{\ensuremath{\theta}}
+\newunicodechar{λ}{\ensuremath{\lambda}}
+\newunicodechar{μ}{\ensuremath{\mu}}
+\newunicodechar{π}{\ensuremath{\pi}}
+\newunicodechar{ρ}{\ensuremath{\rho}}
+\newunicodechar{σ}{\ensuremath{\sigma}}
+\newunicodechar{φ}{\ensuremath{\phi}}
+\newunicodechar{ω}{\ensuremath{\omega}}
+% super/subscripts
+\newunicodechar{¹}{\ensuremath{{}^{1}}}
+\newunicodechar{²}{\ensuremath{{}^{2}}}
+\newunicodechar{³}{\ensuremath{{}^{3}}}
+\newunicodechar{⁴}{\ensuremath{{}^{4}}}
+\newunicodechar{⁵}{\ensuremath{{}^{5}}}
+\newunicodechar{⁶}{\ensuremath{{}^{6}}}
+\newunicodechar{⁷}{\ensuremath{{}^{7}}}
+\newunicodechar{⁸}{\ensuremath{{}^{8}}}
+\newunicodechar{ⁿ}{\ensuremath{{}^{n}}}
+\newunicodechar{ˣ}{\ensuremath{{}^{x}}}
+\newunicodechar{ᵀ}{\ensuremath{{}^{\mathsf{T}}}}
+\newunicodechar{ᵇ}{\ensuremath{{}^{b}}}
+\newunicodechar{⁻}{\ensuremath{{}^{-}}}
+\newunicodechar{⁺}{\ensuremath{{}^{+}}}
+\newunicodechar{₀}{\ensuremath{{}_{0}}}
+\newunicodechar{₁}{\ensuremath{{}_{1}}}
+\newunicodechar{₂}{\ensuremath{{}_{2}}}
+\newunicodechar{₃}{\ensuremath{{}_{3}}}
+\newunicodechar{ᵢ}{\ensuremath{{}_{i}}}
+\newunicodechar{ₐ}{\ensuremath{{}_{a}}}
+% accented letters
+\newunicodechar{î}{\ensuremath{\hat{\imath}}}
+\newunicodechar{ĵ}{\ensuremath{\hat{\jmath}}}
+\newunicodechar{ŷ}{\ensuremath{\hat{y}}}
+\newunicodechar{Ŷ}{\ensuremath{\hat{Y}}}
+\newunicodechar{ȳ}{\ensuremath{\bar{y}}}
+% private-use slots written by prep.py for combining-accent sequences
+\newunicodechar{}{\ensuremath{\hat{f}}}
+\newunicodechar{}{\ensuremath{\hat{\beta}}}
+\newunicodechar{}{\ensuremath{\hat{\sigma}}}
+\newunicodechar{}{\ensuremath{\hat{k}}}
+\newunicodechar{}{\ensuremath{\hat{\mu}}}
+\newunicodechar{}{\ensuremath{\bar{x}}}
+
+% --- layout -----------------------------------------------------------------
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,parsep=0.15em,topsep=0.3em}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{2.0ex plus .6ex minus .2ex}{1.0ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.6ex plus .5ex minus .2ex}{0.7ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{1.2ex plus .4ex minus .2ex}{0.5ex plus .2ex}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\footnotesize\nouppercase\leftmark}
+\fancyhead[R]{\footnotesize\textit{\notestitle}}
+\fancyfoot[C]{\footnotesize\thepage}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[C]{\footnotesize\thepage}}
+
+% keep display math from being torn off its paragraph too eagerly
+\allowdisplaybreaks
+\setlength{\abovedisplayskip}{0.6em}
+\setlength{\belowdisplayskip}{0.6em}
+\setlength{\emergencystretch}{3em}
+\sloppy
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={ML Notes},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={NavyBlue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{ML Notes}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+A running file of machine-learning concepts, in Definition / Intuition /
+Notes form. Written to stand alone --- no book required to read them.
+Math is kept light: a one-line formula plus plain English, not
+derivations.
+
+Statistics foundations --- statistical-learning theory, linear
+regression, classification, resampling, model selection \&
+regularization, moving beyond linearity, survival analysis, and multiple
+testing --- live in a companion \textbf{Stat.md}. Cross-references to
+those concepts are marked \emph{(stat)}.
+
+Sources here: \emph{An Introduction to Statistical Learning} (ISL/ISLP),
+\emph{Hands-On Machine Learning} (Géron), Karpathy's \emph{Zero to
+Hero}, Chip Huyen's \emph{Designing Machine Learning Systems}, and
+Kohavi et al.'s \emph{Trustworthy Online Controlled Experiments}.
+Section tags show which pass a topic came from.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{data-preparation-hands-on-ml}{%
+\subsection{\texorpdfstring{Data Preparation \emph{(Hands-On
+ML)}}{Data Preparation (Hands-On ML)}}\label{data-preparation-hands-on-ml}}
+
+\hypertarget{feature-scaling}{%
+\subsubsection{Feature scaling}\label{feature-scaling}}
+
+\textbf{Definition.} Putting all attributes on the same scale, by one of
+two common routes. \emph{Min-max scaling} (often called normalization):
+subtract the minimum and divide by the range (max − min), landing values
+in \texttt{{[}0,\ 1{]}}. \emph{Standardization}: subtract the mean and
+divide by the standard deviation, giving mean 0 and unit variance.
+
+\begin{equation*}
+x_{\text{min-max}}=\frac{x-\min(x)}{\max(x)-\min(x)}\in[0,1],
+\qquad
+x_{\text{standard}}=\frac{x-\mu}{\sigma}
+\end{equation*}
+
+\textbf{Intuition.} Algorithms that measure distances or penalize
+coefficient size treat a variable measured in thousands as inherently
+``bigger'' than one measured in units --- scaling removes that accident
+of measurement. Min-max gives a bounded range; standardization doesn't
+bound the output but is far less disturbed by outliers, since one
+extreme value doesn't squash everything else into a sliver of
+\texttt{{[}0,\ 1{]}}.
+
+\textbf{Notes.} Already required by several methods in this file: ridge
+and the lasso (the penalty scales with coefficient size), PCA (sensitive
+to units), KNN and radial-kernel SVMs (distance-based), hierarchical
+clustering, and neural networks. Scikit-learn provides
+\texttt{MinMaxScaler} (with a \texttt{feature\_range} option) and
+\texttt{StandardScaler}. Fit the scaler on the training set only, then
+apply it to the test set. → Ridge regression (stat), Principal
+components analysis (PCA), K-nearest neighbors (KNN) (stat),
+Hierarchical clustering.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{tree-based-methods-isl-ch.-8}{%
+\subsection{\texorpdfstring{Tree-Based Methods \emph{(ISL
+ch.~8)}}{Tree-Based Methods (ISL ch.~8)}}\label{tree-based-methods-isl-ch.-8}}
+
+\hypertarget{decision-trees}{%
+\subsubsection{Decision trees}\label{decision-trees}}
+
+\textbf{Definition.} Methods that split the predictor space into simple,
+non-overlapping regions and make a constant prediction in each. Drawn
+upside down: split points are \emph{internal nodes}, the final regions
+are \emph{terminal nodes} (leaves).
+
+\textbf{Intuition.} A flowchart of yes/no questions on the predictors;
+follow the branches to a leaf, and the leaf gives your prediction.
+Splits carve the feature space into boxes.
+
+\textbf{Notes.} Come in regression and classification flavors. →
+Regression trees, Classification trees, Trees: strengths and weaknesses.
+
+\hypertarget{regression-trees}{%
+\subsubsection{Regression trees}\label{regression-trees}}
+
+\textbf{Definition.} Divide the predictor space into \texttt{J} boxes
+\texttt{R\_1,\ …,\ R\_J}; predict, for any point in \texttt{R\_j}, the
+\emph{mean} response of the training observations in \texttt{R\_j}.
+Boxes are found by \emph{recursive binary splitting} --- a top-down,
+greedy procedure that at each step picks the predictor and cutpoint
+giving the greatest immediate reduction in RSS.
+
+\begin{equation*}
+\min_{j,s}\;\sum_{i:\,x_i\in R_1(j,s)}(y_i-\hat y_{R_1})^2+\sum_{i:\,x_i\in R_2(j,s)}(y_i-\hat y_{R_2})^2
+\end{equation*}
+
+\textbf{Intuition.} Repeatedly ask ``which single split most reduces
+error right now?'' and take it, never looking ahead. Greedy because it
+optimizes the current step, not the whole tree; top-down because it
+starts with all data in one region and keeps splitting.
+
+\textbf{Notes.} A fully grown tree overfits (too many boxes → low bias,
+high variance). The fix is to grow big then prune. → Tree pruning.
+
+\hypertarget{tree-pruning-cost-complexity}{%
+\subsubsection{Tree pruning
+(cost-complexity)}\label{tree-pruning-cost-complexity}}
+
+\textbf{Definition.} Grow a large tree, then trim it back to a subtree
+using \emph{cost-complexity (weakest-link) pruning}: minimize
+\texttt{RSS\ +\ α·\textbar{}T\textbar{}}, where
+\texttt{\textbar{}T\textbar{}} is the number of leaves and
+\texttt{α\ ≥\ 0} is a tuning parameter. Choose \texttt{α} by
+cross-validation.
+
+\begin{equation*}
+\sum_{m=1}^{|T|}\ \sum_{i:\,x_i\in R_m}(y_i-\hat y_{R_m})^2+\alpha|T|
+\qquad \alpha \text{ trades fit against tree size}
+\end{equation*}
+
+\textbf{Intuition.} A big tree fits noise; a smaller one generalizes
+better at the cost of a little bias. The
+\texttt{α·\textbar{}T\textbar{}} term charges rent per leaf, so raising
+\texttt{α} prunes branches in a predictable nested order.
+Cross-validation finds the \texttt{α} (tree size) that minimizes test
+error.
+
+\textbf{Notes.} Cheaper than evaluating every possible subtree ---
+increasing \texttt{α} sweeps out the whole useful sequence of subtrees
+automatically. → Regression trees, k-fold cross-validation (stat).
+
+\hypertarget{classification-trees}{%
+\subsubsection{Classification trees}\label{classification-trees}}
+
+\textbf{Definition.} Trees for a qualitative response: predict the
+\emph{most common class} in each leaf. Splits are chosen to increase
+node \emph{purity}, measured by the \emph{Gini index} or \emph{entropy}
+rather than RSS.
+
+\begin{equation*}
+G=\sum_{k=1}^{K}\hat p_{mk}(1-\hat p_{mk})
+\qquad\text{(Gini)},
+\qquad
+D=-\sum_{k=1}^{K}\hat p_{mk}\log \hat p_{mk}
+\qquad\text{(entropy)}
+\end{equation*}
+
+\textbf{Intuition.} Same recursive splitting, but ``good split'' now
+means ``makes the resulting groups more class-pure.'' Gini and entropy
+both reward leaves dominated by a single class.
+
+\textbf{Notes.} Purity measures are more sensitive than raw error rate
+for growing the tree. → Regression trees, Decision trees.
+
+\hypertarget{trees-strengths-and-weaknesses}{%
+\subsubsection{Trees: strengths and
+weaknesses}\label{trees-strengths-and-weaknesses}}
+
+\textbf{Definition.} Single trees are highly interpretable but
+relatively weak predictors.
+
+\textbf{Intuition.} \emph{Strengths:} easy to explain (even easier than
+linear regression), arguably mirror human decision-making, display
+graphically, and handle qualitative predictors without dummy variables.
+\emph{Weaknesses:} lower predictive accuracy than top methods, and
+\emph{non-robust} --- a small data change can swing the whole tree.
+
+\textbf{Notes.} Aggregating many trees --- bagging, random forests,
+boosting, BART --- trades away interpretability for big accuracy gains,
+largely by cutting the high variance of single trees. → Bagging, Random
+forests, Boosting.
+
+\hypertarget{ensemble-methods-and-weak-learners}{%
+\subsubsection{Ensemble methods and weak
+learners}\label{ensemble-methods-and-weak-learners}}
+
+\textbf{Definition.} An \emph{ensemble} combines many simple
+``building-block'' models (\emph{weak learners}, individually mediocre)
+into one much stronger model.
+
+\textbf{Intuition.} Many weak, uncorrelated opinions, aggregated, beat
+any single one --- a crowd-of-experts effect. Trees make ideal building
+blocks. Bagging, random forests, boosting, and BART are all tree
+ensembles.
+
+\textbf{Notes.} They differ in \emph{how} they build and combine the
+trees. → Bagging, Random forests, Boosting, BART.
+
+\hypertarget{bagging}{%
+\subsubsection{Bagging}\label{bagging}}
+
+\textbf{Definition.} \emph{Bootstrap aggregation}: draw \texttt{B}
+bootstrap samples, fit a tree on each, and average their predictions
+(regression) or take a majority vote (classification). A general
+variance-reduction procedure, especially useful for trees.
+
+\begin{equation*}
+\hat f_{\text{bag}}(x)=\frac{1}{B}\sum_{b=1}^{B}\hat f^{*b}(x)
+\qquad\text{averaging }B\text{ bootstrap fits cuts variance by }\approx B
+\end{equation*}
+
+\textbf{Intuition.} Averaging many noisy estimates cuts variance
+(\texttt{Var} of an average of \texttt{n} items is \texttt{σ²/n}).
+Single trees are high-variance; average many bootstrap-grown trees and
+the wobble largely cancels, boosting accuracy. Trees are grown deep and
+\emph{unpruned} --- bagging handles the resulting variance.
+
+\textbf{Notes.} More trees \texttt{B} never causes overfitting (it just
+stops helping), so pick \texttt{B} large enough to level off. Cost: you
+lose the single-tree picture, so interpretability drops; recover some
+via variable-importance measures (total RSS or Gini reduction per
+predictor). Test error comes free via OOB. → Out-of-bag error, Random
+forests.
+
+\hypertarget{out-of-bag-oob-error}{%
+\subsubsection{Out-of-bag (OOB) error}\label{out-of-bag-oob-error}}
+
+\textbf{Definition.} Each bagged tree is trained on a bootstrap sample
+that omits about one-third of observations (its \emph{out-of-bag}
+points). Predict each observation using only the trees where it was OOB,
+and average --- yielding a test-error estimate without cross-validation.
+
+\textbf{Intuition.} Every point is naturally a hold-out for the roughly
+one-third of trees that never saw it. Grading each point on exactly
+those trees gives an honest, essentially free validation.
+
+\textbf{Notes.} Convenient for large bagged models where
+cross-validation would be expensive. → Bagging.
+
+\hypertarget{random-forests}{%
+\subsubsection{Random forests}\label{random-forests}}
+
+\textbf{Definition.} Bagging with a twist that \emph{decorrelates} the
+trees: at each split, only a random subset of \texttt{m} predictors (out
+of \texttt{p}) is allowed as split candidates.
+
+\textbf{Intuition.} In plain bagging, if one predictor is very strong,
+nearly every tree splits on it first, so the trees look alike and
+averaging them barely helps. Forcing each split to ignore most
+predictors lets other variables lead sometimes, making the trees
+different --- and averaging \emph{different} trees cuts variance far
+more.
+
+\textbf{Notes.} \texttt{m} is the key knob: \texttt{m\ =\ p} is just
+bagging; small \texttt{m} helps most when predictors are many and
+correlated (a common default is \texttt{m\ ≈\ √p}). → Bagging, Variance
+(stat).
+
+\hypertarget{boosting}{%
+\subsubsection{Boosting}\label{boosting}}
+
+\textbf{Definition.} Grows trees \emph{sequentially}, each one fit to
+the \emph{residuals} (the signal left over) from the current model, then
+added in shrunken. No bootstrap sampling --- each tree uses a modified
+version of the original data. Three tuning parameters: number of trees
+\texttt{B}, shrinkage \texttt{λ} (learning rate), and tree depth
+\texttt{d} (interaction depth).
+
+\begin{equation*}
+\hat f(x)\leftarrow \hat f(x)+\lambda\hat f^{b}(x),
+\qquad
+r_i\leftarrow r_i-\lambda\hat f^{b}(x_i)
+\qquad (\lambda \text{ = learning rate, typically } 0.01\text{--}0.1)
+\end{equation*}
+
+\textbf{Intuition.} Learn slowly and correct your own mistakes: fit a
+small tree, see what it still gets wrong, fit the next tree to
+\emph{those} errors, and repeat, nudging the model a little each time.
+Small trees (even \texttt{d\ =\ 1} stumps) added gradually build a
+strong additive model.
+
+\textbf{Notes.} Unlike bagging/forests, boosting \emph{can} overfit if
+\texttt{B} is too large (slowly) --- choose \texttt{B} by
+cross-validation. Small \texttt{λ} (0.01, 0.001) learns more carefully
+but needs larger \texttt{B}. \texttt{d} controls how many predictors can
+interact. → Bagging, Random forests, BART.
+
+\hypertarget{bayesian-additive-regression-trees-bart}{%
+\subsubsection{Bayesian additive regression trees
+(BART)}\label{bayesian-additive-regression-trees-bart}}
+
+\textbf{Definition.} A tree ensemble that blends the ideas of forests
+and boosting: trees are grown with randomness (like forests) \emph{and}
+successively try to capture signal the current model misses (like
+boosting), by \emph{perturbing} each tree from the previous iteration.
+Predictions are averaged over many iterations after a burn-in.
+
+\textbf{Intuition.} Each round, randomly tweak the existing trees,
+keeping changes that improve the fit --- a guided random search that
+both chases leftover signal and avoids getting stuck in one solution,
+exploring the space of models thoroughly.
+
+\textbf{Notes.} Places among the tree ensembles by how it builds trees:
+bagging (independent, on resamples), random forests (independent, random
+feature subsets), boosting (sequential, no resampling, slow learning),
+BART (sequential, perturbation-based, avoids local minima). → Ensemble
+methods, Boosting.
+
+\hypertarget{gradient-boosting-libraries-xgboost-lightgbm-catboost}{%
+\subsubsection{Gradient boosting libraries (XGBoost, LightGBM,
+CatBoost)}\label{gradient-boosting-libraries-xgboost-lightgbm-catboost}}
+
+\textbf{Definition.} Production implementations of gradient-boosted
+trees. \emph{XGBoost} and \emph{LightGBM} are heavily optimized,
+regularized boosters (LightGBM grows trees leaf-wise and is very fast on
+large data). \emph{CatBoost} adds two distinctive ideas: \textbf{native
+categorical handling} (ordered target statistics instead of manual
+one-hot) and \textbf{ordered boosting} (a permutation scheme that
+prevents the target leakage ordinary boosting suffers from).
+
+\textbf{Intuition.} Plain boosting is the \emph{algorithm}; these are
+the batteries-included \emph{libraries} that make it fast, regularized,
+and practical. CatBoost's ordered boosting computes each row's residual
+from a model trained only on \emph{earlier} rows, so a row's own label
+never leaks into its encoding or gradient --- cutting overfitting,
+especially with categorical features.
+
+\textbf{Example.} On a table with a high-cardinality \texttt{city}
+column, CatBoost encodes each city by an \emph{ordered} target statistic
+(the average label over previously-seen rows) instead of exploding it
+into thousands of one-hot columns --- often better accuracy with far
+less preprocessing.
+
+\textbf{Notes.} All three routinely top tabular-data benchmarks; the
+pick is usually empirical. \emph{(beyond ISL)} → Boosting, Categorical
+feature encoding (hashing trick), Bagging.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{support-vector-machines-isl-ch.-9}{%
+\subsection{\texorpdfstring{Support Vector Machines \emph{(ISL
+ch.~9)}}{Support Vector Machines (ISL ch.~9)}}\label{support-vector-machines-isl-ch.-9}}
+
+\hypertarget{hyperplane}{%
+\subsubsection{Hyperplane}\label{hyperplane}}
+
+\textbf{Definition.} In \texttt{p}-dimensional space, a hyperplane is a
+flat \texttt{(p\ −\ 1)}-dimensional subspace --- a line in 2D, a plane
+in 3D. A \emph{separating hyperplane} perfectly divides two labeled
+classes, with
+\texttt{β\_0\ +\ β\_1\ x\_1\ +\ …\ +\ β\_p\ x\_p\ \textgreater{}\ 0} on
+one side and \texttt{\textless{}\ 0} on the other (equivalently
+\texttt{y\_i·(that\ expression)\ \textgreater{}\ 0} for all \texttt{i}).
+
+\begin{equation*}
+\beta_0+\beta_1X_1+\dots+\beta_pX_p=0
+\qquad\text{(}>0\text{ on one side, }<0\text{ on the other)}
+\end{equation*}
+
+\textbf{Intuition.} A flat divider one dimension below the space it
+lives in. If two classes can be split by such a divider, the sign of the
+linear score tells you which side --- and which class --- a point is on.
+
+\textbf{Notes.} When a separating hyperplane exists, infinitely many do
+(nudge or tilt it slightly). Picking the ``best'' one motivates the
+maximal margin classifier. → Maximal margin classifier.
+
+\hypertarget{maximal-margin-classifier}{%
+\subsubsection{Maximal margin
+classifier}\label{maximal-margin-classifier}}
+
+\textbf{Definition.} Among all separating hyperplanes, the one
+\emph{farthest} from the training points. The \emph{margin} is the
+smallest distance from any point to the hyperplane; the maximal margin
+(optimal separating) hyperplane makes that smallest distance as large as
+possible. The points touching the margin are the \emph{support vectors}.
+
+\begin{equation*}
+\max_{\beta,M} M
+\quad\text{s.t.}\quad
+\|\beta\|_2=1,\;\;
+y_i\bigl(\beta_0+\beta^{\mathsf T}x_i\bigr)\ge M\ \ \forall i
+\end{equation*}
+
+\textbf{Intuition.} Split the classes with the widest possible buffer
+zone, giving the most breathing room on both sides. Only the closest
+points --- the support vectors --- define the boundary; the rest don't
+matter.
+
+\textbf{Notes.} Fatal limitation: it \emph{requires} the classes to be
+linearly separable, and even then it's hypersensitive to individual
+points (the boundary is fixed by a few support vectors). The support
+vector classifier relaxes both problems. → Support vector classifier.
+
+\hypertarget{support-vector-classifier-soft-margin}{%
+\subsubsection{Support vector classifier (soft
+margin)}\label{support-vector-classifier-soft-margin}}
+
+\textbf{Definition.} A \emph{soft-margin} generalization of the maximal
+margin classifier: allow some points to sit inside the margin, or even
+on the wrong side of the hyperplane, controlled by a budget/tuning
+parameter \texttt{C}.
+
+\begin{equation*}
+y_i(\beta_0+\beta^{\mathsf T}x_i)\ge M(1-\epsilon_i),
+\qquad
+\epsilon_i\ge 0,\quad \sum_{i=1}^{n}\epsilon_i\le C
+\end{equation*}
+
+\textbf{Intuition.} Insisting on perfect separation makes the boundary
+brittle and often impossible. Deliberately tolerating a few violations
+buys a boundary that classifies \emph{most} points more robustly.
+\texttt{C} sets how many/how severe the violations allowed --- a
+bias--variance dial (loose \texttt{C} = wider margin, more bias, less
+variance).
+
+\textbf{Notes.} Only points on or violating the margin (the support
+vectors) affect the boundary, making it robust to distant points. Still
+linear, though. → Maximal margin classifier, Support vector machine,
+Bias--variance trade-off (stat).
+
+\hypertarget{support-vector-machine-kernels}{%
+\subsubsection{Support vector machine
+(kernels)}\label{support-vector-machine-kernels}}
+
+\textbf{Definition.} Extends the support vector classifier to
+\emph{non-linear} boundaries by enlarging the feature space through
+\emph{kernels} --- functions that act as inner products in a
+higher-dimensional space without computing the coordinates explicitly.
+Common choices: the \emph{polynomial kernel} and the \emph{radial (RBF)
+kernel}.
+
+\begin{equation*}
+f(x)=\beta_0+\sum_{i\in\mathcal{S}}\alpha_i K(x,x_i),
+\qquad
+K_{\text{poly}}=(1+x^{\mathsf T}x')^d,
+\qquad
+K_{\text{RBF}}=e^{-\gamma\|x-x'\|^2}
+\end{equation*}
+
+\textbf{Intuition.} A straight divider in a cleverly expanded feature
+space is a curved divider in the original space. Kernels let you get
+that curvature efficiently, without ever building the huge expanded
+features. The radial kernel is \emph{local}: only training points near a
+test point influence its label (distant points contribute almost
+nothing).
+
+\textbf{Intuition (the kernel trick).} You could add the extra features
+by hand --- polynomial features, or \emph{similarity features} measuring
+how close each instance is to chosen landmarks. Both work with any
+learning algorithm, but computing all those extra features is expensive
+on large training sets. The kernel trick gets you the same result
+\emph{as if} you had added them, without ever adding them.
+\emph{(Hands-On ML)}
+
+\textbf{Notes.} Often one of the best ``out-of-the-box'' classifiers.
+Kernel choice and its parameters (e.g.~\texttt{γ} for radial, degree for
+polynomial) tune flexibility. → Support vector classifier, Mercer's
+theorem, Hinge loss, SVMs with more than two classes.
+
+\hypertarget{mercers-theorem}{%
+\subsubsection{Mercer's theorem}\label{mercers-theorem}}
+
+\textbf{Definition.} If a function \texttt{K(a,\ b)} satisfies
+\emph{Mercer's conditions} (continuous, symmetric so
+\texttt{K(a,\ b)\ =\ K(b,\ a)}, and a few others), then there exists a
+mapping \texttt{φ} into some other --- possibly much higher-dimensional
+--- space with \texttt{K(a,\ b)\ =\ φ(a)ᵀ\ φ(b)}.
+
+\textbf{Intuition.} It's the licence for the kernel trick: you can use
+\texttt{K} as a kernel knowing a feature map \texttt{φ} exists, even
+though you never learn what \texttt{φ} is or compute it. For the
+Gaussian RBF kernel, \texttt{φ} maps each instance into an
+\emph{infinite}-dimensional space --- a strong argument for not doing
+the mapping explicitly.
+
+\textbf{Notes.} Some kernels used in practice (e.g.~the sigmoid kernel)
+don't satisfy all of Mercer's conditions yet generally work well anyway.
+\emph{(Hands-On ML)} → Support vector machine (kernels).
+
+\hypertarget{hinge-loss}{%
+\subsubsection{Hinge loss}\label{hinge-loss}}
+
+\textbf{Definition.} The loss function underlying SVM training:
+\texttt{max(0,\ 1\ −\ t)}. It equals 0 once \texttt{t\ ≥\ 1}; its slope
+is \texttt{−1} for \texttt{t\ \textless{}\ 1} and \texttt{0} for
+\texttt{t\ \textgreater{}\ 1}.
+
+\begin{equation*}
+L=\sum_{i=1}^{n}\max\bigl(0,\;1-y_i f(x_i)\bigr)+\lambda\|\beta\|_2^2
+\qquad\text{(zero once a point is correctly outside the margin)}
+\end{equation*}
+
+\textbf{Intuition.} Zero penalty once an instance is correctly
+classified with enough margin, and a penalty growing linearly as it
+falls short --- exactly the ``get on the right side, with room to
+spare'' objective of a margin classifier.
+
+\textbf{Notes.} Not differentiable at \texttt{t\ =\ 1}, but (as with the
+lasso's absolute-value penalty) gradient-based optimization still works
+using a subgradient. \emph{(Hands-On ML)} → Support vector classifier,
+The lasso (stat).
+
+\hypertarget{svms-with-more-than-two-classes}{%
+\subsubsection{SVMs with more than two
+classes}\label{svms-with-more-than-two-classes}}
+
+\textbf{Definition.} SVMs are inherently two-class; two schemes extend
+them to \texttt{K\ \textgreater{}\ 2}. \emph{One-versus-one}: build an
+SVM for every pair of classes and let them vote. \emph{One-versus-all
+(one-versus-rest)}: build \texttt{K} SVMs, each separating one class
+from the rest, and assign the class most confidently positive.
+
+\textbf{Intuition.} Break a many-class problem into many two-class
+problems, then aggregate. One-vs-one runs more classifiers but on
+cleaner pairwise splits; one-vs-all runs fewer but on harder
+one-against-everything splits.
+
+\textbf{Notes.} The separating-hyperplane idea doesn't generalize
+cleanly beyond two classes, which is why these workarounds exist. →
+Support vector machine.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{neural-networks-and-deep-learning-isl-ch.-10-hands-on-ml-karpathy}{%
+\subsection{\texorpdfstring{Neural Networks and Deep Learning \emph{(ISL
+ch.~10; Hands-On ML;
+Karpathy)}}{Neural Networks and Deep Learning (ISL ch.~10; Hands-On ML; Karpathy)}}\label{neural-networks-and-deep-learning-isl-ch.-10-hands-on-ml-karpathy}}
+
+\hypertarget{artificial-neuron-and-the-perceptron}{%
+\subsubsection{Artificial neuron and the
+perceptron}\label{artificial-neuron-and-the-perceptron}}
+
+\textbf{Definition.} The original \emph{artificial neuron} takes one or
+more binary on/off inputs and fires when enough of its inputs are
+active. The \emph{perceptron} (Rosenblatt, 1957) upgrades this to a
+\emph{threshold logic unit} (TLU): inputs and output are numbers, each
+input connection carries a weight, the unit computes a weighted sum
+\texttt{z\ =\ xᵀw} and applies a \emph{step function} --- typically the
+Heaviside step (0 below zero, 1 at or above) or the sign function. A
+perceptron is a single layer of TLUs, each connected to every input.
+
+\begin{equation*}
+z=\sum_{i=1}^{n}w_ix_i+b=\mathbf{w}^{\mathsf T}\mathbf{x}+b,
+\qquad
+a=g(z)
+\end{equation*}
+
+\textbf{Intuition.} A neuron is a little voting machine: weigh the
+evidence, and fire if the total clears a threshold. Even the binary
+version can compute logic --- one wiring gives identity, another AND,
+another OR, and with an inhibiting connection you get NOT --- and these
+compose into complex logical expressions.
+
+\textbf{Notes.} An extra bias feature (\texttt{x\_0\ =\ 1}) is normally
+added, supplied by a \emph{bias neuron} that always outputs 1 --- it
+shifts the activation threshold, making the neuron more or less
+``trigger happy'' (quicker or slower to activate) independently of the
+inputs. A perceptron with several output TLUs is a multi-output
+classifier (several binary classes at once). \emph{(Hands-On ML)} →
+Dense layer, Perceptron learning rule, Multi-layer perceptron.
+
+\hypertarget{dense-fully-connected-layer}{%
+\subsubsection{Dense (fully connected)
+layer}\label{dense-fully-connected-layer}}
+
+\textbf{Definition.} A layer in which every neuron is connected to every
+neuron of the previous layer. A whole layer's output for a batch of
+instances is \texttt{φ(XW\ +\ b)}: \texttt{X} is the input matrix (one
+row per instance, one column per feature), \texttt{W} the weight matrix
+(one row per input neuron, one column per neuron in the layer),
+\texttt{b} the bias vector (one term per neuron), and \texttt{φ} the
+activation function.
+
+\begin{equation*}
+\mathbf{A}=g\bigl(\mathbf{X}\mathbf{W}+\mathbf{b}\bigr),
+\qquad
+\mathbf{X}\in\mathbb{R}^{n\times d_{\text{in}}},\;
+\mathbf{W}\in\mathbb{R}^{d_{\text{in}}\times d_{\text{out}}}
+\end{equation*}
+
+\textbf{Intuition.} One matrix multiply computes an entire layer for
+every instance at once --- this is why networks are fast on modern
+hardware. \emph{Input neurons} are passthrough units that just emit
+whatever they're fed; together they form the input layer.
+
+\textbf{Notes.} For a TLU layer \texttt{φ} is a step function; in
+practice it's ReLU or similar. \emph{(Hands-On ML)} → Artificial neuron
+and the perceptron, Activation function, Hidden layers and units.
+
+\hypertarget{perceptron-learning-rule}{%
+\subsubsection{Perceptron learning
+rule}\label{perceptron-learning-rule}}
+
+\textbf{Definition.} A weight update driven by the network's error:
+\texttt{w\_\{i,j\}\ ←\ w\_\{i,j\}\ +\ η\ (y\_j\ −\ ŷ\_j)\ x\_i}, where
+\texttt{w\_\{i,j\}} connects input neuron \texttt{i} to output neuron
+\texttt{j}, \texttt{x\_i} is the input value, \texttt{ŷ\_j} the
+predicted output, \texttt{y\_j} the target, and \texttt{η} the learning
+rate.
+
+\textbf{Intuition.} A variant of Hebbian learning (``neurons that fire
+together wire together'') that accounts for the mistake made:
+connections that would have reduced the error get reinforced, in
+proportion to how wrong the output was and how active the input was.
+
+\textbf{Notes.} \emph{(Hands-On ML)} → Artificial neuron and the
+perceptron, Gradient descent.
+
+\hypertarget{multi-layer-perceptron-mlp-and-the-xor-problem}{%
+\subsubsection{Multi-layer perceptron (MLP) and the XOR
+problem}\label{multi-layer-perceptron-mlp-and-the-xor-problem}}
+
+\textbf{Definition.} An MLP stacks perceptrons: one passthrough
+\emph{input layer}, one or more \emph{hidden layers} of units, and an
+\emph{output layer}. Layers near the input are the \emph{lower} layers,
+those near the output the \emph{upper} layers; every layer except the
+output includes a bias neuron and is fully connected to the next.
+
+\textbf{Intuition.} A single perceptron can only carve a straight
+boundary, so it famously cannot solve XOR. Stack them and it can --- the
+hidden layer builds intermediate features that make the problem linearly
+separable at the next level. This stacking is exactly why depth buys
+expressiveness.
+
+\textbf{Notes.} Signal flows one way, input to output, so this is a
+\emph{feedforward neural network (FNN)}. An FNN with a deep stack of
+hidden layers is a \emph{deep neural network (DNN)}. \emph{(Hands-On
+ML)} → Neural networks (feed-forward), Hidden layers and units,
+Backpropagation.
+
+\hypertarget{backpropagation}{%
+\subsubsection{Backpropagation}\label{backpropagation}}
+
+\textbf{Definition.} The training algorithm for neural nets, run on one
+mini-batch at a time for multiple \emph{epochs} (full passes over the
+training set). Each step: (1) \emph{forward pass} --- push the batch
+through the layers to the output, keeping all intermediate results; (2)
+measure the output error with a loss function; (3) \emph{backward pass}
+--- apply the chain rule to work out how much each connection
+contributed to the error, layer by layer back to the input; (4) take a
+gradient-descent step on all weights using those gradients.
+
+\begin{equation*}
+\frac{\partial L}{\partial w}=\frac{\partial L}{\partial a}\cdot\frac{\partial a}{\partial z}\cdot\frac{\partial z}{\partial w}
+\qquad\text{(chain rule, applied backwards through the graph)}
+\end{equation*}
+
+\textbf{Intuition.} A forward pass is just prediction with the scratch
+work saved. The backward pass then assigns blame: the chain rule
+propagates the error gradient backward through the network --- hence the
+name --- so every weight learns how much it was responsible and which
+way to move. A gradient is a \emph{slope}: given a nudge to this weight,
+how much does the loss move?
+
+\textbf{Notes.} The automatic gradient computation is \emph{automatic
+differentiation (autodiff)}, or \emph{autograd}; backpropagation uses
+\emph{reverse-mode autodiff}, which is fast and precise and well suited
+to functions with many inputs (weights) and few outputs (one loss). Each
+operation only needs its own \emph{local} derivative, chained with the
+incoming gradient. A few patterns recur when doing it by hand: a
+\textbf{mean/sum} distributes \texttt{1/n} (or 1) to each input; a
+\textbf{broadcast} in the forward pass becomes a \textbf{sum} over that
+axis in the backward; and a value \textbf{reused} in several places
+accumulates the sum of its gradients. A famous simplification: the
+gradient of softmax + cross-entropy collapses to
+\texttt{softmax(logits)}, minus 1 at the correct class, divided by the
+batch size --- predicted probabilities pulled toward the truth.
+\emph{(Hands-On ML; Karpathy)} → Gradient descent, Computational graph
+and autograd, Zeroing gradients, Numerical stability, Weight
+initialization, Stochastic gradient descent.
+
+\hypertarget{computational-graph-and-autograd}{%
+\subsubsection{Computational graph and
+autograd}\label{computational-graph-and-autograd}}
+
+\textbf{Definition.} An \emph{autograd} engine records every operation
+as a graph: each value stores its data, its running gradient, which
+values produced it, and the local derivative rule for the operation that
+made it. Calling \texttt{backward()} on the final output sorts the graph
+topologically, seeds that output's gradient to 1, and walks the nodes in
+reverse applying each local rule.
+
+\textbf{Intuition.} You never derive a formula for the whole network's
+derivative. You only ever specify the derivative of each small
+operation; the graph chains them together for you. That's what makes
+arbitrarily complicated models differentiable ``for free.''
+
+\textbf{Notes.} How coarsely you carve the graph is a free choice ---
+\texttt{tanh} can be one fused node or several smaller ones
+(\texttt{exp}, subtract, divide), and the leaf gradients come out
+identical either way. You only need the local derivative of whatever
+pieces you define. \emph{(Karpathy)} → Backpropagation, Activation
+function.
+
+\hypertarget{zeroing-gradients}{%
+\subsubsection{Zeroing gradients}\label{zeroing-gradients}}
+
+\textbf{Definition.} Gradients \emph{accumulate} --- each backward pass
+adds into the existing \texttt{.grad} rather than replacing it --- so
+every parameter's gradient must be reset to zero before each backward
+pass.
+
+\textbf{Intuition.} Accumulation is necessary and correct: if a value
+feeds into the graph along more than one path, each path contributes and
+the contributions must sum. (Use a value twice in an addition and its
+gradient is 1 + 1 = 2, not 1.) The side effect is that stale gradients
+from the previous iteration linger, so a training loop that forgets to
+clear them pushes each update with the sum of every gradient so far.
+
+\textbf{Notes.} The classic silent bug in a hand-written training loop
+--- the loss still decreases sometimes, just wrongly. \emph{(Karpathy)}
+→ Backpropagation, Gradient descent.
+
+\hypertarget{numerical-stability}{%
+\subsubsection{Numerical stability}\label{numerical-stability}}
+
+\textbf{Definition.} Rearranging a computation so intermediate values
+don't overflow or underflow floating point. The canonical example is the
+\emph{log-sum-exp} trick in softmax/cross-entropy: subtract the maximum
+logit before exponentiating, so the largest exponent is 0.
+
+\textbf{Intuition.} \texttt{exp} of a large logit overflows to infinity
+and \texttt{log(0)} underflows to negative infinity --- both wreck the
+loss. Subtracting the max makes the biggest term \texttt{exp(0)=1} and
+the rest smaller, which changes nothing mathematically (softmax is
+shift-invariant) but keeps every number in a safe range. This is one
+reason to call a library \texttt{cross\_entropy} (which fuses and
+stabilizes the steps) rather than composing \texttt{exp}, \texttt{sum},
+\texttt{log} by hand.
+
+\textbf{Notes.} \emph{(Karpathy)} → Softmax, Likelihood and negative
+log-likelihood, Output layer and loss.
+
+\hypertarget{weight-initialization}{%
+\subsubsection{Weight initialization}\label{weight-initialization}}
+
+\textbf{Definition.} Hidden-layer connection weights must be initialized
+\emph{randomly}, not to a constant such as zero --- and at a
+\emph{scale} that keeps activations well-behaved: divide by
+\texttt{sqrt(fan\_in)} (the number of inputs to the unit), times an
+activation-specific \emph{gain} (\texttt{5/3} for tanh). This is
+\emph{Kaiming} (a.k.a. He) initialization; the Xavier/Glorot variant is
+similar.
+
+\begin{equation*}
+\text{Kaiming/He: } \operatorname{Var}(W)=\frac{2}{n_{\text{in}}},
+\qquad
+\text{Xavier/Glorot: } \operatorname{Var}(W)=\frac{2}{n_{\text{in}}+n_{\text{out}}}
+\end{equation*}
+
+\textbf{Intuition.} Two separate points. \emph{Break symmetry:}
+initialize everything to zero and every neuron in a layer is identical,
+so backprop updates them identically and they stay identical forever ---
+a layer of hundreds behaves like one neuron. Random values fix this.
+\emph{Control the scale:} multiplying by a random weight matrix widens
+the spread of activations, so without the \texttt{1/sqrt(fan\_in)}
+factor activations grow (or shrink) layer to layer, pushing a
+\texttt{tanh} into its flat saturated tails where gradients die.
+Dividing by \texttt{sqrt(fan\_in)} keeps the spread roughly constant
+with depth; the gain undoes the squash of the non-linearity.
+
+\textbf{Notes.} Also matters at the output layer: scaling the last
+layer's weights down (so initial logits are near 0) starts training from
+a near-uniform, low-loss softmax instead of wasting steps un-doing an
+over-confident random guess. Batch normalization largely removes the
+sensitivity to all of this. \emph{(Hands-On ML; Karpathy)} →
+Backpropagation, Activation saturation, Batch normalization, Activation
+function.
+
+\hypertarget{activation-saturation}{%
+\subsubsection{Activation saturation}\label{activation-saturation}}
+
+\textbf{Definition.} When a squashing activation (sigmoid, tanh) is
+driven far from zero, its output flattens against its asymptote (±1 for
+tanh) and its derivative goes to \textasciitilde0 --- so gradients
+through that unit vanish and it stops learning. The ReLU analogue is a
+\emph{dead neuron} (stuck outputting 0 with zero gradient for all
+inputs).
+
+\textbf{Intuition.} A saturated neuron is pinned to the flat part of its
+curve: nudging its input barely changes its output, so backprop passes
+almost no gradient back and the neuron is effectively frozen. A layer
+full of them learns nothing. Diagnose by histogramming activations ---
+too much mass at ±1 (a ``white'' saturation map) is the warning sign.
+
+\textbf{Notes.} Caused by weights initialized too large or unnormalized
+pre-activations; fixed by proper Weight initialization or Batch
+normalization. Leaky ReLU, ELU, and maxout are far less prone to it.
+Connects to the vanishing-gradient problem in deep nets.
+\emph{(Karpathy)} → Weight initialization, Batch normalization,
+Activation function, Vanishing and exploding gradients.
+
+\hypertarget{batch-normalization}{%
+\subsubsection{Batch normalization}\label{batch-normalization}}
+
+\textbf{Definition.} A layer, placed right after a linear (or
+convolutional) layer, that normalizes the pre-activations to zero mean
+and unit variance \emph{across the current batch}, then re-scales and
+re-shifts them with two learned parameters, \texttt{gamma} (scale) and
+\texttt{beta} (shift). At test time it uses fixed statistics --- a
+running (momentum) average of the batch mean/variance collected during
+training, or a one-time pass over the training set.
+
+\begin{equation*}
+\hat x=\frac{x-\mu_{\mathcal B}}{\sqrt{\sigma^2_{\mathcal B}+\epsilon}},
+\qquad
+y=\gamma\hat x+\beta
+\qquad (\gamma,\beta\text{ learned})
+\end{equation*}
+
+\textbf{Intuition.} Instead of hand-tuning initialization so activations
+stay healthy, just force them healthy at every step: standardize, then
+let \texttt{gamma}/\texttt{beta} learn whatever scale and offset are
+actually useful. This makes deep nets far more forgiving of weight
+initialization and learning rate. Two knock-on effects: the preceding
+layer's bias becomes redundant (batchnorm subtracts the mean, cancelling
+any added constant --- \texttt{beta} is the effective bias), and because
+each example is normalized using \emph{its batch's} statistics, its
+activations jitter slightly depending on which examples share the batch.
+That coupling is a small random augmentation of the activations, so
+batchnorm also acts as a mild \textbf{regularizer} --- at the cost of
+making predictions subtly batch-dependent (hence the need for running
+statistics at inference).
+
+\textbf{Notes.} Uses the unbiased variance (Bessel's correction,
+\texttt{n−1}) and an \texttt{eps} for stability. One of the most
+impactful training tricks in deep learning; alternatives like layer norm
+avoid the batch-dependence. \emph{(Hands-On ML; Karpathy)} → Weight
+initialization, Activation saturation, Neural network regularization,
+Vanishing and exploding gradients, Layer normalization.
+
+\hypertarget{wavenet-hierarchical-context}{%
+\subsubsection{WaveNet / hierarchical
+context}\label{wavenet-hierarchical-context}}
+
+\textbf{Definition.} An architecture that fuses a sequence
+\emph{progressively} rather than all at once: instead of flattening the
+whole context into one vector for a single hidden layer, it combines a
+few elements at a time (e.g.~pairs) and repeats, building a tree ---
+characters → bigrams → 4-grams → 8-grams.
+
+\textbf{Intuition.} Squashing an entire long context into one layer
+forces every position to interact immediately, before any local
+structure is learned. A hierarchy lets early layers learn short-range
+patterns and later layers combine those into longer-range ones --- a
+smoother, deeper way to grow the context window. (WaveNet uses this,
+with dilated convolutions, for raw audio.)
+
+\textbf{Notes.} In the makemore build this is
+\texttt{FlattenConsecutive(2)} blocks halving the time dimension each
+step; a longer \texttt{block\_size} becomes usable. Cousin of the CNN
+idea of stacking local receptive fields. \emph{(Karpathy)} →
+Convolutional neural network, Recurrent neural network, Language model.
+
+\hypertarget{train-dev-test-split}{%
+\subsubsection{Train / dev / test split}\label{train-dev-test-split}}
+
+\textbf{Definition.} Partition the data three ways: a \textbf{training}
+set to fit parameters, a \textbf{dev (validation)} set to choose
+hyperparameters, and a \textbf{test} set touched only once at the very
+end for an honest final estimate.
+
+\textbf{Intuition.} The validation set is how you pick model size,
+learning rate, embedding dimension, and so on --- but tuning against it
+means you slowly overfit \emph{those choices} to it. A held-back test
+set you never optimize against catches that. Train ≈ dev loss suggests
+underfitting (grow the model); a big train-dev gap suggests overfitting.
+
+\textbf{Notes.} The deep-learning-practice version of ISL's
+train/validation idea and cross-validation. Common split: 80/10/10. →
+Validation set approach (stat), k-fold cross-validation (stat),
+Overfitting (stat).
+
+\hypertarget{neural-networks-feed-forward}{%
+\subsubsection{Neural networks
+(feed-forward)}\label{neural-networks-feed-forward}}
+
+\textbf{Definition.} A model that predicts by feeding inputs through one
+or more layers of \emph{derived features}. A feed-forward network for
+\texttt{p} inputs has the form
+\texttt{f(X)\ =\ β\_0\ +\ Σ\_k\ β\_k\ h\_k(X)}, where each hidden unit
+\texttt{h\_k(X)\ =\ g(w\_\{k0\}\ +\ Σ\_j\ w\_\{kj\}\ X\_j)} is a
+non-linear transform \texttt{g} of a weighted sum of the inputs.
+
+\textbf{Intuition.} The network invents its own intermediate features
+(the hidden units) --- each a squashed weighted mix of the inputs ---
+then combines those features to produce the output. Stacking layers lets
+later features build on earlier ones; that depth is what ``deep''
+learning means. The ``neuron'' name is a loose brain analogy.
+
+\textbf{Notes.} The raw features form the \emph{input layer}; the
+derived \texttt{h\_k} form a \emph{hidden layer}. What sets neural nets
+apart from other flexible methods is this layered structure. → Hidden
+layers and units, Activation function.
+
+\hypertarget{hidden-layers-and-units}{%
+\subsubsection{Hidden layers and units}\label{hidden-layers-and-units}}
+
+\textbf{Definition.} The layers of derived features between input and
+output. Each hidden \emph{unit} is one derived feature; a network can
+have many units per layer and many layers stacked.
+
+\textbf{Intuition.} More units and layers = more capacity to represent
+complex functions. Modern practice: use \emph{many} units and control
+overfitting with regularization rather than by keeping the network
+small.
+
+\textbf{Notes.} Number of layers and units per layer are key
+architecture choices, tuned alongside the regularization knobs. → Neural
+networks, Dropout.
+
+\hypertarget{activation-function}{%
+\subsubsection{Activation function}\label{activation-function}}
+
+\textbf{Definition.} The non-linear function \texttt{g} applied inside
+each hidden unit. Common choices: the \emph{sigmoid/logistic}
+\texttt{g(z)\ =\ 1/(1\ +\ e\^{}\{−z\})} (output in \texttt{(0,1)}), the
+\emph{hyperbolic tangent} \texttt{tanh(z)\ =\ 2σ(2z)\ −\ 1} (same
+S-shape, output in \texttt{(−1,1)}), and the \emph{ReLU} (rectified
+linear unit) \texttt{g(z)\ =\ max(0,\ z)}. Variants of ReLU include
+leaky ReLU, PReLU, RReLU, ELU, and SELU.
+
+\begin{equation*}
+\mathrm{ReLU}(z)=\max(0,z),
+\qquad
+\sigma(z)=\frac{1}{1+e^{-z}},
+\qquad
+\tanh(z)=\frac{e^{z}-e^{-z}}{e^{z}+e^{-z}}
+\end{equation*}
+
+\textbf{Intuition.} Without a non-linearity, stacking linear layers
+would just give another linear model --- the activation is what lets the
+network bend. ReLU (pass positives, zero out negatives) is the modern
+default: cheap to compute, and having no maximum output value avoids
+some gradient problems that saturating S-curves cause. tanh's advantage
+over the logistic is that its outputs are centered near 0 at the start
+of training, which often speeds convergence.
+
+\textbf{Notes.} ReLU is not differentiable at \texttt{z\ =\ 0} (the
+slope jumps, which can make gradient descent bounce) and its derivative
+is 0 for \texttt{z\ \textless{}\ 0} --- in practice it still works very
+well. A rough practical ordering for hidden layers: \textbf{SELU
+\textgreater{} ELU \textgreater{} leaky ReLU (and variants)
+\textgreater{} ReLU \textgreater{} tanh \textgreater{} logistic}, though
+it varies; ELU may beat SELU when the architecture can't self-normalize,
+and leaky ReLU is preferable when runtime latency matters. Try RReLU if
+overfitting, PReLU with a very large training set. \emph{(Hands-On ML)}
+→ Neural networks, Vanishing and exploding gradients.
+
+\hypertarget{output-layer-and-loss}{%
+\subsubsection{Output layer and loss}\label{output-layer-and-loss}}
+
+\textbf{Definition.} How the final layer and training objective are set.
+For a quantitative response: a linear output trained with squared-error
+loss \texttt{Σ(y\_i\ −\ f(x\_i))²}. For classification: a \emph{softmax}
+output producing class probabilities, trained by minimizing the negative
+multinomial log-likelihood, a.k.a. \emph{cross-entropy}.
+
+\textbf{Intuition.} A regression net aims to land near the number
+(squared error); a classification net aims to put high probability on
+the true class (cross-entropy), exactly like multinomial logistic
+regression. Softmax turns the final scores into probabilities summing to
+1.
+
+\textbf{Notes.} Softmax and cross-entropy are the neural-net versions of
+ideas already in multinomial logistic regression. → Multinomial logistic
+regression (stat), Maximum likelihood (stat), Softmax, Likelihood and
+negative log-likelihood.
+
+\hypertarget{softmax}{%
+\subsubsection{Softmax}\label{softmax}}
+
+\textbf{Definition.} The function that turns a vector of real-valued
+scores (\emph{logits}) into a probability distribution:
+\textbf{exponentiate each, then normalize} by their sum. Output values
+are positive and sum to 1.
+
+\begin{equation*}
+\mathrm{softmax}(z)_k=\frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}
+\qquad\text{(shift-invariant: subtract }\max_j z_j\text{ for stability)}
+\end{equation*}
+
+\textbf{Intuition.} Exponentiating forces every score positive and blows
+up the differences (the biggest logit dominates); dividing by the total
+scales them into probabilities. It's the multi-class stand-in for the
+logistic function.
+
+\textbf{Notes.} Reading exp(logit) as a \emph{count} makes the picture
+concrete: a count model normalizes raw counts into probabilities, and
+softmax normalizes exp(logits) the same way --- so a logit is a learned
+log-count. The output layer of a classification net. → Logits, Output
+layer and loss, Multinomial logistic regression (stat).
+
+\hypertarget{logits}{%
+\subsubsection{Logits}\label{logits}}
+
+\textbf{Definition.} The raw, un-normalized scores a model outputs
+before softmax --- interpretable as \emph{log-counts}.
+
+\textbf{Intuition.} The confusing count↔logit↔probability chain,
+untangled: a count model has counts \texttt{N} → normalize →
+probabilities. A network outputs logits; \texttt{exp(logits)} gives
+numbers playing the exact role of \texttt{N} (positive ``counts'');
+normalizing those is softmax → probabilities. So logits are just the
+network's learned version of the log of a count table --- instead of
+tallying counts, gradient descent discovers them.
+
+\textbf{Notes.} ``Log-counts'' and ``logits'' are the same thing in this
+setting. → Softmax, Output layer and loss.
+
+\hypertarget{one-hot-encoding}{%
+\subsubsection{One-hot encoding}\label{one-hot-encoding}}
+
+\textbf{Definition.} Representing a categorical value (say index
+\texttt{k} out of \texttt{K}) as a length-\texttt{K} vector that is 1 in
+position \texttt{k} and 0 everywhere else.
+
+\textbf{Intuition.} A raw index is a misleading number --- category 5
+isn't ``half of'' category 10, and categories have no order or spacing.
+One-hot strips out that false arithmetic, giving each category its own
+independent input slot. Multiplying a one-hot vector by a weight matrix
+simply selects one row of that matrix.
+
+\textbf{Notes.} Standard input encoding for categorical features and for
+characters/words in language models; dense \emph{embeddings} are the
+learned, lower-dimensional successor. → Word embeddings, Dummy
+variables.
+
+\hypertarget{likelihood-and-negative-log-likelihood}{%
+\subsubsection{Likelihood and negative
+log-likelihood}\label{likelihood-and-negative-log-likelihood}}
+
+\textbf{Definition.} The \emph{likelihood} of the data under a model is
+the product of the probabilities it assigns to every observed event. The
+\emph{log-likelihood} is the sum of the logs of those probabilities
+(\texttt{log(a·b·c)\ =\ log\ a\ +\ log\ b\ +\ log\ c}). The
+\emph{negative log-likelihood (NLL)} is its negation; the \emph{average
+NLL} divides by the number of events.
+
+\begin{equation*}
+\mathrm{NLL}=-\frac{1}{n}\sum_{i=1}^{n}\log p_{\theta}(y_i\mid x_i)
+\qquad\text{(cross-entropy; minimising it maximises likelihood)}
+\end{equation*}
+
+\textbf{Intuition.} Maximizing likelihood = making the observed data
+look as probable as possible under the model. Three equivalent moves
+make it a usable loss: take logs (a stable sum instead of a vanishing
+product of tiny numbers --- and monotonic, so it preserves the ranking),
+then negate (we want a loss that's \emph{lower when better}, but
+likelihood runs the other way), then average (a clean,
+dataset-size-independent number). The best possible average NLL is 0 ---
+perfect confidence, always correct.
+
+\textbf{Notes.} Average NLL over a softmax output is exactly
+\emph{cross-entropy loss}. Minimizing NLL is the loss-function face of
+maximum likelihood. → Maximum likelihood (stat), Softmax, Output layer
+and loss.
+
+\hypertarget{language-model}{%
+\subsubsection{Language model}\label{language-model}}
+
+\textbf{Definition.} A model of the probability of the next token in a
+sequence given the previous ones. A \emph{character-level} language
+model does this over characters, treating each character as a training
+example and learning to predict the next character. An \emph{n-gram}
+model conditions on the previous \texttt{n\ −\ 1} tokens; a
+\emph{bigram} model (\texttt{n\ =\ 2}) uses only the single previous
+token.
+
+\textbf{Intuition.} Learn ``what usually comes next,'' then generate by
+sampling one token at a time and feeding it back in. A bigram model has
+almost no context --- it's the simplest thing that works --- while
+longer context (more history, or an RNN's hidden state) makes for a
+stronger model.
+
+\textbf{Notes.} The count-based bigram model and its neural-network twin
+compute the same thing: the network's learned weights are the equivalent
+of the (log) count table. Beyond bigrams, a fixed \textbf{context
+window} of the previous few characters can be embedded and fed through
+an MLP (the Bengio 2003 design), or fused hierarchically (WaveNet); an
+RNN instead carries unbounded context in a hidden state. → Logits,
+One-hot encoding, Embedding layer, WaveNet / hierarchical context,
+Recurrent neural network.
+
+\hypertarget{broadcasting}{%
+\subsubsection{Broadcasting}\label{broadcasting}}
+
+\textbf{Definition.} The rule that lets element-wise operations combine
+tensors of different shapes by \emph{virtually} stretching the smaller
+one --- e.g.~dividing a \texttt{(27,\ 27)} matrix by a \texttt{(27,\ 1)}
+column of row-sums copies that column across all columns, then divides
+element-wise. No data is actually duplicated.
+
+\textbf{Intuition.} A convenience that saves loops, but a notorious
+source of silent bugs: when normalizing a matrix's rows, the sum must
+keep shape \texttt{(27,\ 1)} (\texttt{keepdims=True}) so it broadcasts
+\emph{down each row}; a bare \texttt{(27,)} broadcasts across the wrong
+axis and normalizes columns instead --- no error, just wrong numbers.
+
+\textbf{Notes.} \emph{(Karpathy)} → Feature scaling.
+
+\hypertarget{convolutional-neural-network-cnn}{%
+\subsubsection{Convolutional neural network
+(CNN)}\label{convolutional-neural-network-cnn}}
+
+\textbf{Definition.} A network specialized for images, combining
+\emph{convolution} layers (which slide filters across the image) and
+\emph{pooling} layers (which downsample).
+
+\textbf{Intuition.} Rather than wire every pixel to every unit, a CNN
+slides small filters over the image to detect local patterns (edges,
+textures), then builds from simple to complex features layer by layer.
+It exploits the spatial structure of images the way RNNs exploit
+sequence order.
+
+\textbf{Notes.} Color images have three channels (R, G, B); a filter
+carries one sub-filter per channel and sums their results into one
+feature map. Using \texttt{K} filters yields \texttt{K} feature maps,
+stacked as the next layer's input. → Convolution filter, Pooling.
+
+\hypertarget{convolution-filter}{%
+\subsubsection{Convolution filter}\label{convolution-filter}}
+
+\textbf{Definition.} A small weight matrix slid over every patch of an
+image; at each position it multiplies element-wise with the patch and
+sums to one number. Sweeping it over all patches produces a
+\emph{convolved feature map}.
+
+\begin{equation*}
+H_{\text{out}}=\left\lfloor\frac{H_{\text{in}}+2P-F}{S}\right\rfloor+1
+\qquad F=\text{filter size},\;P=\text{padding},\;S=\text{stride}
+\end{equation*}
+
+\textbf{Intuition.} The filter is a little pattern detector --- its
+output lights up where the image locally resembles the filter. Different
+filters catch different features. A ReLU is typically applied after
+(sometimes called the \emph{detector} step).
+
+\textbf{Notes.} Filter weights are \emph{learned}, not hand-set. →
+Convolutional neural network, Activation function.
+
+\hypertarget{pooling}{%
+\subsubsection{Pooling}\label{pooling}}
+
+\textbf{Definition.} A downsampling step; \emph{max pooling} replaces
+each non-overlapping block (e.g.~2×2) with its maximum value.
+
+\textbf{Intuition.} Shrinks the feature map (halving each dimension for
+2×2) and grants some \emph{location invariance} --- the network
+registers that a feature is present in a region, not its exact pixel.
+Fewer parameters, more robustness.
+
+\textbf{Notes.} → Convolutional neural network.
+
+\hypertarget{data-augmentation}{%
+\subsubsection{Data augmentation}\label{data-augmentation}}
+
+\textbf{Definition.} Expanding the training set by adding randomly
+distorted copies of each example (for images: small rotations, shifts,
+flips) that don't change the label.
+
+\textbf{Intuition.} Teach the network that a cat is still a cat when
+nudged or mirrored --- free extra training data that improves
+generalization and fights overfitting.
+
+\textbf{Notes.} A regularizer tailored to structured inputs like images.
+→ Dropout.
+
+\hypertarget{bag-of-words}{%
+\subsubsection{Bag-of-words}\label{bag-of-words}}
+
+\textbf{Definition.} A simple way to turn a document into features: for
+a dictionary of \texttt{M} words, represent each document as a
+length-\texttt{M} binary vector marking which words are present (1) or
+absent (0).
+
+\textbf{Intuition.} Ignore grammar and order; just record which words
+show up. Crude but often effective for text classification. The vector
+is huge, so the dictionary is capped (e.g.~the 10,000 most frequent
+words).
+
+\textbf{Notes.} Throws away word order --- RNNs and embeddings capture
+what bag-of-words discards. → Recurrent neural network, Word embeddings.
+
+\hypertarget{recurrent-neural-network-rnn}{%
+\subsubsection{Recurrent neural network
+(RNN)}\label{recurrent-neural-network-rnn}}
+
+\textbf{Definition.} A network for \emph{sequential} inputs
+\texttt{X\ =\ \{X\_1,\ …,\ X\_L\}} (words, time steps). It processes the
+sequence one element at a time, maintaining a hidden activation
+\texttt{A\_ℓ} updated from the current input \texttt{X\_ℓ} and the
+previous activation \texttt{A\_\{ℓ−1\}}.
+
+\textbf{Intuition.} The hidden state is a running memory: each step
+folds in the new element while carrying context forward from earlier
+ones. This lets \emph{order} matter --- what bag-of-words ignores ---
+the way CNNs let spatial layout matter.
+
+\textbf{Notes.} Words are fed as one-hot vectors or, better, embeddings.
+→ Word embeddings, LSTM.
+
+\hypertarget{embedding-layer}{%
+\subsubsection{Embedding layer}\label{embedding-layer}}
+
+\textbf{Definition.} A learned lookup table that maps each item of a
+discrete vocabulary (word, character, category) to a dense,
+low-dimensional vector. Stored as a matrix \texttt{C} with one row per
+vocabulary item; ``embedding'' a batch of indices is just row-indexing,
+\texttt{C{[}X{]}}. The vectors are parameters, trained by backprop like
+any other weights. Pretrained word embeddings include \emph{word2vec}
+and \emph{GloVe}.
+
+\textbf{Intuition.} A one-hot vector treats every item as equally
+unrelated to every other; an embedding places them in a space where
+similar items sit close together, and the model learns that geometry
+from the task. Indexing \texttt{C{[}i{]}} is the efficient equivalent of
+\texttt{one\_hot(i)\ @\ C} --- it selects one row without building the
+one-hot. Far richer input than raw indices, and (for pretrained vectors)
+reusable across tasks.
+
+\textbf{Notes.} In a character-level model the embedding table is small
+(e.g.~27 characters × 10 dims) and learned from scratch; you can plot a
+2-D one and watch related characters cluster. The successor to one-hot
+input; the input stage of most language models. → One-hot encoding,
+Recurrent neural network, Language model.
+
+\hypertarget{lstm}{%
+\subsubsection{LSTM}\label{lstm}}
+
+\textbf{Definition.} \emph{Long short-term memory} --- an elaboration of
+the RNN that maintains two tracks of hidden activations, so a unit can
+draw on context from both the recent and the more distant past.
+
+\textbf{Intuition.} Plain RNNs struggle to remember information from far
+back in a sequence. LSTM adds a longer-memory channel alongside the
+short-term one, so important early signal isn't washed out.
+
+\textbf{Notes.} → Recurrent neural network.
+
+\hypertarget{autoregressive-models-and-autocorrelation}{%
+\subsubsection{Autoregressive models and
+autocorrelation}\label{autoregressive-models-and-autocorrelation}}
+
+\textbf{Definition.} In time-series data, observations aren't
+independent --- they show \emph{autocorrelation} (correlation between
+\texttt{v\_t} and its lagged value \texttt{v\_\{t−ℓ\}}). An
+order-\texttt{L} \emph{autoregressive} model, AR(L), regresses each
+value on its previous \texttt{L} values:
+\texttt{v\_t\ =\ β\_0\ +\ β\_1\ v\_\{t−1\}\ +\ …\ +\ β\_L\ v\_\{t−L\}}.
+
+\textbf{Intuition.} Today resembles recent days, so predict from the
+recent past. Chop the series into overlapping windows of length
+\texttt{L} (the \emph{lag}) and fit. An RNN and an AR model use the same
+windows; the AR model \emph{flattens} each window into one predictor
+vector, while the RNN processes it in order with shared weights and a
+hidden state, adding non-linearity.
+
+\textbf{Notes.} Autocorrelation is also the ``correlated errors'' caveat
+for ordinary regression. → Potential problems in linear regression
+(stat), Recurrent neural network.
+
+\hypertarget{gradient-descent}{%
+\subsubsection{Gradient descent}\label{gradient-descent}}
+
+\textbf{Definition.} The iterative method for fitting a network: start
+from a guess for all parameters \texttt{θ}, then repeatedly nudge
+\texttt{θ} a small step in the direction that most decreases the loss
+\texttt{R(θ)}, until it stops improving. The step size is the
+\emph{learning rate} \texttt{ρ}.
+
+\begin{equation*}
+\theta\leftarrow\theta-\eta\,\nabla_\theta L(\theta)
+\qquad \eta=\text{learning rate}
+\end{equation*}
+
+\textbf{Intuition.} Roll downhill on the loss surface. The gradient
+points uphill, so step against it; take small enough steps and the loss
+keeps dropping. Reach a spot where the gradient is zero and you've found
+a minimum. Each component of the gradient is a \emph{partial derivative}
+--- ``if I nudge parameter \texttt{θ\_j} alone, how much does the loss
+change?'' Picture standing on a hillside and asking the slope facing
+east, then facing north, once per dimension.
+
+\textbf{Notes.} Network loss surfaces are non-convex, so gradient
+descent can settle in a \emph{local} rather than \emph{global} minimum.
+``Slow learning'' --- small steps plus early stopping when overfitting
+appears --- is itself a safeguard. A generic optimizer, not
+neural-net-specific: it solves a wide range of problems. → Stochastic
+gradient descent, Double descent, Early stopping.
+
+\hypertarget{stochastic-gradient-descent-sgd}{%
+\subsubsection{Stochastic gradient descent
+(SGD)}\label{stochastic-gradient-descent-sgd}}
+
+\textbf{Definition.} A faster variant of gradient descent that computes
+each step's gradient on a small random \emph{minibatch} of the data
+rather than all of it. Three points on the same spectrum: \emph{batch}
+GD uses the whole training set per step; \emph{stochastic} GD uses a
+single randomly chosen instance; \emph{mini-batch} GD uses a small
+random subset (e.g.~32).
+
+\begin{equation*}
+\theta\leftarrow\theta-\eta\,\nabla_\theta L_{\mathcal B}(\theta)
+\qquad \mathcal B=\text{a minibatch, not the full dataset}
+\end{equation*}
+
+\textbf{Intuition.} Estimating the downhill direction from a small
+sample is noisier but far cheaper per step, so you take many more steps
+in the same time --- usually reaching a good solution faster. Batch GD's
+problem is exactly this: using every instance for every step makes it
+very slow on large training sets. Pure stochastic GD sits at the other
+extreme --- barely any data per iteration, so it's fast and can train on
+huge sets since only one instance need be held at a time; the cost is a
+noisy, jittery descent path. \emph{(Hands-On ML)}
+
+\textbf{Notes.} The standard optimizer for large networks. Key knobs:
+batch size and number of \emph{epochs} (full passes over the training
+set). → Gradient descent, Backpropagation, Learning-rate schedule.
+
+\hypertarget{learning-rate-schedule}{%
+\subsubsection{Learning-rate schedule}\label{learning-rate-schedule}}
+
+\textbf{Definition.} Varying the learning rate (step size) over the
+course of training rather than holding it fixed --- most commonly
+\emph{decay}, where the step size shrinks at higher epochs.
+
+\textbf{Intuition.} Big steps early cover ground fast toward the
+minimum; small steps late stop you from bouncing around it and let you
+settle in precisely. A constant rate forces a bad compromise between the
+two.
+
+\textbf{Notes.} One of the more impactful training knobs in deep
+learning. To find a sane range in the first place, sweep the rate
+exponentially (e.g.~1e-3 up to 1) over steps and watch where the loss
+falls fastest --- too low barely moves, too high diverges.
+\emph{(Karpathy)} → Gradient descent, Stochastic gradient descent.
+
+\hypertarget{adam-and-adamw}{%
+\subsubsection{Adam and AdamW}\label{adam-and-adamw}}
+
+\textbf{Definition.} \emph{Adam} (adaptive moment estimation) is a
+gradient-descent optimizer that keeps a per-parameter running average of
+the gradient (first moment, a momentum term) and of its square (second
+moment), and scales each parameter's step by them --- so every parameter
+gets its own adaptive learning rate. \emph{AdamW} is the variant that
+applies weight decay (L2 shrinkage) \emph{decoupled} from the gradient
+update rather than folded into it.
+
+\textbf{Intuition.} Plain SGD uses one global step size for every
+parameter; Adam gives parameters with consistently large gradients
+smaller steps and rarely-updated ones larger steps, which makes it fast
+and robust with little tuning --- the default optimizer for
+transformers. AdamW's decoupled weight decay fixes a subtlety where
+Adam's per-parameter scaling distorts ordinary L2 regularization, so the
+shrinkage acts as intended.
+
+\textbf{Notes.} A common default learning rate is \textasciitilde3e-4.
+The GPT build trains with
+\texttt{torch.optim.AdamW(model.parameters(),\ lr=...)}.
+\emph{(Karpathy)} → Stochastic gradient descent (SGD), Learning-rate
+schedule, Neural network regularization.
+
+\hypertarget{dropout}{%
+\subsubsection{Dropout}\label{dropout}}
+
+\textbf{Definition.} A regularization method that randomly removes a
+fraction \texttt{φ} of the units in a layer during each training update
+(setting their activations to zero), scaling the survivors up by
+\texttt{1/(1−φ)} to compensate.
+
+\textbf{Intuition.} By randomly knocking out units, no single unit can
+become indispensable, so the network spreads its representation and
+generalizes better. Inspired by random forests' trick of randomly
+restricting features; applied fresh for each training example.
+
+\textbf{Notes.} Similar in spirit to ridge regularization; ridge/lasso
+penalties are also applied to network weights. One of the most popular
+regularizers for deep nets --- even strong networks have gained 1--2
+percentage points of accuracy from it, which at 95\% accuracy means
+cutting the error rate by nearly 40\%. \emph{(Hands-On ML)} → Random
+forests, Ridge regression (stat), MC dropout, Neural network
+regularization.
+
+\hypertarget{neural-network-regularization}{%
+\subsubsection{Neural network
+regularization}\label{neural-network-regularization}}
+
+\textbf{Definition.} The family of techniques that constrain a network's
+freedom to fit noise: \emph{early stopping}, \emph{batch normalization}
+(as a side effect), \emph{L1 and L2 penalties} on the connection weights
+(typically not the biases), \emph{dropout}, and \emph{max-norm
+regularization}.
+
+\textbf{Intuition.} Deep networks routinely carry tens of thousands to
+millions of parameters --- enough freedom to fit almost any dataset, and
+therefore enough to memorize noise. (Von Neumann's line: with four
+parameters he could fit an elephant, with five make its trunk wiggle;
+with thousands you can fit the whole zoo.) Regularization is what buys
+back generalization.
+
+\textbf{Notes.} L1/L2 on network weights is the same idea as the lasso
+and ridge penalties for linear models: the penalty is computed each
+training step and added to the loss. In a softmax classifier, an L2
+penalty (\texttt{+λ·mean(W²)}) pulls the weights toward 0, which pulls
+the logits toward 0 and the class probabilities toward \emph{uniform}
+--- so weight decay acts as a smoothing pressure, the gradient-based
+twin of adding fake counts to a count model. \texttt{λ} sets how much:
+too large and every prediction blurs toward uniform. \emph{(Hands-On ML;
+Karpathy)} → Dropout, Max-norm regularization, Early stopping, Ridge
+regression (stat), The lasso (stat), Softmax.
+
+\hypertarget{max-norm-regularization}{%
+\subsubsection{Max-norm regularization}\label{max-norm-regularization}}
+
+\textbf{Definition.} For each neuron, constrain the incoming connection
+weights so that \texttt{‖w‖₂\ ≤\ r}, where \texttt{r} is the max-norm
+hyperparameter.
+
+\textbf{Intuition.} Rather than penalizing large weights in the loss,
+simply cap them: after each update, if a neuron's weight vector has
+grown past the ceiling, rescale it back down. A hard constraint instead
+of a soft penalty.
+
+\textbf{Notes.} \emph{(Hands-On ML)} → Neural network regularization.
+
+\hypertarget{mc-dropout}{%
+\subsubsection{MC dropout}\label{mc-dropout}}
+
+\textbf{Definition.} \emph{Monte-Carlo dropout}: leave dropout switched
+on at prediction time, run the same input through the network many
+times, and average the resulting predictions.
+
+\textbf{Intuition.} Each pass with dropout active is a slightly
+different network, so the spread of their predictions is a usable
+measure of the model's \emph{uncertainty} --- and averaging them
+typically improves accuracy too. It works on an already-trained dropout
+model with no retraining and no change to the architecture.
+
+\textbf{Notes.} A 2016 result (Gal and Ghahramani) also established a
+connection between dropout networks and approximate Bayesian inference,
+giving dropout a firmer theoretical grounding. \emph{(Hands-On ML)} →
+Dropout.
+
+\hypertarget{early-stopping}{%
+\subsubsection{Early stopping}\label{early-stopping}}
+
+\textbf{Definition.} Halt training once validation performance stops
+improving, rather than running to convergence on the training loss.
+
+\textbf{Intuition.} Training error keeps falling long after test error
+has bottomed out; early stopping catches the model at the bottom of that
+U instead of letting it slide into overfitting. Cheap, effective, and it
+needs no change to the model.
+
+\textbf{Notes.} One of the best regularizers for neural nets, and the
+practical face of the ``slow learning'' safeguard. \emph{(Hands-On ML)}
+→ Neural network regularization, Gradient descent, Training MSE vs test
+MSE (stat).
+
+\hypertarget{vanishing-and-exploding-gradients}{%
+\subsubsection{Vanishing and exploding
+gradients}\label{vanishing-and-exploding-gradients}}
+
+\textbf{Definition.} The problem that gradients propagated backward
+through a deep network can shrink toward zero (so lower layers barely
+train) or blow up (so training diverges).
+
+\textbf{Intuition.} Each backward step multiplies by a layer's local
+derivative; do that through many layers and the product can decay or
+explode geometrically. Saturating activations like the logistic make it
+worse, since their derivative is near zero over much of their range ---
+a large part of why ReLU and its variants, with no upper saturation,
+became the default. Batch normalization was designed to address this
+too.
+
+\textbf{Notes.} \emph{(Hands-On ML)} → Activation function,
+Backpropagation.
+
+\hypertarget{double-descent}{%
+\subsubsection{Double descent}\label{double-descent}}
+
+\textbf{Definition.} A phenomenon where, as model flexibility increases
+past the point of \emph{interpolation} (zero training error), test error
+--- after the usual U-shaped rise --- can fall \emph{again}.
+
+\textbf{Intuition.} Classic bias--variance says test error is U-shaped
+and interpolating the data is bad, and that holds \emph{up to} the
+interpolation threshold. But push flexibility even further and, in some
+settings, test error descends a second time --- so a model that fits
+training data perfectly can sometimes beat a slightly less flexible one.
+Hence ``double'' descent.
+
+\textbf{Notes.} A modern refinement of, not a contradiction to, the
+bias--variance trade-off --- the trade-off governs behavior up to
+interpolation. Helps explain why huge over-parameterized networks can
+still generalize. → Bias--variance trade-off (stat), Overfitting (stat).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{transformers-and-large-language-models-karpathy}{%
+\subsection{\texorpdfstring{Transformers and Large Language Models
+\emph{(Karpathy)}}{Transformers and Large Language Models (Karpathy)}}\label{transformers-and-large-language-models-karpathy}}
+
+\hypertarget{tokenization-and-byte-pair-encoding-bpe}{%
+\subsubsection{Tokenization and byte-pair encoding
+(BPE)}\label{tokenization-and-byte-pair-encoding-bpe}}
+
+\textbf{Definition.} Turning raw text into a sequence of integer
+\emph{tokens} (and back) via a fixed vocabulary. A
+\emph{character-level} tokenizer uses one token per character (tiny
+vocab, long sequences). Real LLMs use \emph{subword} tokenizers, chiefly
+\emph{byte-pair encoding (BPE)}: start from the 256 raw \emph{UTF-8
+bytes} as the base vocabulary, then repeatedly find the most frequent
+adjacent token pair and merge it into a new token, for a fixed number of
+merges.
+
+\textbf{Intuition.} A lossless, reversible mapping --- \texttt{encode}
+text → ints, \texttt{decode} ints → text, with
+\texttt{decode(encode(s))\ ==\ s}. The core trade-off is vocabulary size
+vs sequence length: bytes/characters give a small vocab but long
+sequences (so a fixed context window covers less text); merging frequent
+pairs shortens sequences at the cost of a bigger vocab. \emph{Training}
+the tokenizer = running the merge loop to learn a \texttt{merges} table;
+\emph{encoding} re-applies those merges in the order learned (earliest
+merge id first) until none apply; \emph{decoding} concatenates each
+token's stored bytes and UTF-8-decodes.
+
+\textbf{Notes.} The tokenizer is a \emph{separate module} from the model
+--- its own training data, its own BPE pass --- and the model only ever
+sees token ids. Working on raw UTF-8 bytes means any string is
+representable (no out-of-vocabulary). GPT-3 vocab 50,257; LLaMA 32,000.
+→ Regex pre-tokenization, Special tokens, tiktoken vs SentencePiece,
+Tokenization failure modes, One-hot encoding, Embedding layer, Language
+model.
+
+\hypertarget{regex-pre-tokenization}{%
+\subsubsection{Regex pre-tokenization}\label{regex-pre-tokenization}}
+
+\textbf{Definition.} Splitting text with a regular expression
+\emph{before} BPE, so merges are only ever computed \emph{within} each
+chunk, never across chunk boundaries. GPT-2's pattern breaks text into
+words, numbers, punctuation runs, and whitespace (using Unicode classes
+\texttt{\textbackslash{}p\{L\}} letters, \texttt{\textbackslash{}p\{N\}}
+numbers), and keeps a leading space attached to the following word
+(\texttt{?\textbackslash{}p\{L\}+}).
+
+\textbf{Intuition.} Left unconstrained, BPE would merge across category
+and word boundaries --- fusing \texttt{dog} with a trailing \texttt{.}
+or a space --- wasting vocabulary and hurting generalization.
+Pre-splitting forces merges to respect linguistic boundaries. It's also
+why tokens so often begin with a space.
+
+\textbf{Notes.} GPT-4's tokenizer revised this pattern (and, unlike
+GPT-2, does merge runs of spaces). Requires the \texttt{regex} module
+for \texttt{\textbackslash{}p\{...\}} classes. → Tokenization and
+byte-pair encoding (BPE).
+
+\hypertarget{special-tokens}{%
+\subsubsection{Special tokens}\label{special-tokens}}
+
+\textbf{Definition.} Reserved tokens added to the vocabulary
+\emph{outside} the BPE merges, with fixed ids, to mark structure rather
+than content --- e.g.~GPT-2's single
+\texttt{\textless{}\textbar{}endoftext\textbar{}\textgreater{}} marking
+document boundaries; chat models add turn-boundary tokens.
+
+\textbf{Intuition.} The model needs signals like ``document ends here''
+or ``user turn ends, assistant begins'' that can't be confused with
+ordinary text. Because they're handled specially, a literal
+\texttt{\textless{}\textbar{}endoftext\textbar{}\textgreater{}} typed
+into the input can be intercepted as a control token instead of those
+characters.
+
+\textbf{Notes.} GPT-2's vocab is 256 byte tokens + 50,000 merges + 1
+special = 50,257. Adding new special tokens means growing the embedding
+and output layers. → Adding vocabulary after training, Tokenization and
+byte-pair encoding (BPE), Language model.
+
+\hypertarget{tiktoken-vs-sentencepiece}{%
+\subsubsection{tiktoken vs
+SentencePiece}\label{tiktoken-vs-sentencepiece}}
+
+\textbf{Definition.} Two production tokenizers. \emph{tiktoken} (OpenAI)
+encodes text to UTF-8 bytes and runs BPE on the \emph{bytes}
+(inference-only). \emph{SentencePiece} (Google; used by Llama/Mistral)
+runs BPE on the Unicode \emph{code points} directly, and can both train
+and infer.
+
+\textbf{Intuition.} The difference is \emph{what} BPE operates on: bytes
+(tiktoken) vs code points (SentencePiece). SentencePiece handles rare
+code points via \texttt{character\_coverage} plus
+\texttt{byte\_fallback} --- very rare characters either map to an
+\texttt{UNK} token or fall back to raw UTF-8 byte tokens. Its
+\texttt{add\_dummy\_prefix} prepends a space so a word tokenizes the
+same at the start of a sentence as mid-sentence.
+
+\textbf{Notes.} tiktoken can't train a new vocabulary; SentencePiece is
+the go-to when you need to \emph{train} a tokenizer. → Tokenization and
+byte-pair encoding (BPE).
+
+\hypertarget{tokenization-failure-modes}{%
+\subsubsection{Tokenization failure
+modes}\label{tokenization-failure-modes}}
+
+\textbf{Definition.} Many LLM quirks trace to tokenization rather than
+the model: weak spelling and character-level tasks (a token isn't its
+letters), shaky digit arithmetic (numbers split inconsistently), worse
+non-English performance (more tokens per word → less effective context),
+trailing-whitespace sensitivity, and ``glitch tokens'' like
+\texttt{SolidGoldMagikarp} (rare tokens the model barely trained on).
+
+\textbf{Intuition.} The model reasons over tokens, not characters, so
+anything needing sub-token structure --- spelling, reversing a string,
+per-digit arithmetic --- is handicapped by how the text was chunked.
+Tokens that appeared in the \emph{tokenizer's} training but hardly in
+the \emph{model's} trigger erratic behavior when invoked.
+
+\textbf{Notes.} Practical upshots: prefer formats that tokenize
+compactly (sometimes YAML over JSON), and watch for whitespace and
+special-token pitfalls. → Tokenization and byte-pair encoding (BPE).
+
+\hypertarget{adding-vocabulary-after-training}{%
+\subsubsection{Adding vocabulary after
+training}\label{adding-vocabulary-after-training}}
+
+\textbf{Definition.} Introducing new tokens (new special tokens, domain
+terms, a new language) into an already-trained model by \emph{extending}
+the token-embedding matrix and the output (unembedding) layer with fresh
+rows, then training \emph{only} those new rows while freezing all
+existing weights.
+
+\textbf{Intuition.} The old tokens already have good embeddings you
+don't want to disturb; the new rows start random and must catch up.
+Freezing everything else and training just the added embeddings teaches
+the new tokens cheaply, without degrading what the model already knows
+--- a minimal, targeted fine-tune.
+
+\textbf{Notes.} Common when adding control tokens for fine-tuning or
+adapting to a new domain. \emph{(Karpathy)} → Special tokens, Embedding
+layer, Parameter-efficient fine-tuning (LoRA / PEFT).
+
+\hypertarget{self-attention}{%
+\subsubsection{Self-attention}\label{self-attention}}
+
+\textbf{Definition.} A layer that lets each position in a sequence
+gather information from other positions with data-dependent weights.
+Every token emits three vectors from learned linear maps of its
+embedding: a \emph{query} (what am I looking for), a \emph{key} (what do
+I contain), and a \emph{value} (what I'll pass on if attended to). The
+weight from token \texttt{i} to token \texttt{j} is the (scaled,
+softmaxed) dot product of \texttt{i}'s query with \texttt{j}'s key; the
+output at \texttt{i} is the weighted sum of all values:
+\texttt{out\ =\ softmax(Q\ Kᵀ\ /\ sqrt(d))\ V}.
+
+\textbf{Intuition.} A \emph{communication mechanism}: picture tokens as
+nodes in a directed graph that aggregate information from the nodes
+pointing to them, via a weighted sum whose weights depend on the data. A
+token's query ``asks'' for certain content; tokens whose keys match get
+high weight, and their values flow into the output. Because it's just
+dot products over a \emph{set} of vectors, attention has no built-in
+sense of position --- order must be injected separately (→ Positional
+encoding). Keeping \emph{value} separate from the raw embedding lets a
+token expose something different from what it \emph{is}.
+
+\textbf{Notes.} ``Self'' means Q, K, V all come from the same sequence
+\texttt{x}; when K and V come from a different source it's
+\emph{cross-attention}. Each batch example is processed completely
+independently. → Scaled dot-product attention, Causal (masked)
+self-attention, Multi-head attention, Encoder, decoder, and
+cross-attention.
+
+\hypertarget{scaled-dot-product-attention}{%
+\subsubsection{Scaled dot-product
+attention}\label{scaled-dot-product-attention}}
+
+\textbf{Definition.} The attention scores are divided by
+\texttt{sqrt(head\_size)} before the softmax:
+\texttt{wei\ =\ (Q\ Kᵀ)\ ·\ head\_size\^{}(−1/2)}.
+
+\begin{equation*}
+\mathrm{Attention}(Q,K,V)=\mathrm{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt{d_k}}\right)V
+\end{equation*}
+
+\textbf{Intuition.} If Q and K have unit variance, their dot product
+over \texttt{head\_size} dimensions has variance ≈ \texttt{head\_size},
+so raw scores grow large as the head widens. Feeding large-magnitude
+scores into softmax makes it \emph{peaky} --- it converges toward a
+one-hot vector that attends to a single token, starving the other
+positions of gradient (the same saturation problem squashing activations
+have). Dividing by \texttt{sqrt(head\_size)} keeps scores unit-variance,
+so softmax stays \emph{diffuse} early in training and every token can
+contribute.
+
+\textbf{Notes.} Matters most at initialization, when a saturated softmax
+would pass almost no gradient. → Activation saturation, Softmax,
+Self-attention.
+
+\hypertarget{causal-masked-self-attention}{%
+\subsubsection{Causal (masked)
+self-attention}\label{causal-masked-self-attention}}
+
+\textbf{Definition.} In an autoregressive language model, a token may
+attend only to itself and earlier positions, never future ones.
+Implemented by setting the upper-triangular entries of the score matrix
+to \texttt{−inf} before the softmax (a lower-triangular mask), so their
+weights become 0.
+
+\textbf{Intuition.} When predicting the next token, letting a position
+see the future would leak the answer, so the mask forces position
+\texttt{t}'s output to depend only on positions \texttt{≤\ t}.
+Mechanically: build a lower-triangular ones matrix,
+\texttt{masked\_fill} the zeros with \texttt{−inf}, then softmax --- the
+\texttt{−inf} entries exponentiate to 0, giving a valid weighted average
+over the past only. An early toy form of the same idea is a
+lower-triangular matrix of \emph{uniform} averaging weights
+\texttt{@\ x}; attention just replaces the uniform weights with learned,
+data-dependent ones.
+
+\textbf{Notes.} This triangular masking is what makes a block a
+\emph{decoder} block; deleting the mask lets all tokens see each other
+(an \emph{encoder} block). → Self-attention, Encoder, decoder, and
+cross-attention.
+
+\hypertarget{multi-head-attention}{%
+\subsubsection{Multi-head attention}\label{multi-head-attention}}
+
+\textbf{Definition.} Run several self-attention \emph{heads} in
+parallel, each with its own smaller Q/K/V projections
+(\texttt{head\_size\ =\ n\_embd\ /\ n\_heads}), then concatenate their
+outputs and pass them through a linear \emph{projection} back to the
+embedding dimension.
+
+\begin{equation*}
+\mathrm{MultiHead}(Q,K,V)=\mathrm{Concat}(\mathrm{head}_1,\dots,\mathrm{head}_h)W^{O},
+\qquad
+\mathrm{head}_i=\mathrm{Attention}(QW_i^{Q},KW_i^{K},VW_i^{V})
+\end{equation*}
+
+\textbf{Intuition.} One head can track one kind of relationship;
+multiple heads let the model attend to several different things at once,
+each in its own subspace (e.g.~one head tracking the previous character,
+another matching vowels). Concatenating and projecting recombines these
+independent ``communication channels'' into one representation.
+Splitting the embedding across heads keeps total compute the same as one
+full-width head.
+
+\textbf{Notes.} The output projection is what lets the concatenated
+per-head results be added back into the residual stream. →
+Self-attention, Transformer block, Residual (skip) connections.
+
+\hypertarget{positional-encoding}{%
+\subsubsection{Positional encoding}\label{positional-encoding}}
+
+\textbf{Definition.} Extra information added to token embeddings so the
+model knows each token's \emph{position}, since attention itself is
+order-agnostic. In the GPT build this is a learned \emph{positional
+embedding table} indexed by position \texttt{0…T−1}, added to the token
+embedding: \texttt{x\ =\ tok\_emb\ +\ pos\_emb}.
+
+\begin{equation*}
+PE_{(pos,2i)}=\sin\!\left(\frac{pos}{10000^{2i/d}}\right),
+\qquad
+PE_{(pos,2i+1)}=\cos\!\left(\frac{pos}{10000^{2i/d}}\right)
+\end{equation*}
+
+\textbf{Intuition.} Attention treats its inputs as an unordered set, so
+``the cat sat'' and ``sat the cat'' would look identical without
+positional information. Giving each slot its own learned vector lets the
+model recover word order. (The original transformer used fixed
+sinusoidal encodings; GPT learns them instead.)
+
+\textbf{Notes.} Caps the usable context length at the table size
+(\texttt{block\_size}). → Self-attention, Embedding layer.
+
+\hypertarget{residual-skip-connections}{%
+\subsubsection{Residual (skip)
+connections}\label{residual-skip-connections}}
+
+\textbf{Definition.} Adding a sub-layer's input back to its output ---
+\texttt{x\ =\ x\ +\ sublayer(x)} --- so each block computes a
+\emph{change} to a running representation rather than replacing it. Used
+around both the attention and feed-forward sub-blocks.
+
+\begin{equation*}
+y=x+F(x)
+\qquad\Longrightarrow\qquad
+\frac{\partial y}{\partial x}=I+\frac{\partial F}{\partial x}
+\quad\text{(gradient always has a clean path back)}
+\end{equation*}
+
+\textbf{Intuition.} The additions create a ``residual highway'' straight
+from input to output. During backprop, gradient flows unimpeded down
+this highway (addition distributes gradient equally to both branches),
+so even very deep stacks train --- sidestepping vanishing gradients.
+Each block only has to learn a small correction to the residual stream,
+and at initialization the sub-blocks contribute little, so the network
+starts near the identity.
+
+\textbf{Notes.} Introduced by ResNets; essential for training deep
+transformers. → Vanishing and exploding gradients, Transformer block,
+Backpropagation.
+
+\hypertarget{layer-normalization}{%
+\subsubsection{Layer normalization}\label{layer-normalization}}
+
+\textbf{Definition.} Normalizes each individual example's activation
+vector to zero mean and unit variance \emph{across its features} (not
+across the batch), then applies a learned scale \texttt{gamma} and shift
+\texttt{beta}. Same formula as batch norm, but reduced over the feature
+dimension per token rather than over the batch per feature.
+
+\begin{equation*}
+y=\gamma\,\frac{x-\mu}{\sqrt{\sigma^2+\epsilon}}+\beta
+\qquad \mu,\sigma \text{ computed \emph{across features} of one example, not across the batch}
+\end{equation*}
+
+\textbf{Intuition.} Batch norm's statistics couple examples in a batch
+together (an example's output depends on its batch-mates), which is
+awkward for variable-length sequences and small batches. Layer norm
+normalizes each token's own feature vector, so there's \emph{no
+cross-example dependence} and train/test behave identically --- no
+running statistics needed. It keeps activations well-scaled through a
+deep stack.
+
+\textbf{Notes.} In modern (\emph{pre-norm}) transformer blocks, layer
+norm is applied \emph{before} each sub-block rather than after. Its
+per-token, batch-independent design is exactly why transformers prefer
+it over batch norm. → Batch normalization, Transformer block.
+
+\hypertarget{transformer-feed-forward-network}{%
+\subsubsection{Transformer feed-forward
+network}\label{transformer-feed-forward-network}}
+
+\textbf{Definition.} A small per-token MLP applied after attention:
+\texttt{Linear(n\_embd\ →\ 4·n\_embd)\ →\ ReLU\ →\ Linear(4·n\_embd\ →\ n\_embd)},
+plus dropout. The 4× hidden expansion follows the original paper.
+
+\begin{equation*}
+\mathrm{FFN}(x)=W_2\,g\bigl(W_1x+b_1\bigr)+b_2
+\qquad\text{inner width typically }4d_{\text{model}}
+\end{equation*}
+
+\textbf{Intuition.} Attention is where tokens \emph{communicate} (gather
+information); the feed-forward network is where each token then
+\emph{thinks} on what it gathered, independently of the others. Widening
+to 4× gives the non-linearity room to compute richer features before
+projecting back down to the residual dimension.
+
+\textbf{Notes.} The second linear (\texttt{4·n\_embd\ →\ n\_embd})
+projects back to the embedding size so the result can be added into the
+residual stream. Applied identically and independently to every
+position. → Transformer block, Multi-head attention, Activation
+function.
+
+\hypertarget{transformer-block}{%
+\subsubsection{Transformer block}\label{transformer-block}}
+
+\textbf{Definition.} The repeating unit of a transformer: multi-head
+self-attention followed by a feed-forward network, each wrapped in a
+residual connection and preceded by layer norm ---
+\texttt{x\ =\ x\ +\ sa(ln1(x));\ x\ =\ x\ +\ ffwd(ln2(x))}. A model
+stacks many such blocks.
+
+\textbf{Intuition.} \emph{Communication followed by computation}: the
+attention sub-block lets tokens exchange information, then the
+feed-forward sub-block lets each token process it. Residual connections
+plus pre-block layer norm are what make a deep stack of these trainable.
+
+\textbf{Notes.} GPT interleaves \texttt{n\_layer} of these, each
+preserving the \texttt{(B,\ T,\ n\_embd)} shape. The pre-norm placement
+(LN \emph{before} each sub-block) departs from the original paper's
+post-norm. → Multi-head attention, Transformer feed-forward network,
+Residual (skip) connections, Layer normalization.
+
+\hypertarget{encoder-decoder-and-cross-attention}{%
+\subsubsection{Encoder, decoder, and
+cross-attention}\label{encoder-decoder-and-cross-attention}}
+
+\textbf{Definition.} The original transformer has two stacks: an
+\emph{encoder} (bidirectional self-attention --- every token sees every
+other) and a \emph{decoder} (masked self-attention plus a
+\emph{cross-attention} sub-layer whose queries come from the decoder but
+whose keys and values come from the encoder's output).
+\emph{Cross-attention} is attention where Q is produced from one
+sequence and K, V from another.
+
+\textbf{Intuition.} In a translation model, the encoder reads the whole
+source sentence into rich vectors; the decoder then generates the target
+one token at a time, using masked self-attention over what it has
+produced so far \emph{and} cross-attention to consult the encoded
+source. Self-attention (K, V, Q from the same place) is a token looking
+at its own sequence; cross-attention is a token looking at an external,
+fully-visible source.
+
+\textbf{Notes.} \emph{Correction to the highlight:} a \textbf{GPT is
+decoder-only} --- an encoder-free stack of masked-self-attention blocks,
+and therefore has \textbf{no cross-attention at all}. The ``encoder +
+decoder + cross-attention'' picture is the \emph{original} (Vaswani)
+encoder-decoder transformer used for tasks like translation, not GPT.
+GPT's blocks also drop the cross-attention sub-layer that the original
+decoder block has, leaving just masked self-attention + feed-forward.
+(Encoder-only models like BERT keep the \emph{unmasked} self-attention
+and drop the decoder.) → Causal (masked) self-attention, Self-attention,
+Decoder-only transformer (GPT).
+
+\hypertarget{decoder-only-transformer-gpt}{%
+\subsubsection{Decoder-only transformer
+(GPT)}\label{decoder-only-transformer-gpt}}
+
+\textbf{Definition.} The full generative model: token embedding +
+positional embedding → a stack of \texttt{n\_layer} transformer blocks
+(masked multi-head attention + feed-forward) → a final layer norm → a
+linear \texttt{lm\_head} projecting to vocabulary logits. Trained with
+cross-entropy on next-token prediction; generates by repeatedly sampling
+the next token and appending it.
+
+\textbf{Intuition.} Every piece assembled: embed tokens and positions,
+let them communicate causally and compute through many blocks, then read
+out a distribution over the next token. Generation crops the running
+context to the last \texttt{block\_size} tokens, takes the logits at the
+final position, softmaxes, and samples --- autoregressively.
+
+\textbf{Notes.} This is the architecture behind GPT-2/3; scaling the
+\emph{same} design (more layers, wider embeddings, more data) is most of
+what separates the toy build from GPT-3 (96 layers, \textasciitilde175B
+parameters, 50K vocab, 2048 context). → Transformer block, Causal
+(masked) self-attention, Language model, GPT training pipeline.
+
+\hypertarget{gpt-training-pipeline}{%
+\subsubsection{GPT training pipeline}\label{gpt-training-pipeline}}
+
+\textbf{Definition.} The four-stage recipe that turns raw text into an
+assistant: \emph{pretraining} (next-token prediction on a huge
+low-quality corpus → a \emph{base model}), \emph{supervised fine-tuning
+(SFT)} (train on a small, high-quality set of ideal prompt/response
+demonstrations → an \emph{SFT model}), \emph{reward modeling (RM)}
+(train a model to score responses from human preference comparisons → an
+\emph{RM}), and \emph{reinforcement learning (RLHF)} (optimize the SFT
+model to produce responses the RM scores highly → the deployed \emph{RL
+model}).
+
+\textbf{Intuition.} Pretraining absorbs essentially all the knowledge
+(thousands of GPUs, months); the later stages are comparatively cheap
+alignment steps that shape \emph{how} the model uses that knowledge ---
+turning a document-completer into a helpful assistant. The data flips
+from ``huge quantity, low quality'' (pretraining) to ``low quantity,
+high quality'' (the fine-tuning stages).
+
+\textbf{Notes.} ChatGPT and Claude are RLHF models; base models like
+GPT/LLaMA/PaLM are pretraining-only. → Pretraining and base models,
+Supervised fine-tuning (SFT), Reward modeling and RLHF.
+
+\hypertarget{pretraining-and-base-models}{%
+\subsubsection{Pretraining and base
+models}\label{pretraining-and-base-models}}
+
+\textbf{Definition.} Training a transformer from scratch on trillions of
+words of internet text by next-token prediction. The result is a
+\emph{base model} --- a powerful next-token predictor, not an assistant.
+
+\textbf{Intuition.} A base model only ``wants'' to complete documents;
+ask it a question and it may reply with \emph{more questions}, because
+that's what its training text looks like. It can still be \emph{coerced}
+into tasks by making the prompt look like a document whose natural
+continuation is the answer (few-shot examples, or a
+\texttt{Q:}/\texttt{A:} format). Pretraining learns broad,
+general-purpose representations that transfer to many downstream tasks.
+
+\textbf{Notes.} Order-of-magnitude cost: thousands of GPUs, months,
+millions of dollars. Base models are the reusable foundation the
+alignment stages build on. → GPT training pipeline, In-context learning
+(zero/one/few-shot), Supervised fine-tuning (SFT).
+
+\hypertarget{supervised-fine-tuning-sft}{%
+\subsubsection{Supervised fine-tuning
+(SFT)}\label{supervised-fine-tuning-sft}}
+
+\textbf{Definition.} Continue training the base model (same next-token
+objective) on a small, curated dataset of high-quality prompt →
+ideal-response pairs written by contractors following detailed labeling
+instructions.
+
+\textbf{Intuition.} Same algorithm as pretraining, different data: by
+imitating thousands of exemplary assistant responses, the model learns
+the \emph{format and manner} of a helpful assistant rather than raw
+document completion. Quality matters far more than quantity here
+(\textasciitilde10K--100K examples).
+
+\textbf{Notes.} SFT alone yields a usable assistant and is achievable
+without huge resources; RLHF is the research-heavier stage layered on
+top. → GPT training pipeline, Reward modeling and RLHF.
+
+\hypertarget{reward-modeling-and-rlhf}{%
+\subsubsection{Reward modeling and
+RLHF}\label{reward-modeling-and-rlhf}}
+
+\textbf{Definition.} \emph{Reward modeling:} collect human
+\emph{comparisons} ranking several model responses to the same prompt,
+and train a model to predict a scalar reward (read out at a special
+token) consistent with those preferences. \emph{RLHF:} use reinforcement
+learning (PPO) to update the SFT model so its sampled responses score
+highly under the reward model, weighting each token's update by the
+reward-derived \emph{advantage}.
+
+\textbf{Intuition.} Judging which of two answers is better is far easier
+and more reliable for humans than writing the ideal answer, so
+preferences scale better than demonstrations. The reward model turns
+those preferences into a trainable signal; RL then pushes the policy
+toward high-reward completions --- boosting the probabilities of tokens
+in good responses and suppressing those in bad ones.
+
+\textbf{Notes.} Produces the deployed model (ChatGPT, Claude). RLHF is
+still research territory relative to SFT. → GPT training pipeline, Mode
+collapse, Supervised fine-tuning (SFT).
+
+\hypertarget{mode-collapse}{%
+\subsubsection{Mode collapse}\label{mode-collapse}}
+
+\textbf{Definition.} The loss of output diversity (entropy) that RLHF
+tends to cause: the aligned model confidently emits a few near-identical
+phrasings where the base model had a broad distribution.
+
+\textbf{Intuition.} RLHF concentrates probability on the responses the
+reward model likes, so the model stops exploring alternatives. This is
+why \emph{base} models can beat RLHF models at tasks needing variety ---
+e.g.~``generate 100 different names'' --- where the goal is diversity,
+not a single best answer.
+
+\textbf{Notes.} A concrete cost of alignment; choose base vs aligned by
+whether the task wants one good answer or many varied ones. → Reward
+modeling and RLHF, Pretraining and base models.
+
+\hypertarget{in-context-learning-zeroonefew-shot}{%
+\subsubsection{In-context learning
+(zero/one/few-shot)}\label{in-context-learning-zeroonefew-shot}}
+
+\textbf{Definition.} Getting a model to perform a task purely from the
+prompt, with \emph{no gradient updates}: \emph{zero-shot} gives only a
+task description, \emph{one-shot} adds a single worked example,
+\emph{few-shot} adds several. ``Prompting over fine-tuning.''
+
+\textbf{Intuition.} A capable base model can infer the pattern from a
+handful of in-prompt examples and continue it --- so you often get
+task-specific behavior without training anything, just by arranging the
+context. GPT-2/3 popularized this as an alternative to fine-tuning a
+separate model per task.
+
+\textbf{Notes.} Cheap and immediate, but limited by the context window
+and generally weaker than true fine-tuning on hard tasks. → Language
+model, Pretraining and base models, Parameter-efficient fine-tuning
+(LoRA / PEFT).
+
+\hypertarget{chain-of-thought-prompting}{%
+\subsubsection{Chain-of-thought
+prompting}\label{chain-of-thought-prompting}}
+
+\textbf{Definition.} Prompting the model to produce intermediate
+reasoning steps before its final answer (e.g.~appending ``Let's think
+step by step''), rather than answering immediately.
+
+\textbf{Intuition.} A transformer spends the \emph{same} small amount of
+compute per token and has no internal scratchpad, so hard problems need
+their reasoning \emph{spread out over tokens} --- the tokens themselves
+are the working memory. Writing out the steps gives the model room to
+compute the answer instead of guessing it in one shot. Few-shot CoT
+shows worked reasoning examples; zero-shot CoT just adds the trigger
+phrase.
+
+\textbf{Notes.} Large accuracy gains on multi-step (e.g.~arithmetic)
+problems. Related lever: because LLMs imitate a \emph{range} of quality,
+explicitly asking for competent/expert reasoning (``condition on good
+performance'') tends to help. → Self-consistency and ensembling
+attempts, In-context learning (zero/one/few-shot).
+
+\hypertarget{self-consistency-and-ensembling-attempts}{%
+\subsubsection{Self-consistency and ensembling
+attempts}\label{self-consistency-and-ensembling-attempts}}
+
+\textbf{Definition.} Sample several independent chain-of-thought
+solutions to the same problem and take the \emph{majority} final answer
+instead of trusting a single pass.
+
+\textbf{Intuition.} Sampling can get ``unlucky'' and commit to a bad
+reasoning path that the model is then stuck with. Generating multiple
+diverse paths and marginalizing over them (majority vote on the final
+answer) recovers accuracy --- an ensemble over reasoning traces.
+
+\textbf{Notes.} Trades compute for reliability. → Chain-of-thought
+prompting, Tree of thoughts.
+
+\hypertarget{tree-of-thoughts}{%
+\subsubsection{Tree of thoughts}\label{tree-of-thoughts}}
+
+\textbf{Definition.} A deliberate problem-solving strategy that expands
+a \emph{tree} of intermediate thoughts, evaluates them, and searches ---
+keeping promising branches, pruning bad ones --- rather than committing
+to one linear chain.
+
+\textbf{Intuition.} The ``System 2'' (slow, deliberate) counterpart to a
+single fast pass: explore several partial solutions, score them, and
+expand the best --- analogous to the lookahead search in AlphaGo. More
+capable than chain-of-thought or self-consistency on problems that
+benefit from planning and backtracking.
+
+\textbf{Notes.} Part of a broader shift from one-shot Q\&A toward search
+and planning over model outputs. → Chain-of-thought prompting,
+Self-consistency and ensembling attempts, LLM agents (chains, ReAct).
+
+\hypertarget{llm-agents-chains-react}{%
+\subsubsection{LLM agents (chains,
+ReAct)}\label{llm-agents-chains-react}}
+
+\textbf{Definition.} Wrapping an LLM in a loop that interleaves
+reasoning with \emph{actions} (tool calls, searches) and observations,
+rather than answering in one turn. \emph{ReAct} alternates Thought →
+Action → Observation steps; \emph{AutoGPT}-style systems add task queues
+and memory to pursue a goal semi-autonomously.
+
+\textbf{Intuition.} Think pipelines, state machines, and agents instead
+of single Q\&A: the model plans, takes an action in the world, reads the
+result, and continues --- letting it use tools and decompose long tasks.
+
+\textbf{Notes.} Powerful but brittle; the practical recommendation is
+copilots (human-in-the-loop) over fully autonomous agents. → Tree of
+thoughts, Retrieval-augmented generation (RAG).
+
+\hypertarget{retrieval-augmented-generation-rag}{%
+\subsubsection{Retrieval-augmented generation
+(RAG)}\label{retrieval-augmented-generation-rag}}
+
+\textbf{Definition.} Fetch task-relevant documents at query time and
+pack them into the context window so the model can condition on them,
+rather than relying only on what's baked into its weights.
+
+\textbf{Intuition.} The context window is the model's ``working
+memory,'' and it's near-perfect \emph{within} that window --- so loading
+the right reference text into it sharpens answers and supplies facts the
+weights lack. Emerging recipe: split documents into chunks, embed the
+chunks into a vector store, retrieve the chunks most similar to the
+query, and insert them into the prompt.
+
+\textbf{Notes.} Sits on a spectrum between pure retrieval (search
+engines) and pure parametric memory (the raw LLM). Addresses knowledge
+cutoffs and hallucination. → LLM agents (chains, ReAct), Embedding
+layer, LLM limitations and safe use.
+
+\hypertarget{constrained-prompting}{%
+\subsubsection{Constrained prompting}\label{constrained-prompting}}
+
+\textbf{Definition.} ``Prompting languages'' that interleave free
+generation with enforced structure --- templates where some fields are
+generated and others are constrained to a fixed option set or pattern
+(e.g.~Microsoft's \texttt{guidance}), so the output conforms to a schema
+such as valid JSON.
+
+\textbf{Intuition.} Rather than hoping the model emits well-formed
+structured output, force the format: let it generate the free-text
+fields while restricting others to valid options/regex, guaranteeing
+parseable results.
+
+\textbf{Notes.} Useful for reliable JSON/structured output from an
+otherwise free-form generator. → In-context learning
+(zero/one/few-shot).
+
+\hypertarget{parameter-efficient-fine-tuning-lora-peft}{%
+\subsubsection{Parameter-efficient fine-tuning (LoRA /
+PEFT)}\label{parameter-efficient-fine-tuning-lora-peft}}
+
+\textbf{Definition.} Fine-tuning that updates only a small number of
+added parameters while freezing most of the pretrained weights.
+\emph{LoRA} injects low-rank trainable matrices into the layers;
+\emph{PEFT} is the general family.
+
+\begin{equation*}
+W'=W_0+\Delta W=W_0+BA,
+\qquad
+B\in\mathbb{R}^{d\times r},\;A\in\mathbb{R}^{r\times k},\;r\ll\min(d,k)
+\end{equation*}
+
+\textbf{Intuition.} Full fine-tuning of a huge model is expensive;
+training a small set of adapter parameters (plus tricks like
+low-precision inference, e.g.~bitsandbytes) makes customizing open base
+models like LLaMA far more accessible, at a fraction of the cost.
+
+\textbf{Notes.} SFT-style fine-tuning is now achievable this way; full
+RLHF remains research-heavy. → In-context learning (zero/one/few-shot),
+Supervised fine-tuning (SFT).
+
+\hypertarget{llm-limitations-and-safe-use}{%
+\subsubsection{LLM limitations and safe
+use}\label{llm-limitations-and-safe-use}}
+
+\textbf{Definition.} Known failure modes of LLMs: they may be
+\emph{biased}, \emph{hallucinate} (fabricate facts), make
+\emph{reasoning errors}, struggle with some task classes (e.g.~spelling,
+a side effect of tokenization), have \emph{knowledge cutoffs}, and be
+vulnerable to \emph{prompt injection}, jailbreaks, and data-poisoning
+attacks.
+
+\textbf{Intuition.} An LLM imitates the next token; it doesn't know what
+it doesn't know, doesn't sanity-check or reflect by default, and spends
+equal compute per token. This is \emph{System 1} (fast, automatic)
+thinking --- techniques like chain-of-thought, self-consistency, and
+tree-of-thoughts bolt on a \emph{System 2} (slow, deliberate) layer. Its
+large fact-based knowledge and near-perfect context-window working
+memory are the real strengths to lean on.
+
+\textbf{Notes.} Practical guidance: use in low-stakes settings with
+human oversight, treat outputs as inspiration/suggestions, and prefer
+copilots over autonomous agents. → Chain-of-thought prompting,
+Retrieval-augmented generation (RAG), Mode collapse.
+
+\hypertarget{torch.compile}{%
+\subsubsection{torch.compile}\label{torch.compile}}
+
+\textbf{Definition.} A PyTorch feature (\texttt{torch.compile(model)})
+that traces the model's operations and compiles them into optimized,
+fused kernels ahead of execution.
+
+\textbf{Intuition.} Eager PyTorch dispatches each operation separately
+with Python overhead; compiling fuses operations and strips that
+overhead, so the model runs substantially faster. The cost is a one-time
+compilation delay on the first call.
+
+\textbf{Notes.} A near-free speedup for training and inference once
+compiled. \emph{(Karpathy)} → Backpropagation, Model compression
+(distillation, pruning, quantization).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{unsupervised-learning-isl-ch.-12}{%
+\subsection{\texorpdfstring{Unsupervised Learning \emph{(ISL
+ch.~12)}}{Unsupervised Learning (ISL ch.~12)}}\label{unsupervised-learning-isl-ch.-12}}
+
+\hypertarget{unsupervised-learning}{%
+\subsubsection{Unsupervised learning}\label{unsupervised-learning}}
+
+\textbf{Definition.} Learning from predictors \texttt{X\_1,\ …,\ X\_p}
+with \emph{no} response \texttt{Y} --- the goal is to discover structure
+(patterns, groupings, low-dimensional summaries) rather than predict a
+labeled output. Main tools: PCA and clustering.
+
+\textbf{Intuition.} No answer key, so you can't measure predictive
+error. Instead you explore --- ``what natural structure lives in this
+data?'' Often part of exploratory data analysis.
+
+\textbf{Notes.} Harder to validate than supervised learning: no test-set
+error or cross-validation to lean on, and no universally agreed way to
+check results. → Principal components analysis, Clustering, Supervised
+vs unsupervised learning (stat).
+
+\hypertarget{principal-components-analysis-pca}{%
+\subsubsection{Principal components analysis
+(PCA)}\label{principal-components-analysis-pca}}
+
+\textbf{Definition.} An unsupervised method that finds a few directions
+(\emph{principal components}) capturing most of the variance in the
+data. The first principal component is the normalized linear combination
+\texttt{Z\_1\ =\ φ\_\{11\}X\_1\ +\ …\ +\ φ\_\{p1\}X\_p} (with
+\texttt{Σ\ φ\_\{j1\}²\ =\ 1}) having the largest variance; each later
+component has the largest remaining variance subject to being
+uncorrelated with (perpendicular to) the earlier ones. The weights
+\texttt{φ} are the \emph{loadings}.
+
+\begin{equation*}
+\max_{\phi}\;\frac{1}{n}\sum_{i=1}^{n}\Bigl(\sum_{j=1}^{p}\phi_{j1}x_{ij}\Bigr)^{2}
+\quad\text{s.t.}\quad\sum_{j=1}^{p}\phi_{j1}^{2}=1
+\end{equation*}
+
+\begin{equation*}
+\text{equivalently: } \phi_k=\text{the }k\text{-th eigenvector of the covariance }\tfrac{1}{n}\mathbf{X}^{\mathsf T}\mathbf{X}
+\end{equation*}
+
+\textbf{Intuition.} Find the single direction the data spread out along
+most --- that's PC1. Then the next-biggest spread at right angles to it,
+and so on. A few components often capture most of the variation, so you
+can compress or visualize high-dimensional data with little loss. The
+components also trace the line/plane closest to the data cloud.
+
+\textbf{Notes.} Center variables to mean zero first, and usually scale
+them too --- PCA is sensitive to units. An \texttt{n\ ×\ p} dataset has
+\texttt{min(n−1,\ p)} components, but you keep only the first few.
+Feeding components into a regression is PCR. → Principal components
+regression (PCR) (stat), Unsupervised learning.
+
+\hypertarget{matrix-completion}{%
+\subsubsection{Matrix completion}\label{matrix-completion}}
+
+\textbf{Definition.} Filling in missing entries of a data matrix by
+approximating it with a low-rank (PCA-style) decomposition fit only on
+the \emph{observed} entries, then reading off predictions for the
+missing ones. Solved by an iterative algorithm.
+
+\textbf{Intuition.} If the data really live near a few underlying
+dimensions, the observed entries pin down that structure well enough to
+guess the gaps --- the principle behind recommender systems (``users
+like you also liked\ldots{}'').
+
+\textbf{Notes.} An application of the PCA idea to missing data. →
+Principal components analysis.
+
+\hypertarget{clustering}{%
+\subsubsection{Clustering}\label{clustering}}
+
+\textbf{Definition.} A broad family of methods for partitioning
+observations into subgroups (\emph{clusters}) so that observations
+within a cluster are similar and those in different clusters are
+dissimilar.
+
+\textbf{Intuition.} Find the natural groupings in data --- customer
+segments, cell types --- without being told the groups in advance.
+
+\textbf{Notes.} Requires a notion of similarity/dissimilarity (often
+Euclidean distance), whose choice strongly affects results. Two main
+approaches: K-means and hierarchical. → K-means clustering, Hierarchical
+clustering.
+
+\hypertarget{k-means-clustering}{%
+\subsubsection{K-means clustering}\label{k-means-clustering}}
+
+\textbf{Definition.} Partitions data into a \emph{pre-specified} number
+\texttt{K} of non-overlapping clusters. Algorithm: randomly assign
+points to clusters, then iterate --- (a) compute each cluster's
+\emph{centroid} (the mean of its points), (b) reassign each point to the
+nearest centroid --- until assignments stop changing.
+
+\begin{equation*}
+\min_{C_1,\dots,C_K}\ \sum_{k=1}^{K}\frac{1}{|C_k|}\sum_{i,i'\in C_k}\|x_i-x_{i'}\|^2
+\;\equiv\;
+\min\ \sum_{k=1}^{K}\sum_{i\in C_k}\|x_i-\mu_k\|^2
+\end{equation*}
+
+\textbf{Intuition.} Guess \texttt{K} groups, find their centers, move
+each point to its closest center, recompute centers, repeat. It settles
+into clusters that minimize within-cluster spread.
+
+\textbf{Notes.} You must choose \texttt{K} up front, and the result
+depends on the random start --- so run it several times and keep the
+best. → Clustering, Hierarchical clustering.
+
+\hypertarget{hierarchical-clustering}{%
+\subsubsection{Hierarchical clustering}\label{hierarchical-clustering}}
+
+\textbf{Definition.} Builds a tree of nested clusters \emph{without}
+pre-specifying \texttt{K}. The \emph{agglomerative} (bottom-up) version
+starts with each observation as its own cluster, then repeatedly fuses
+the two most similar clusters until all are joined. The result is a
+\emph{dendrogram} (an upside-down tree) whose fusion heights show
+dissimilarity.
+
+\textbf{Intuition.} Repeatedly merge the closest pair of groups,
+recording when each merge happens. Cutting the dendrogram at a chosen
+height gives any number of clusters --- so you read \texttt{K} off the
+tree instead of committing to it in advance.
+
+\textbf{Notes.} Fusing \emph{groups} (not just points) needs
+\emph{linkage} --- a rule for cluster-to-cluster dissimilarity:
+complete, average, single, or centroid. Linkage and the distance measure
+both strongly shape the dendrogram. → Clustering, K-means clustering.
+
+\hypertarget{gaussian-mixture-model-gmm}{%
+\subsubsection{Gaussian mixture model
+(GMM)}\label{gaussian-mixture-model-gmm}}
+
+\textbf{Definition.} A probabilistic clustering model assuming the data
+were generated from a mixture of \texttt{k} Gaussian distributions with
+unknown parameters. The generative story: for each instance, pick
+cluster \texttt{j} at random with probability given by that cluster's
+weight \texttt{φ\_j}; then draw the instance from that cluster's
+Gaussian, \texttt{N(μ\_j,\ Σ\_j)}. Instances from one Gaussian form a
+cluster.
+
+\begin{equation*}
+p(x)=\sum_{k=1}^{K}\pi_k\,\mathcal{N}(x\mid\mu_k,\Sigma_k),
+\qquad
+\sum_{k=1}^{K}\pi_k=1
+\end{equation*}
+
+\textbf{Intuition.} K-means assigns each point to its nearest centroid,
+full stop. A GMM instead models each cluster as an ellipsoidal blob with
+its own shape, size, density, and orientation, and gives each point a
+\emph{probability} of belonging to each cluster. Softer and more
+flexible than K-means, which effectively assumes round, equal-sized
+clusters.
+
+\textbf{Notes.} In the simplest variant you must specify \texttt{k} in
+advance. Fitting the parameters (weights, means, covariances) is done by
+the EM algorithm --- \emph{(beyond both books' highlights here)}.
+Related to QDA, which also models each class as its own Gaussian, but
+supervised. \emph{(Hands-On ML)} → Clustering, K-means clustering,
+Quadratic discriminant analysis (QDA) (stat).
+
+\hypertarget{bayesian-gaussian-mixture}{%
+\subsubsection{Bayesian Gaussian
+mixture}\label{bayesian-gaussian-mixture}}
+
+\textbf{Definition.} A GMM variant that can drive the weights of
+unnecessary clusters to (or near) zero. Set the number of components to
+a value you have reason to believe exceeds the true number, and the
+algorithm prunes the surplus itself.
+
+\textbf{Intuition.} Instead of hunting for the right \texttt{k} by hand,
+over-provision and let the fit decide: ask for 10 clusters on 3-cluster
+data and the extra weights collapse to zero, leaving three non-trivial
+clusters.
+
+\textbf{Notes.} Needs some minimal prior knowledge --- enough to pick a
+safe upper bound on \texttt{k}. A useful answer to the ``how do I choose
+\texttt{K}?'' problem that K-means leaves open. \emph{(Hands-On ML)} →
+Gaussian mixture model, K-means clustering.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{machine-learning-systems-design-designing-ml-systems}{%
+\subsection{\texorpdfstring{Machine Learning Systems Design
+\emph{(Designing ML
+Systems)}}{Machine Learning Systems Design (Designing ML Systems)}}\label{machine-learning-systems-design-designing-ml-systems}}
+
+\hypertarget{when-to-use-machine-learning}{%
+\subsubsection{When to use machine
+learning}\label{when-to-use-machine-learning}}
+
+\textbf{Definition.} Machine learning is an approach to \emph{learn}
+\emph{complex patterns} from \emph{existing data} and use them to make
+\emph{predictions} on \emph{unseen data}. It fits when all of these
+hold: there are patterns to learn, the patterns are complex (hard to
+hand-code), data exists (or can be collected), the problem is
+predictive, and the patterns generalize --- ideally the task is also
+repetitive, operates at scale, and lives in a changing environment.
+
+\textbf{Intuition.} With no pattern, no data, or a problem cheaply
+solved by explicit rules, ML is the wrong tool. It earns its keep when
+rules would be too many or too brittle, and when being right \emph{most}
+of the time is already valuable.
+
+\textbf{Notes.} Complements the statistical-learning framing
+(\texttt{Y\ =\ f(X)\ +\ ε}) by stressing the \emph{systems}
+preconditions and deployment realities. → Statistical learning (stat),
+Prediction vs inference (stat).
+
+\hypertarget{classification-task-types-binary-multiclass-multilabel}{%
+\subsubsection{Classification task types (binary, multiclass,
+multilabel)}\label{classification-task-types-binary-multiclass-multilabel}}
+
+\textbf{Definition.} Within classification: \emph{binary} (two classes),
+\emph{multiclass} (one label from \texttt{K\ \textgreater{}\ 2} mutually
+exclusive classes), and \emph{multilabel} (each example may carry
+\emph{several} labels at once).
+
+\textbf{Intuition.} Multiclass assumes exactly one class is correct
+(probabilities sum to 1, softmax); multilabel drops that assumption ---
+an image can be both ``cat'' and ``outdoors'' --- so it's usually framed
+as \texttt{K} independent binary problems (a sigmoid per label).
+Multilabel is the hardest to source labels for and to evaluate.
+
+\textbf{Notes.} Very high-cardinality multiclass is sometimes decomposed
+hierarchically. → Regression vs classification (stat), Softmax,
+Multinomial logistic regression (stat), Classification metrics
+(precision, recall, F1).
+
+\hypertarget{decoupling-objectives-multi-objective-optimization}{%
+\subsubsection{Decoupling objectives (multi-objective
+optimization)}\label{decoupling-objectives-multi-objective-optimization}}
+
+\textbf{Definition.} When a model must satisfy several competing
+objectives (e.g.~rank posts by \emph{engagement} and by \emph{quality}),
+train a separate model or head per objective and combine their outputs
+with a weighted (linear) sum, rather than optimizing one pre-blended
+loss.
+
+\textbf{Intuition.} Folding objectives into a single loss
+\texttt{α·loss\_a\ +\ β·loss\_b} means retraining every time you
+re-weight the trade-off. Decoupling --- optimize each objective
+separately, then combine scores with tunable weights at serving time ---
+lets you re-weight without retraining and keeps each objective's
+behavior legible.
+
+\textbf{Notes.} The combination weights become product knobs. → Neural
+network regularization.
+
+\hypertarget{etl-extract-transform-load}{%
+\subsubsection{ETL (extract, transform,
+load)}\label{etl-extract-transform-load}}
+
+\textbf{Definition.} The standard data pipeline: \emph{extract} from
+sources, \emph{transform} (clean, validate, aggregate, reshape), and
+\emph{load} into a destination (warehouse, database, files) for
+downstream use.
+
+\textbf{Intuition.} The plumbing that turns messy source data into
+query-ready tables feeding training and features. (``ELT'' reorders it
+--- load raw first, transform later inside the warehouse.)
+
+\textbf{Notes.} → Batch features vs streaming features.
+
+\hypertarget{non-probability-sampling}{%
+\subsubsection{Non-probability
+sampling}\label{non-probability-sampling}}
+
+\textbf{Definition.} Selecting data by convenience rather than random
+chance: \emph{convenience} (whatever's easily available),
+\emph{snowball} (existing samples recruit more), \emph{judgment} (an
+expert hand-picks), and \emph{quota} (fill fixed counts per group).
+
+\textbf{Intuition.} Cheap and common, but the selection criteria are
+non-random, so the sample carries selection bias and rarely represents
+the population --- a frequent hidden source of biased models.
+
+\textbf{Notes.} Fine for exploration; risky as the basis for a
+production model. → Random sampling methods (simple, stratified,
+weighted, reservoir), Data leakage.
+
+\hypertarget{random-sampling-methods-simple-stratified-weighted-reservoir}{%
+\subsubsection{Random sampling methods (simple, stratified, weighted,
+reservoir)}\label{random-sampling-methods-simple-stratified-weighted-reservoir}}
+
+\textbf{Definition.} Probability-based selection: \emph{simple random}
+(every item equally likely), \emph{stratified} (split into groups/strata
+and sample each so all are represented), \emph{weighted} (each item
+drawn with a chosen probability), and \emph{reservoir} (a streaming
+algorithm keeping a uniform sample of \texttt{k} items from a stream of
+unknown length).
+
+\textbf{Intuition.} Stratified sampling guarantees rare classes appear;
+weighted sampling encodes priorities or corrects imbalance. Reservoir
+sampling solves the streaming case: keep the first \texttt{k}, then for
+the \texttt{i}-th arrival (\texttt{i\ \textgreater{}\ k}) keep it with
+probability \texttt{k/i}, evicting a random current member --- leaving
+every item seen so far equally likely to be in the reservoir at any
+moment.
+
+\textbf{Notes.} → Non-probability sampling, Class imbalance.
+
+\hypertarget{labeling-and-weak-supervision}{%
+\subsubsection{Labeling and weak
+supervision}\label{labeling-and-weak-supervision}}
+
+\textbf{Definition.} Producing labels without (or with little)
+hand-annotation. \emph{Weak supervision} generates noisy labels
+programmatically via \emph{labeling functions} --- heuristics such as
+regex/keyword rules, existing knowledge bases, or the outputs of other
+models --- which are then combined.
+
+\textbf{Intuition.} Hand-labeling is slow and expensive; labeling
+functions encode cheap, noisy expert intuition at scale, and aggregating
+many weak signals yields usable (if imperfect) labels. Neighboring
+paradigms lower labeling cost differently: semi-supervised learning
+leverages unlabeled data, transfer learning reuses another task's model,
+active learning labels only the most informative points.
+
+\textbf{Notes.} → Semi-supervised learning (stat), Transfer learning,
+Active learning.
+
+\hypertarget{transfer-learning}{%
+\subsubsection{Transfer learning}\label{transfer-learning}}
+
+\textbf{Definition.} Reusing a model trained on one (data-rich) task as
+the starting point for another related task --- as a fixed feature
+extractor, or by fine-tuning it on the new task's smaller dataset.
+
+\textbf{Intuition.} Representations learned on a big task (a pretrained
+language or vision model) capture general structure that transfers, so
+the target task needs far less data and compute. This is the foundation
+of the pretrain-then-adapt recipe.
+
+\textbf{Notes.} → Pretraining and base models, Parameter-efficient
+fine-tuning (LoRA / PEFT), Zero-shot learning.
+
+\hypertarget{zero-shot-learning}{%
+\subsubsection{Zero-shot learning}\label{zero-shot-learning}}
+
+\textbf{Definition.} Making correct predictions for a task the system
+was \emph{never trained on}, by leveraging training on a \emph{related}
+task (also called zero-data learning).
+
+\textbf{Intuition.} The system needs \emph{no} data for the task at hand
+--- but it still had to learn from data for a related task, so
+``zero-shot'' does not mean ``zero data'' overall. Common with large
+pretrained models prompted to do new tasks.
+
+\textbf{Notes.} → In-context learning (zero/one/few-shot), Transfer
+learning.
+
+\hypertarget{active-learning}{%
+\subsubsection{Active learning}\label{active-learning}}
+
+\textbf{Definition.} A labeling strategy in which the model chooses
+which unlabeled examples it would most benefit from having labeled next
+(e.g.~the ones it is most uncertain about), and a human labels those.
+
+\textbf{Intuition.} Not all labels are equally useful; labeling the most
+informative/uncertain points buys more accuracy per label than random
+labeling, cutting annotation cost.
+
+\textbf{Notes.} → Labeling and weak supervision.
+
+\hypertarget{class-imbalance}{%
+\subsubsection{Class imbalance}\label{class-imbalance}}
+
+\textbf{Definition.} When some classes vastly outnumber others
+(e.g.~fraud detection), biasing a model toward the majority. Addressed
+by \emph{resampling} --- undersample the majority and/or oversample the
+minority (e.g.~SMOTE, which synthesizes new minority examples) --- and
+by adjusting the loss (class weights, focal loss).
+
+\textbf{Intuition.} Accuracy is useless under imbalance (just predict
+the majority). Rebalancing the data or reweighting the loss forces the
+model to care about the rare class; the choice of \emph{metric} matters
+as much as the fix.
+
+\textbf{Notes.} → Random sampling methods (simple, stratified, weighted,
+reservoir), Classification metrics (precision, recall, F1), Data
+augmentation.
+
+\hypertarget{handling-missing-data}{%
+\subsubsection{Handling missing data}\label{handling-missing-data}}
+
+\textbf{Definition.} Two broad strategies: \emph{deletion} (drop rows or
+columns with missing values) and \emph{imputation} (fill them --- with
+the mean/median/mode, a constant, or a model's prediction).
+
+\textbf{Intuition.} Deletion is simple but discards data and can bias
+the set when missingness isn't random. Imputation keeps the rows but
+injects assumptions; whether missingness is random (MCAR/MAR) or
+informative (MNAR) determines what's safe. The \emph{fact} of
+missingness can itself be a useful feature.
+
+\textbf{Notes.} Fit imputation statistics on the training set only. →
+Feature scaling, Data leakage.
+
+\hypertarget{categorical-feature-encoding-hashing-trick}{%
+\subsubsection{Categorical feature encoding (hashing
+trick)}\label{categorical-feature-encoding-hashing-trick}}
+
+\textbf{Definition.} Turning categories into numbers a model can use.
+Beyond one-hot/dummy encoding, the \emph{hashing trick} maps each
+category through a hash function into a fixed number of buckets,
+handling unseen and high-cardinality categories in bounded space.
+
+\textbf{Intuition.} One-hot explodes with high cardinality and can't
+represent categories unseen at training time. Hashing fixes the
+dimension in advance and absorbs new categories gracefully (at the cost
+of occasional collisions), which is why it suits large-scale, streaming
+category spaces.
+
+\textbf{Notes.} → One-hot encoding, Qualitative predictors and dummy
+variables (stat), Embedding layer.
+
+\hypertarget{feature-crossing}{%
+\subsubsection{Feature crossing}\label{feature-crossing}}
+
+\textbf{Definition.} Creating a new feature by combining two or more
+existing features (e.g.~\texttt{area\ =\ length\ ×\ width}, or the pair
+\texttt{(marital\_status,\ num\_children)}), so a model can capture
+their joint effect.
+
+\textbf{Intuition.} The same idea as interaction terms in linear models:
+crossing lets a model that treats features additively express effects
+that depend on \emph{combinations}. Especially useful for linear models,
+and it helps DNNs learn faster --- at the cost of more features and
+higher overfitting risk.
+
+\textbf{Notes.} → Interaction terms (stat), Feature scaling.
+
+\hypertarget{data-leakage}{%
+\subsubsection{Data leakage}\label{data-leakage}}
+
+\textbf{Definition.} When information unavailable at prediction time
+leaks into training, inflating offline metrics and then collapsing in
+production. \emph{Group leakage} is a common form: correlated or
+duplicate records split across train and test (e.g.~multiple scans of
+one patient), so the test set isn't truly unseen.
+
+\textbf{Intuition.} Leakage lets the model ``cheat'' --- via a
+target-derived feature, scaling statistics computed over the whole
+dataset, time-travel in a time-series split, or grouped duplicates
+straddling the split. Suspiciously high performance, or a single feature
+with implausibly high correlation to the target, is a red flag.
+
+\textbf{Notes.} Guard by splitting \emph{before} any preprocessing,
+splitting by group/time where relevant, and checking feature--target
+correlations. → Train / dev / test split, Handling missing data, Feature
+scaling.
+
+\hypertarget{classification-metrics-precision-recall-f1}{%
+\subsubsection{Classification metrics (precision, recall,
+F1)}\label{classification-metrics-precision-recall-f1}}
+
+\textbf{Definition.} Beyond raw accuracy: \emph{precision} = TP/(TP+FP)
+(of predicted positives, how many are correct), \emph{recall} =
+TP/(TP+FN) (of actual positives, how many were caught), and \emph{F1} =
+their harmonic mean \texttt{2·P·R/(P+R)}.
+
+\begin{equation*}
+P=\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}},\quad
+R=\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}},\quad
+F_1=\frac{2PR}{P+R}
+\end{equation*}
+
+\textbf{Intuition.} Accuracy hides \emph{which} errors you make and
+misleads under class imbalance. Precision vs recall is the
+false-positive vs false-negative trade-off; F1 balances them in one
+number. Pick the metric matching each error's cost --- recall for
+disease screening, precision when false alarms are expensive.
+
+\textbf{Notes.} All read off the confusion matrix; sweeping the
+threshold traces the ROC (or precision--recall) curve. → Confusion
+matrix and error types (stat), ROC curve (stat), Class imbalance.
+
+\hypertarget{stacking-stacked-generalization}{%
+\subsubsection{Stacking (stacked
+generalization)}\label{stacking-stacked-generalization}}
+
+\textbf{Definition.} An ensemble that trains several diverse \emph{base}
+models and then a \emph{meta-model} which learns how best to combine
+their predictions, instead of a fixed average or vote.
+
+\textbf{Intuition.} Where bagging averages and boosting adds
+sequentially, stacking \emph{learns} the combination --- the meta-model
+discovers which base learner to trust when. Often squeezes out extra
+accuracy in competitions.
+
+\textbf{Notes.} Train the meta-model on \emph{out-of-fold} base
+predictions to avoid leakage. → Ensemble methods and weak learners,
+Bagging, Boosting.
+
+\hypertarget{distributed-training-data-vs-model-parallelism}{%
+\subsubsection{Distributed training (data vs model
+parallelism)}\label{distributed-training-data-vs-model-parallelism}}
+
+\textbf{Definition.} Training across multiple devices. \emph{Data
+parallelism}: replicate the model on each device, split the batch across
+them, and average gradients. \emph{Model parallelism}: split the
+\emph{model itself} across devices (different layers/tensors on
+different GPUs) when it's too big to fit on one.
+
+\textbf{Intuition.} Data parallelism scales throughput (more data per
+step) and is the common case; model parallelism is for models too large
+for one device's memory. Real systems often combine both, plus pipeline
+parallelism.
+
+\textbf{Notes.} Data-parallel gradient averaging effectively enlarges
+the batch, which interacts with the learning rate. → Stochastic gradient
+descent (SGD), Batch normalization.
+
+\hypertarget{model-evaluation-tests-perturbation-invariance-slice-based}{%
+\subsubsection{Model evaluation tests (perturbation, invariance,
+slice-based)}\label{model-evaluation-tests-perturbation-invariance-slice-based}}
+
+\textbf{Definition.} Behavioral tests beyond a single aggregate score.
+\emph{Perturbation test}: add small noise/changes to inputs and check
+the outputs stay sensible/robust. \emph{Invariance test}: change inputs
+that \emph{shouldn't} affect the output (e.g.~a name or gender) and
+check the prediction doesn't move. \emph{Slice-based evaluation}:
+measure performance separately on meaningful \emph{subsets} (slices) ---
+by segment, device, language --- to expose failures the aggregate hides.
+
+\textbf{Intuition.} A good overall number can mask that the model fails
+a critical subgroup or reacts to irrelevant features. These tests probe
+the robustness and fairness a lump-sum metric can't.
+
+\textbf{Notes.} \emph{Correction:} slice-based evaluation is
+\textbf{not} the train/validation/test split. The split partitions data
+to \emph{estimate generalization}; slicing evaluates the
+\emph{already-trained} model on subgroups of the \emph{same} eval set to
+find hidden weaknesses --- a different purpose. → Train / dev / test
+split, Classification metrics (precision, recall, F1).
+
+\hypertarget{batch-features-vs-streaming-features}{%
+\subsubsection{Batch features vs streaming
+features}\label{batch-features-vs-streaming-features}}
+
+\textbf{Definition.} \emph{Batch (static) features} are precomputed from
+historical data at rest (e.g.~a user's average rating over the last
+month), stored, and looked up. \emph{Streaming (dynamic/online)
+features} are computed in near-real-time from a stream of events at
+request time (e.g.~clicks in the last 10 minutes).
+
+\textbf{Intuition.} Batch features are cheap and simple but can be
+stale; streaming features are fresh and often more predictive but need
+streaming infrastructure. Many systems use both.
+
+\textbf{Notes.} \emph{Clarification:} ``streaming features'' and
+``online features'' usually mean the \emph{same} thing --- the real
+contrast is \textbf{batch/static vs streaming/online}, not ``streaming
+vs online.'' → ETL, Batch prediction vs online prediction, Storage vs
+compute.
+
+\hypertarget{batch-prediction-vs-online-prediction}{%
+\subsubsection{Batch prediction vs online
+prediction}\label{batch-prediction-vs-online-prediction}}
+
+\textbf{Definition.} \emph{Batch prediction} (asynchronous): precompute
+predictions for many inputs on a schedule and store them for lookup.
+\emph{Online prediction} (on-demand/synchronous): generate a prediction
+the moment a request arrives.
+
+\textbf{Intuition.} Batch is simpler and cheaper and hides model
+latency, but predictions can be stale and you must know the inputs in
+advance. Online serves fresh, input-dependent predictions (needed for
+search or recommendations on new queries) but demands low-latency
+serving. Batch features often feed batch prediction; streaming features
+enable responsive online prediction.
+
+\textbf{Notes.} → Batch features vs streaming features, Model
+compression (distillation, pruning, quantization), Storage vs compute.
+
+\hypertarget{model-compression-distillation-pruning-quantization}{%
+\subsubsection{Model compression (distillation, pruning,
+quantization)}\label{model-compression-distillation-pruning-quantization}}
+
+\textbf{Definition.} Shrinking a model for cheaper/faster inference.
+\emph{Knowledge distillation}: train a small \emph{student} to mimic a
+large \emph{teacher}'s outputs. \emph{Pruning}: remove unimportant
+weights/neurons from a trained network (often zeroing small-magnitude
+weights). \emph{Quantization}: store and compute weights at lower
+precision (e.g.~32-bit → 8-bit or lower).
+
+\textbf{Intuition.} Big models are accurate but expensive to serve;
+these techniques trade a little accuracy for large gains in size,
+latency, and energy. Quantization is the most broadly used and the most
+hardware-friendly.
+
+\textbf{Notes.} \emph{Clarification:} ``pruning'' here is
+\textbf{neural-network} pruning --- removing weights --- distinct from
+decision-tree \emph{cost-complexity pruning} (trimming branches), though
+both simplify a trained model. → Tree pruning (cost-complexity),
+torch.compile, Batch prediction vs online prediction.
+
+\hypertarget{data-distribution-shifts-covariate-label-concept}{%
+\subsubsection{Data distribution shifts (covariate, label,
+concept)}\label{data-distribution-shifts-covariate-label-concept}}
+
+\textbf{Definition.} When the data a deployed model sees drifts from its
+training distribution. \emph{Covariate shift}: input distribution
+\texttt{P(X)} changes while \texttt{P(Y\textbar{}X)} holds. \emph{Label
+shift}: label distribution \texttt{P(Y)} changes while
+\texttt{P(X\textbar{}Y)} holds. \emph{Concept drift}: the relationship
+\texttt{P(Y\textbar{}X)} itself changes (same inputs, different correct
+answer).
+
+\textbf{Intuition.} A model trained on last year's data goes stale ---
+slowly or suddenly --- as the world changes. Identifying which
+distribution moved guides the fix: reweighting for covariate/label
+shift, retraining for concept drift.
+
+\textbf{Notes.} Detected by monitoring input/output/label distributions
+over time. → Continual learning (stateless vs stateful), Degenerate
+feedback loops, Train / dev / test split.
+
+\hypertarget{degenerate-feedback-loops}{%
+\subsubsection{Degenerate feedback
+loops}\label{degenerate-feedback-loops}}
+
+\textbf{Definition.} When a model's own predictions shape the future
+data it is trained on, reinforcing its biases over time --- e.g.~a
+recommender that only surfaces popular items makes them more popular, so
+they look even better next round.
+
+\textbf{Intuition.} The model shapes the world it later learns from,
+creating a self-fulfilling loop that narrows exposure and entrenches
+whatever it already favored (popularity bias, filter bubbles). Breaking
+it needs deliberate exploration (randomization, bandits) or positional
+debiasing.
+
+\textbf{Notes.} → Data distribution shifts (covariate, label, concept),
+Bandit algorithms.
+
+\hypertarget{continual-learning-stateless-vs-stateful}{%
+\subsubsection{Continual learning (stateless vs
+stateful)}\label{continual-learning-stateless-vs-stateful}}
+
+\textbf{Definition.} How a model is updated over time. \emph{Stateless
+retraining}: retrain from scratch on a fresh window of data each cycle.
+\emph{Stateful training} (incremental/continual): continue training the
+\emph{existing} model on new data, carrying its learned state forward.
+
+\textbf{Intuition.} Stateless is simple and reproducible but wasteful
+and slower to adapt; stateful updates cheaply on just the new data and
+reacts faster --- at the risk of \emph{catastrophic forgetting} and
+harder debugging. Update cadence trades freshness against stability.
+
+\textbf{Notes.} → Data distribution shifts (covariate, label, concept),
+Transfer learning.
+
+\hypertarget{deployment-strategies-shadow-canary-ab-testing}{%
+\subsubsection{Deployment strategies (shadow, canary, A/B
+testing)}\label{deployment-strategies-shadow-canary-ab-testing}}
+
+\textbf{Definition.} Ways to roll out and evaluate a new model in
+production. \emph{Shadow deployment}: run the new model alongside the
+old on live traffic but don't serve its predictions --- just log and
+compare. \emph{Canary}: release to a small slice of traffic first, then
+widen. \emph{A/B testing}: route a fraction of real traffic to the new
+model and compare outcomes statistically before full rollout.
+
+\textbf{Intuition.} Offline metrics don't guarantee online wins. Shadow
+mode de-risks by testing on real inputs with zero user impact; A/B
+testing measures the real causal effect on user-facing metrics on a
+slice of traffic.
+
+\textbf{Notes.} → Model evaluation tests (perturbation, invariance,
+slice-based), Bandit algorithms, Hypothesis test, t-statistic, and
+p-value (stat).
+
+\hypertarget{bandit-algorithms}{%
+\subsubsection{Bandit algorithms}\label{bandit-algorithms}}
+
+\textbf{Definition.} Online decision algorithms that balance
+\emph{exploration} (trying options to learn their payoff) against
+\emph{exploitation} (choosing the current best), allocating traffic
+adaptively --- e.g.~among candidate models or content. \emph{Contextual
+bandits} condition the choice on features of each request.
+
+\textbf{Intuition.} Plain A/B testing sends fixed traffic to a losing
+variant for the whole test; a bandit shifts traffic toward better
+performers as evidence accumulates, so it's more data-efficient. The
+exploration keeps it from prematurely locking onto a wrong ``best.''
+
+\textbf{Notes.} A remedy for degenerate feedback loops (deliberate
+exploration). → Deployment strategies (shadow, canary, A/B testing),
+Degenerate feedback loops.
+
+\hypertarget{storage-vs-compute}{%
+\subsubsection{Storage vs compute}\label{storage-vs-compute}}
+
+\textbf{Definition.} A recurring systems trade-off: precompute-and-store
+results (spend storage) versus compute-on-demand (spend compute) --- as
+in batch vs streaming features, or batch vs online prediction.
+
+\textbf{Intuition.} Storing precomputed answers makes serving cheap and
+fast but risks staleness and grows storage; computing fresh each time is
+always current but costs latency and compute per request. The right
+balance depends on freshness needs, request volume, and cost.
+
+\textbf{Notes.} → Batch features vs streaming features, Batch prediction
+vs online prediction.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{controlled-experiments-and-ab-testing-trustworthy-online-controlled-experiments}{%
+\subsection{\texorpdfstring{Controlled Experiments and A/B Testing
+\emph{(Trustworthy Online Controlled
+Experiments)}}{Controlled Experiments and A/B Testing (Trustworthy Online Controlled Experiments)}}\label{controlled-experiments-and-ab-testing-trustworthy-online-controlled-experiments}}
+
+\hypertarget{ab-testing-controlled-experiments}{%
+\subsubsection{A/B testing (controlled
+experiments)}\label{ab-testing-controlled-experiments}}
+
+\textbf{Definition.} A \textbf{controlled experiment} randomly splits
+users into a \textbf{Control} (A, the current experience) and one or
+more \textbf{Treatments} (B, \ldots, the change), then compares a metric
+between them. Because assignment is random, a difference in the metric
+can be attributed \textbf{causally} to the change.
+
+\textbf{Intuition.} Randomization makes the groups statistically
+equivalent on everything \emph{except} the change, so any outcome gap is
+caused by the change --- not by a confound. It's the gold standard for
+``does this actually help?'' Larger designs (A/B/C/D) compare several
+options at once.
+
+\textbf{Example.} Ship a new checkout button to 50\% of users
+(Treatment) and keep the old one for 50\% (Control); if Treatment's
+purchase rate beats Control's beyond noise (a two-sample test, →
+(stat)), the button \emph{caused} the lift.
+
+\textbf{Notes.} The online analogue of a randomized controlled trial. →
+Deployment strategies (shadow, canary, A/B testing), Bandit algorithms,
+Overall Evaluation Criterion (OEC), Hypothesis test, t-statistic, and
+p-value (stat).
+
+\hypertarget{overall-evaluation-criterion-oec}{%
+\subsubsection{Overall Evaluation Criterion
+(OEC)}\label{overall-evaluation-criterion-oec}}
+
+\textbf{Definition.} The \textbf{OEC} is the single agreed metric (or
+weighted combination) an experiment optimizes --- chosen to reflect
+\textbf{long-term} value, not just a short-term bump.
+
+\textbf{Intuition.} You get what you measure. A bad OEC (clicks alone)
+is easily gamed by changes that hurt the business --- clickbait raises
+clicks but lowers trust and retention. A good OEC balances short-term
+signal against long-term goals, so ``winning'' the test means genuinely
+improving.
+
+\textbf{Example.} Optimizing \emph{sessions per user} or \emph{long-term
+revenue} rather than immediate clicks discourages dark-pattern changes
+that spike clicks but drive users away.
+
+\textbf{Notes.} The hardest and most important design choice in
+experimentation. → Metric taxonomy (goal, driver, guardrail), Decoupling
+objectives (multi-objective optimization).
+
+\hypertarget{parameters-variants-and-randomization-unit}{%
+\subsubsection{Parameters, variants, and randomization
+unit}\label{parameters-variants-and-randomization-unit}}
+
+\textbf{Definition.} A \textbf{parameter} (factor/variable) is a
+controllable knob thought to affect the OEC, set to different
+\textbf{levels} (values). A \textbf{variant} is one user experience (a
+setting of the parameters) --- A and B are the Control and Treatment
+variants. The \textbf{randomization unit} is what you randomly assign
+(usually a user, via hashing) to a variant. A \textbf{multivariate test
+(MVT)} varies several parameters together to find interactions.
+
+\textbf{Intuition.} Hashing the unit (e.g.~user id) to a variant gives a
+stable, pseudo-random split so the same user always sees the same
+variant and the groups stay comparable. Randomizing by \emph{user} (not
+by page view) keeps a person's experience consistent and avoids
+correlated observations.
+
+\textbf{Example.} Parameter = button colour with levels \{blue, green\}
+→ two variants. An MVT crossing colour × font size finds the best
+\emph{combination}, catching interactions a one-parameter test would
+miss.
+
+\textbf{Notes.} Proper randomization is exactly what licenses the causal
+claim. → A/B testing (controlled experiments), Interaction terms (stat).
+
+\hypertarget{metric-taxonomy-goal-driver-guardrail}{%
+\subsubsection{Metric taxonomy (goal, driver,
+guardrail)}\label{metric-taxonomy-goal-driver-guardrail}}
+
+\textbf{Definition.} Three roles a metric can play. \textbf{Goal}
+(success / true-north) metrics capture what the org ultimately wants.
+\textbf{Driver} (sign-post / surrogate / predictive) metrics are
+shorter-term, more sensitive proxies believed to \emph{lead} to the
+goal. \textbf{Guardrail} metrics guard against harm --- some protect the
+business, others protect the \emph{trustworthiness / internal validity}
+of the experiment itself.
+
+\textbf{Intuition.} Goal metrics are often slow and hard to move in one
+experiment, so you steer by driver metrics that respond faster, while
+guardrails make sure a ``win'' didn't break something (latency, crashes,
+revenue) or invalidate the test (e.g.~a sample-ratio mismatch).
+
+\textbf{Example.} Goal = customer lifetime value; driver = weekly active
+days; guardrails = page-load time and error rate (business) plus the
+traffic split actually matching the intended 50/50 (trustworthiness).
+
+\textbf{Notes.} → Overall Evaluation Criterion (OEC), Good metric
+properties (measurable, attributable, sensitive).
+
+\hypertarget{good-metric-properties-measurable-attributable-sensitive}{%
+\subsubsection{Good metric properties (measurable, attributable,
+sensitive)}\label{good-metric-properties-measurable-attributable-sensitive}}
+
+\textbf{Definition.} An experiment metric should be \textbf{measurable}
+(you can actually quantify it --- some effects, like post-purchase
+satisfaction, are hard), \textbf{attributable} (each value can be tied
+to a specific variant), and \textbf{sensitive \& timely} (able to detect
+changes that matter, soon enough to act on).
+
+\textbf{Intuition.} A metric you can't attribute to a variant can't be
+compared across A and B; a metric too insensitive won't budge even when
+the change truly helps, wasting the experiment. These properties decide
+whether a metric is \emph{usable} at all --- before you even ask whether
+it's the right thing to optimize.
+
+\textbf{Example.} ``Revenue per user'' is measurable, attributable, and
+fairly sensitive; ``brand love'' matters but is hard to measure and
+attribute, so it makes a poor \emph{experiment} metric.
+
+\textbf{Notes.} Sensitivity ties directly to statistical power --- an
+insensitive metric needs a huge sample to move. → Statistical power and
+power analysis (stat), Metric taxonomy (goal, driver, guardrail).
+
+\hypertarget{twymans-law-and-trustworthiness}{%
+\subsubsection{Twyman's law and
+trustworthiness}\label{twymans-law-and-trustworthiness}}
+
+\textbf{Definition.} \textbf{Twyman's law:} any figure that looks
+especially interesting or surprising is probably \emph{wrong} --- a data
+or instrumentation error --- and should be double-checked before it's
+believed.
+
+\textbf{Intuition.} Spectacular results (a 50\% lift!) far more often
+come from bugs, logging errors, or broken randomization than from
+genuinely huge effects. Trustworthy experimentation means distrusting
+the too-good result and validating it (guardrails, A/A tests, sanity
+checks) before acting.
+
+\textbf{Example.} A treatment showing an implausible 30\% revenue jump
+usually traces to a tracking bug or a sample-ratio mismatch, not a real
+win --- investigate before shipping.
+
+\textbf{Notes.} The cultural backbone of a trustworthy experimentation
+platform. → Metric taxonomy (goal, driver, guardrail), Model evaluation
+tests (perturbation, invariance, slice-based).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{glossary}{%
+\subsection{Glossary}\label{glossary}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{A/B test (controlled experiment)} --- randomized Control vs
+  Treatment comparison for causal effects. →
+  \protect\hyperlink{ab-testing-controlled-experiments}{A/B testing
+  (controlled experiments)}.
+\item
+  \textbf{Activation function} --- the non-linearity (sigmoid, ReLU)
+  inside a neural-net unit. →
+  \protect\hyperlink{activation-function}{Activation function}.
+\item
+  \textbf{Active learning} --- the model requests labels for its most
+  informative examples. → \protect\hyperlink{active-learning}{Active
+  learning}.
+\item
+  \textbf{Adam / AdamW} --- adaptive per-parameter optimizer; AdamW
+  decouples weight decay. → \protect\hyperlink{adam-and-adamw}{Adam and
+  AdamW}.
+\item
+  \textbf{Adding vocabulary after training} --- extend embedding/output
+  rows and train only those, frozen elsewhere. →
+  \protect\hyperlink{adding-vocabulary-after-training}{Adding vocabulary
+  after training}.
+\item
+  \textbf{Autocorrelation / autoregressive (AR) model} --- time-series
+  values correlate with their own lags; AR(L) regresses on the previous
+  \texttt{L} values. →
+  \protect\hyperlink{autoregressive-models-and-autocorrelation}{Autoregressive
+  models and autocorrelation}.
+\item
+  \textbf{Bag-of-words} --- represent a document by which dictionary
+  words it contains. → \protect\hyperlink{bag-of-words}{Bag-of-words}.
+\item
+  \textbf{Activation saturation} --- squashing units pinned at ±1 (or
+  dead at 0) with \textasciitilde0 gradient. →
+  \protect\hyperlink{activation-saturation}{Activation saturation}.
+\item
+  \textbf{Backpropagation} --- forward pass, chain-rule backward pass,
+  then a gradient step. →
+  \protect\hyperlink{backpropagation}{Backpropagation}.
+\item
+  \textbf{Bandit algorithms} --- adaptively balance exploration vs
+  exploitation over traffic. →
+  \protect\hyperlink{bandit-algorithms}{Bandit algorithms}.
+\item
+  \textbf{Base model} --- pretraining-only next-token predictor; not yet
+  an assistant. →
+  \protect\hyperlink{pretraining-and-base-models}{Pretraining and base
+  models}.
+\item
+  \textbf{Batch vs online prediction} --- precomputed/stored vs
+  generated on-demand at request time. →
+  \protect\hyperlink{batch-prediction-vs-online-prediction}{Batch
+  prediction vs online prediction}.
+\item
+  \textbf{Batch vs streaming features} --- precomputed static vs
+  near-real-time online features. →
+  \protect\hyperlink{batch-features-vs-streaming-features}{Batch
+  features vs streaming features}.
+\item
+  \textbf{Broadcasting} --- stretch a smaller tensor to match a larger
+  one for element-wise ops; mind \texttt{keepdims}. →
+  \protect\hyperlink{broadcasting}{Broadcasting}.
+\item
+  \textbf{Bagging} --- averaging trees fit on bootstrap samples to cut
+  variance. → \protect\hyperlink{bagging}{Bagging}.
+\item
+  \textbf{BART} --- tree ensemble combining random perturbation with
+  boosting-style residual fitting. →
+  \protect\hyperlink{bayesian-additive-regression-trees-bart}{Bayesian
+  additive regression trees (BART)}.
+\item
+  \textbf{Bayesian Gaussian mixture} --- GMM variant that zeroes out
+  surplus clusters. →
+  \protect\hyperlink{bayesian-gaussian-mixture}{Bayesian Gaussian
+  mixture}.
+\item
+  \textbf{Batch normalization} --- normalize pre-activations across the
+  batch; learned scale/shift; mild regularizer. →
+  \protect\hyperlink{batch-normalization}{Batch normalization}.
+\item
+  \textbf{Boosting} --- sequential trees each fit to the previous
+  model's residuals. → \protect\hyperlink{boosting}{Boosting}.
+\item
+  \textbf{Byte-pair encoding (BPE)} --- subword tokenization by merging
+  frequent token pairs. →
+  \protect\hyperlink{tokenization-and-byte-pair-encoding-bpe}{Tokenization
+  and byte-pair encoding (BPE)}.
+\item
+  \textbf{CatBoost / XGBoost / LightGBM} --- production
+  gradient-boosting libraries; CatBoost adds ordered boosting + native
+  categoricals. →
+  \protect\hyperlink{gradient-boosting-libraries-xgboost-lightgbm-catboost}{Gradient
+  boosting libraries (XGBoost, LightGBM, CatBoost)}.
+\item
+  \textbf{Causal (masked) self-attention} --- attention restricted to
+  current and past tokens via a triangular mask. →
+  \protect\hyperlink{causal-masked-self-attention}{Causal (masked)
+  self-attention}.
+\item
+  \textbf{Chain-of-thought (CoT)} --- prompt the model to reason in
+  steps before answering. →
+  \protect\hyperlink{chain-of-thought-prompting}{Chain-of-thought
+  prompting}.
+\item
+  \textbf{Classification task types} --- binary, multiclass (one of K),
+  multilabel (several at once). →
+  \protect\hyperlink{classification-task-types-binary-multiclass-multilabel}{Classification
+  task types (binary, multiclass, multilabel)}.
+\item
+  \textbf{Class imbalance} --- skewed class counts; fix via resampling
+  (SMOTE) or loss weights. → \protect\hyperlink{class-imbalance}{Class
+  imbalance}.
+\item
+  \textbf{Clustering} --- partitioning observations into similar
+  subgroups. → \protect\hyperlink{clustering}{Clustering}.
+\item
+  \textbf{Computational graph / autograd} --- recorded op graph that
+  makes derivatives automatic. →
+  \protect\hyperlink{computational-graph-and-autograd}{Computational
+  graph and autograd}.
+\item
+  \textbf{Constrained prompting} --- templates forcing structured
+  (e.g.~JSON) output. →
+  \protect\hyperlink{constrained-prompting}{Constrained prompting}.
+\item
+  \textbf{Continual learning} --- stateless retraining vs stateful
+  incremental training. →
+  \protect\hyperlink{continual-learning-stateless-vs-stateful}{Continual
+  learning (stateless vs stateful)}.
+\item
+  \textbf{Convolution filter} --- small learned matrix slid over image
+  patches to detect local patterns. →
+  \protect\hyperlink{convolution-filter}{Convolution filter}.
+\item
+  \textbf{Convolutional neural network (CNN)} --- image network of
+  convolution + pooling layers. →
+  \protect\hyperlink{convolutional-neural-network-cnn}{Convolutional
+  neural network (CNN)}.
+\item
+  \textbf{Cross-attention} --- Q from one sequence, K/V from another
+  (e.g.~encoder → decoder). →
+  \protect\hyperlink{encoder-decoder-and-cross-attention}{Encoder,
+  decoder, and cross-attention}.
+\item
+  \textbf{Cross-entropy} --- the classification loss for neural nets
+  (negative log-likelihood). →
+  \protect\hyperlink{output-layer-and-loss}{Output layer and loss}.
+\item
+  \textbf{Data augmentation} --- label-preserving random distortions
+  that enlarge training data. →
+  \protect\hyperlink{data-augmentation}{Data augmentation}.
+\item
+  \textbf{Data distribution shift} --- covariate P(X), label P(Y), or
+  concept P(Y\textbar X) drift. →
+  \protect\hyperlink{data-distribution-shifts-covariate-label-concept}{Data
+  distribution shifts (covariate, label, concept)}.
+\item
+  \textbf{Data leakage} --- train-time use of info unavailable at
+  prediction; includes group leakage. →
+  \protect\hyperlink{data-leakage}{Data leakage}.
+\item
+  \textbf{Decoder-only transformer (GPT)} --- stacked masked-attention
+  blocks; the GPT architecture. →
+  \protect\hyperlink{decoder-only-transformer-gpt}{Decoder-only
+  transformer (GPT)}.
+\item
+  \textbf{Decoupling objectives} --- train a head per objective, combine
+  scores with tunable weights. →
+  \protect\hyperlink{decoupling-objectives-multi-objective-optimization}{Decoupling
+  objectives (multi-objective optimization)}.
+\item
+  \textbf{Degenerate feedback loop} --- predictions shape future
+  training data, entrenching bias. →
+  \protect\hyperlink{degenerate-feedback-loops}{Degenerate feedback
+  loops}.
+\item
+  \textbf{Dense (fully connected) layer} --- every neuron connected to
+  every neuron of the previous layer; \texttt{φ(XW\ +\ b)}. →
+  \protect\hyperlink{dense-fully-connected-layer}{Dense (fully
+  connected) layer}.
+\item
+  \textbf{Decision tree} --- flowchart of splits carving the predictor
+  space into regions. → \protect\hyperlink{decision-trees}{Decision
+  trees}.
+\item
+  \textbf{Dendrogram} --- the nested-cluster tree produced by
+  hierarchical clustering. →
+  \protect\hyperlink{hierarchical-clustering}{Hierarchical clustering}.
+\item
+  \textbf{Distributed training} --- data parallelism (split the batch)
+  vs model parallelism (split the model). →
+  \protect\hyperlink{distributed-training-data-vs-model-parallelism}{Distributed
+  training (data vs model parallelism)}.
+\item
+  \textbf{Double descent} --- test error can fall again past the
+  interpolation point. → \protect\hyperlink{double-descent}{Double
+  descent}.
+\item
+  \textbf{Dropout} --- regularize a net by randomly zeroing units during
+  training. → \protect\hyperlink{dropout}{Dropout}.
+\item
+  \textbf{Early stopping} --- halt training when validation performance
+  stops improving. → \protect\hyperlink{early-stopping}{Early stopping}.
+\item
+  \textbf{Encoder / decoder} --- bidirectional vs masked transformer
+  stacks; GPT is decoder-only. →
+  \protect\hyperlink{encoder-decoder-and-cross-attention}{Encoder,
+  decoder, and cross-attention}.
+\item
+  \textbf{Ensemble / weak learner} --- combine many mediocre models into
+  a strong one. →
+  \protect\hyperlink{ensemble-methods-and-weak-learners}{Ensemble
+  methods and weak learners}.
+\item
+  \textbf{ETL} --- extract, transform, load: the data pipeline. →
+  \protect\hyperlink{etl-extract-transform-load}{ETL (extract,
+  transform, load)}.
+\item
+  \textbf{Feature crossing} --- combine features into a new joint
+  feature (an interaction). →
+  \protect\hyperlink{feature-crossing}{Feature crossing}.
+\item
+  \textbf{Embedding layer} --- learned lookup table mapping tokens to
+  dense vectors. → \protect\hyperlink{embedding-layer}{Embedding layer}.
+\item
+  \textbf{Feature scaling} --- min-max scaling vs standardization to put
+  attributes on one scale. → \protect\hyperlink{feature-scaling}{Feature
+  scaling}.
+\item
+  \textbf{Feed-forward network} --- inputs flow through hidden layers to
+  an output. → \protect\hyperlink{neural-networks-feed-forward}{Neural
+  networks (feed-forward)}.
+\item
+  \textbf{Gaussian mixture model (GMM)} --- probabilistic clustering as
+  a mixture of \texttt{k} Gaussians. →
+  \protect\hyperlink{gaussian-mixture-model-gmm}{Gaussian mixture model
+  (GMM)}.
+\item
+  \textbf{Goal / driver / guardrail metric} --- true-north /
+  leading-proxy / protective experiment metrics. →
+  \protect\hyperlink{metric-taxonomy-goal-driver-guardrail}{Metric
+  taxonomy (goal, driver, guardrail)}.
+\item
+  \textbf{Gradient descent} --- fit by stepping parameters downhill on
+  the loss. → \protect\hyperlink{gradient-descent}{Gradient descent}.
+\item
+  \textbf{Hashing trick} --- hash categories into fixed buckets for
+  high-cardinality encoding. →
+  \protect\hyperlink{categorical-feature-encoding-hashing-trick}{Categorical
+  feature encoding (hashing trick)}.
+\item
+  \textbf{Hinge loss} --- \texttt{max(0,\ 1\ −\ t)}; the SVM's margin
+  objective. → \protect\hyperlink{hinge-loss}{Hinge loss}.
+\item
+  \textbf{Hidden layer / units} --- a neural net's layers of derived
+  features. → \protect\hyperlink{hidden-layers-and-units}{Hidden layers
+  and units}.
+\item
+  \textbf{Hierarchical clustering} --- merge clusters bottom-up into a
+  dendrogram; no \texttt{K} needed. →
+  \protect\hyperlink{hierarchical-clustering}{Hierarchical clustering}.
+\item
+  \textbf{Hyperplane} --- flat \texttt{(p−1)}-dimensional divider; basis
+  of SVMs. → \protect\hyperlink{hyperplane}{Hyperplane}.
+\item
+  \textbf{In-context learning (zero/one/few-shot)} --- task behavior
+  from prompt examples, no gradient updates. →
+  \protect\hyperlink{in-context-learning-zeroonefew-shot}{In-context
+  learning (zero/one/few-shot)}.
+\item
+  \textbf{K-means clustering} --- partition into \texttt{K} clusters via
+  centroids. → \protect\hyperlink{k-means-clustering}{K-means
+  clustering}.
+\item
+  \textbf{Knowledge distillation} --- train a small student model to
+  mimic a large teacher. →
+  \protect\hyperlink{model-compression-distillation-pruning-quantization}{Model
+  compression (distillation, pruning, quantization)}.
+\item
+  \textbf{Layer normalization} --- normalize each token's own features
+  (batch-independent); transformer default. →
+  \protect\hyperlink{layer-normalization}{Layer normalization}.
+\item
+  \textbf{Leaky ReLU / ELU / SELU} --- ReLU variants; rough ordering
+  SELU \textgreater{} ELU \textgreater{} leaky ReLU \textgreater{} ReLU
+  \textgreater{} tanh \textgreater{} logistic. →
+  \protect\hyperlink{activation-function}{Activation function}.
+\item
+  \textbf{Language model (n-gram / bigram)} --- predicts the next token
+  from previous ones. → \protect\hyperlink{language-model}{Language
+  model}.
+\item
+  \textbf{Learning-rate schedule} --- vary/decay the step size over
+  training. → \protect\hyperlink{learning-rate-schedule}{Learning-rate
+  schedule}.
+\item
+  \textbf{Learning rate} --- the step size in gradient descent. →
+  \protect\hyperlink{gradient-descent}{Gradient descent}.
+\item
+  \textbf{Linkage} --- rule for cluster-to-cluster dissimilarity
+  (complete/average/single/centroid). →
+  \protect\hyperlink{hierarchical-clustering}{Hierarchical clustering}.
+\item
+  \textbf{Likelihood / NLL} --- product of assigned probabilities;
+  negate the log for a loss. →
+  \protect\hyperlink{likelihood-and-negative-log-likelihood}{Likelihood
+  and negative log-likelihood}.
+\item
+  \textbf{LLM agent (ReAct)} --- an LLM in a reason--act--observe loop
+  with tools. → \protect\hyperlink{llm-agents-chains-react}{LLM agents
+  (chains, ReAct)}.
+\item
+  \textbf{LLM limitations} --- bias, hallucination, reasoning errors,
+  cutoffs, prompt injection. →
+  \protect\hyperlink{llm-limitations-and-safe-use}{LLM limitations and
+  safe use}.
+\item
+  \textbf{Loadings} --- the predictor weights defining a principal
+  component. →
+  \protect\hyperlink{principal-components-analysis-pca}{Principal
+  components analysis (PCA)}.
+\item
+  \textbf{Logits} --- un-normalized scores (log-counts) fed into
+  softmax. → \protect\hyperlink{logits}{Logits}.
+\item
+  \textbf{LoRA / PEFT} --- parameter-efficient fine-tuning via a few
+  added weights. →
+  \protect\hyperlink{parameter-efficient-fine-tuning-lora--peft}{Parameter-efficient
+  fine-tuning (LoRA / PEFT)}.
+\item
+  \textbf{LSTM} --- RNN variant with long- and short-term memory tracks.
+  → \protect\hyperlink{lstm}{LSTM}.
+\item
+  \textbf{Max-norm regularization} --- cap each neuron's incoming weight
+  norm at \texttt{r}. →
+  \protect\hyperlink{max-norm-regularization}{Max-norm regularization}.
+\item
+  \textbf{MC dropout} --- keep dropout on at prediction time and average
+  many passes. → \protect\hyperlink{mc-dropout}{MC dropout}.
+\item
+  \textbf{Mercer's theorem} --- licence for the kernel trick: a valid
+  kernel implies a feature map exists. →
+  \protect\hyperlink{mercers-theorem}{Mercer's theorem}.
+\item
+  \textbf{Matrix completion} --- fill missing entries via a low-rank
+  PCA-style fit. → \protect\hyperlink{matrix-completion}{Matrix
+  completion}.
+\item
+  \textbf{Maximal margin classifier} --- separating hyperplane with the
+  widest buffer. → \protect\hyperlink{maximal-margin-classifier}{Maximal
+  margin classifier}.
+\item
+  \textbf{Missing data (imputation / deletion)} --- drop or fill missing
+  values. → \protect\hyperlink{handling-missing-data}{Handling missing
+  data}.
+\item
+  \textbf{Mode collapse} --- RLHF's loss of output diversity/entropy. →
+  \protect\hyperlink{mode-collapse}{Mode collapse}.
+\item
+  \textbf{Model compression} --- distillation, (network) pruning,
+  quantization for cheaper serving. →
+  \protect\hyperlink{model-compression-distillation-pruning-quantization}{Model
+  compression (distillation, pruning, quantization)}.
+\item
+  \textbf{Multi-head attention} --- several parallel attention heads
+  concatenated and projected. →
+  \protect\hyperlink{multi-head-attention}{Multi-head attention}.
+\item
+  \textbf{Multilabel classification} --- each example may carry several
+  labels; per-label sigmoids. →
+  \protect\hyperlink{classification-task-types-binary-multiclass-multilabel}{Classification
+  task types (binary, multiclass, multilabel)}.
+\item
+  \textbf{Multi-layer perceptron (MLP)} --- stacked perceptron layers;
+  solves XOR. →
+  \protect\hyperlink{multi-layer-perceptron-mlp-and-the-xor-problem}{Multi-layer
+  perceptron (MLP) and the XOR problem}.
+\item
+  \textbf{Neural network} --- layered model of derived features; basis
+  of deep learning. →
+  \protect\hyperlink{neural-networks-feed-forward}{Neural networks
+  (feed-forward)}.
+\item
+  \textbf{Neural network regularization} --- early stopping, L1/L2,
+  dropout, max-norm. →
+  \protect\hyperlink{neural-network-regularization}{Neural network
+  regularization}.
+\item
+  \textbf{Non-probability sampling} ---
+  convenience/snowball/judgment/quota; cheap but biased. →
+  \protect\hyperlink{non-probability-sampling}{Non-probability
+  sampling}.
+\item
+  \textbf{Numerical stability (log-sum-exp)} --- subtract the max logit
+  before exp so nothing overflows. →
+  \protect\hyperlink{numerical-stability}{Numerical stability}.
+\item
+  \textbf{OEC (Overall Evaluation Criterion)} --- the long-term metric
+  an experiment optimizes. →
+  \protect\hyperlink{overall-evaluation-criterion-oec}{Overall
+  Evaluation Criterion (OEC)}.
+\item
+  \textbf{One-hot encoding} --- index → length-K vector, 1 in that slot.
+  → \protect\hyperlink{one-hot-encoding}{One-hot encoding}.
+\item
+  \textbf{Out-of-bag (OOB) error} --- free test-error estimate from
+  bagging's unused points. →
+  \protect\hyperlink{out-of-bag-oob-error}{Out-of-bag (OOB) error}.
+\item
+  \textbf{Perceptron / TLU} --- weighted sum plus a step function;
+  single layer of threshold units. →
+  \protect\hyperlink{artificial-neuron-and-the-perceptron}{Artificial
+  neuron and the perceptron}.
+\item
+  \textbf{Perceptron learning rule} --- error-driven weight update
+  \texttt{w\ ←\ w\ +\ η(y\ −\ ŷ)x}. →
+  \protect\hyperlink{perceptron-learning-rule}{Perceptron learning
+  rule}.
+\item
+  \textbf{Perturbation / invariance / slice tests} --- robustness,
+  irrelevant-input, and subgroup evaluation. →
+  \protect\hyperlink{model-evaluation-tests-perturbation-invariance-slice-based}{Model
+  evaluation tests (perturbation, invariance, slice-based)}.
+\item
+  \textbf{Pooling} --- downsampling (e.g.~max pooling) in a CNN for
+  compactness and location invariance. →
+  \protect\hyperlink{pooling}{Pooling}.
+\item
+  \textbf{Positional encoding} --- inject token order into
+  order-agnostic attention. →
+  \protect\hyperlink{positional-encoding}{Positional encoding}.
+\item
+  \textbf{Precision / recall / F1} --- of-predicted-positive /
+  of-actual-positive / their harmonic mean. →
+  \protect\hyperlink{classification-metrics-precision-recall-f1}{Classification
+  metrics (precision, recall, F1)}.
+\item
+  \textbf{Pretraining} --- next-token training on a huge corpus to make
+  a base model. →
+  \protect\hyperlink{pretraining-and-base-models}{Pretraining and base
+  models}.
+\item
+  \textbf{Principal components analysis (PCA)} --- unsupervised
+  top-variance directions of the data. →
+  \protect\hyperlink{principal-components-analysis-pca}{Principal
+  components analysis (PCA)}.
+\item
+  \textbf{Pruning (cost-complexity)} --- trim a grown tree via an
+  \texttt{α·\textbar{}T\textbar{}} penalty. →
+  \protect\hyperlink{tree-pruning-cost-complexity}{Tree pruning
+  (cost-complexity)}.
+\item
+  \textbf{Quantization} --- store and compute weights at lower
+  precision. →
+  \protect\hyperlink{model-compression-distillation-pruning-quantization}{Model
+  compression (distillation, pruning, quantization)}.
+\item
+  \textbf{Randomization unit} --- what is randomly assigned to a variant
+  (usually a hashed user). →
+  \protect\hyperlink{parameters-variants-and-randomization-unit}{Parameters,
+  variants, and randomization unit}.
+\item
+  \textbf{Regex pre-tokenization} --- split text before BPE so merges
+  don't cross word/space boundaries. →
+  \protect\hyperlink{regex-pre-tokenization}{Regex pre-tokenization}.
+\item
+  \textbf{Reservoir sampling} --- uniform sample of k items from a
+  stream of unknown length. →
+  \protect\hyperlink{random-sampling-methods-simple-stratified-weighted-reservoir}{Random
+  sampling methods (simple, stratified, weighted, reservoir)}.
+\item
+  \textbf{Residual (skip) connection} ---
+  \texttt{x\ =\ x\ +\ sublayer(x)}; a gradient highway for deep nets. →
+  \protect\hyperlink{residual-skip-connections}{Residual (skip)
+  connections}.
+\item
+  \textbf{Retrieval-augmented generation (RAG)} --- fetch documents into
+  the context window at query time. →
+  \protect\hyperlink{retrieval-augmented-generation-rag}{Retrieval-augmented
+  generation (RAG)}.
+\item
+  \textbf{Reward model (RM) / RLHF} --- score responses from human
+  preferences, then RL-optimize against it. →
+  \protect\hyperlink{reward-modeling-and-rlhf}{Reward modeling and
+  RLHF}.
+\item
+  \textbf{Random forests} --- bagging + random feature subsets per split
+  to decorrelate trees. → \protect\hyperlink{random-forests}{Random
+  forests}.
+\item
+  \textbf{Recurrent neural network (RNN)} --- sequence network with a
+  running hidden state. →
+  \protect\hyperlink{recurrent-neural-network-rnn}{Recurrent neural
+  network (RNN)}.
+\item
+  \textbf{Regression tree} --- tree predicting the mean response in each
+  region. → \protect\hyperlink{regression-trees}{Regression trees}.
+\item
+  \textbf{ReLU / sigmoid} --- the two common activation functions. →
+  \protect\hyperlink{activation-function}{Activation function}.
+\item
+  \textbf{Scaled dot-product attention} --- divide scores by √(head
+  size) to keep softmax diffuse. →
+  \protect\hyperlink{scaled-dot-product-attention}{Scaled dot-product
+  attention}.
+\item
+  \textbf{Self-attention} --- tokens communicate via query/key/value
+  weighted sums. → \protect\hyperlink{self-attention}{Self-attention}.
+\item
+  \textbf{Self-consistency} --- majority-vote over multiple sampled
+  reasoning paths. →
+  \protect\hyperlink{self-consistency-and-ensembling-attempts}{Self-consistency
+  and ensembling attempts}.
+\item
+  \textbf{Shadow / canary / A/B deployment} --- log-only, small-slice,
+  and split-traffic rollouts. →
+  \protect\hyperlink{deployment-strategies-shadow-canary-ab-testing}{Deployment
+  strategies (shadow, canary, A/B testing)}.
+\item
+  \textbf{Softmax} --- exponentiate logits then normalize into class
+  probabilities. → \protect\hyperlink{softmax}{Softmax}.
+\item
+  \textbf{Special tokens} --- reserved non-content tokens
+  (e.g.~\texttt{\textless{}\textbar{}endoftext\textbar{}\textgreater{}})
+  added outside BPE. → \protect\hyperlink{special-tokens}{Special
+  tokens}.
+\item
+  \textbf{Stacking} --- a meta-model learns to combine base models'
+  predictions. →
+  \protect\hyperlink{stacking-stacked-generalization}{Stacking (stacked
+  generalization)}.
+\item
+  \textbf{Stochastic gradient descent (SGD)} --- gradient steps on
+  random minibatches. →
+  \protect\hyperlink{stochastic-gradient-descent-sgd}{Stochastic
+  gradient descent (SGD)}.
+\item
+  \textbf{Storage vs compute} --- precompute-and-store vs
+  compute-on-demand trade-off. →
+  \protect\hyperlink{storage-vs-compute}{Storage vs compute}.
+\item
+  \textbf{Stratified sampling} --- sample within groups so all strata
+  are represented. →
+  \protect\hyperlink{random-sampling-methods-simple-stratified-weighted-reservoir}{Random
+  sampling methods (simple, stratified, weighted, reservoir)}.
+\item
+  \textbf{Supervised fine-tuning (SFT)} --- imitate high-quality
+  demonstration responses. →
+  \protect\hyperlink{supervised-fine-tuning-sft}{Supervised fine-tuning
+  (SFT)}.
+\item
+  \textbf{Support vector classifier} --- soft-margin linear classifier
+  tolerating violations. →
+  \protect\hyperlink{support-vector-classifier-soft-margin}{Support
+  vector classifier (soft margin)}.
+\item
+  \textbf{Support vector machine (SVM)} --- kernel-enlarged classifier
+  for non-linear boundaries. →
+  \protect\hyperlink{support-vector-machine-kernels}{Support vector
+  machine (kernels)}.
+\item
+  \textbf{tiktoken / SentencePiece} --- BPE on UTF-8 bytes vs on Unicode
+  code points. → \protect\hyperlink{tiktoken-vs-sentencepiece}{tiktoken
+  vs SentencePiece}.
+\item
+  \textbf{Tokenization} --- reversible text↔integer mapping (char, BPE,
+  SentencePiece). →
+  \protect\hyperlink{tokenization-and-byte-pair-encoding-bpe}{Tokenization
+  and byte-pair encoding (BPE)}.
+\item
+  \textbf{Tokenization failure modes} --- spelling, arithmetic,
+  non-English, glitch tokens trace to tokenization. →
+  \protect\hyperlink{tokenization-failure-modes}{Tokenization failure
+  modes}.
+\item
+  \textbf{torch.compile} --- compiles/fuses model ops for a large
+  speedup after a one-time cost. →
+  \protect\hyperlink{torchcompile}{torch.compile}.
+\item
+  \textbf{Transfer learning} --- reuse a model trained on a related,
+  data-rich task. → \protect\hyperlink{transfer-learning}{Transfer
+  learning}.
+\item
+  \textbf{Transformer block} --- attention + feed-forward, each with a
+  residual and layer norm. →
+  \protect\hyperlink{transformer-block}{Transformer block}.
+\item
+  \textbf{Tree of thoughts} --- search a tree of intermediate reasoning
+  steps. → \protect\hyperlink{tree-of-thoughts}{Tree of thoughts}.
+\item
+  \textbf{tanh} --- S-shaped activation with output in
+  \texttt{(−1,\ 1)}, centered near 0. →
+  \protect\hyperlink{activation-function}{Activation function}.
+\item
+  \textbf{Train / dev / test split} --- fit / tune / final-check
+  partitions. → \protect\hyperlink{train--dev--test-split}{Train / dev /
+  test split}.
+\item
+  \textbf{Twyman's law} --- a surprising figure is probably an error;
+  verify it. →
+  \protect\hyperlink{twymans-law-and-trustworthiness}{Twyman's law and
+  trustworthiness}.
+\item
+  \textbf{Unsupervised learning} --- finding structure with no response
+  variable. → \protect\hyperlink{unsupervised-learning}{Unsupervised
+  learning}.
+\item
+  \textbf{Vanishing / exploding gradients} --- gradients decaying or
+  blowing up through deep layers. →
+  \protect\hyperlink{vanishing-and-exploding-gradients}{Vanishing and
+  exploding gradients}.
+\item
+  \textbf{Variant / parameter / level} --- a tested experience; a knob
+  (factor) set to values. →
+  \protect\hyperlink{parameters-variants-and-randomization-unit}{Parameters,
+  variants, and randomization unit}.
+\item
+  \textbf{WaveNet / hierarchical context} --- fuse a sequence
+  progressively in a tree. →
+  \protect\hyperlink{wavenet--hierarchical-context}{WaveNet /
+  hierarchical context}.
+\item
+  \textbf{Weak supervision} --- programmatic noisy labels from
+  regex/heuristics/other models. →
+  \protect\hyperlink{labeling-and-weak-supervision}{Labeling and weak
+  supervision}.
+\item
+  \textbf{Weight init (Kaiming / fan-in)} --- scale weights by
+  gain/√(fan\_in) to keep activations healthy. →
+  \protect\hyperlink{weight-initialization}{Weight initialization}.
+\item
+  \textbf{Weight initialization} --- must be random, to break symmetry
+  between units. → \protect\hyperlink{weight-initialization}{Weight
+  initialization}.
+\item
+  \textbf{Word embeddings} --- dense vectors placing similar words
+  nearby (word2vec, GloVe). →
+  \protect\hyperlink{embedding-layer}{Embedding layer}.
+\item
+  \textbf{Zeroing gradients} --- clear \texttt{.grad} before each
+  backward pass; gradients accumulate. →
+  \protect\hyperlink{zeroing-gradients}{Zeroing gradients}.
+\item
+  \textbf{Zero-shot learning} --- predict a task with no data for it,
+  via a related task. → \protect\hyperlink{zero-shot-learning}{Zero-shot
+  learning}.
+\end{itemize}
+
+\end{document}

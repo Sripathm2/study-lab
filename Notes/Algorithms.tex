@@ -1,0 +1,2468 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  10pt,
+  letterpaper,
+  onecolumn]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  % fontspec, NOT unicode-math: unicode-math makes math glyphs math-active,
+  % which breaks \newunicodechar mappings in text mode.
+  \usepackage{fontspec}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\IfFileExists{lmodern.sty}{\ifPDFTeX\usepackage{lmodern}\fi}{}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Latin Modern Roman}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=0.85in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\newcommand{\notestitle}{Algorithms --- Implementation Notes}
+% ---------------------------------------------------------------------------
+%  Study-notes preamble (inlined by pandoc -H, so each .tex is standalone).
+%  Engine: XeLaTeX.  Class: article, 10pt, one column.
+% ---------------------------------------------------------------------------
+\usepackage{amsmath,amssymb}
+\usepackage{newunicodechar}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{microtype}
+
+% --- fonts ------------------------------------------------------------------
+% Latin Modern for text/math; DejaVu Sans Mono for code (wide Unicode coverage).
+\setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]
+
+% --- Unicode the text font cannot draw -> real math glyphs ------------------
+\newunicodechar{−}{\ensuremath{-}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{÷}{\ensuremath{\div}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{≅}{\ensuremath{\cong}}
+\newunicodechar{≇}{\ensuremath{\ncong}}
+\newunicodechar{∞}{\ensuremath{\infty}}
+\newunicodechar{√}{\ensuremath{\sqrt{\;}}}
+\newunicodechar{Σ}{\ensuremath{\Sigma}}
+\newunicodechar{∫}{\ensuremath{\int}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{∘}{\ensuremath{\circ}}
+\newunicodechar{‖}{\ensuremath{\|}}
+\newunicodechar{ℓ}{\ensuremath{\ell}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{⇐}{\ensuremath{\Leftarrow}}
+\newunicodechar{⇔}{\ensuremath{\Leftrightarrow}}
+\newunicodechar{⌈}{\ensuremath{\lceil}}
+\newunicodechar{⌉}{\ensuremath{\rceil}}
+\newunicodechar{⌊}{\ensuremath{\lfloor}}
+\newunicodechar{⌋}{\ensuremath{\rfloor}}
+\newunicodechar{°}{\ensuremath{{}^{\circ}}}
+\newunicodechar{✓}{\ensuremath{\checkmark}}
+% greek
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{β}{\ensuremath{\beta}}
+\newunicodechar{γ}{\ensuremath{\gamma}}
+\newunicodechar{ε}{\ensuremath{\epsilon}}
+\newunicodechar{η}{\ensuremath{\eta}}
+\newunicodechar{θ}{\ensuremath{\theta}}
+\newunicodechar{λ}{\ensuremath{\lambda}}
+\newunicodechar{μ}{\ensuremath{\mu}}
+\newunicodechar{π}{\ensuremath{\pi}}
+\newunicodechar{ρ}{\ensuremath{\rho}}
+\newunicodechar{σ}{\ensuremath{\sigma}}
+\newunicodechar{φ}{\ensuremath{\phi}}
+\newunicodechar{ω}{\ensuremath{\omega}}
+% super/subscripts
+\newunicodechar{¹}{\ensuremath{{}^{1}}}
+\newunicodechar{²}{\ensuremath{{}^{2}}}
+\newunicodechar{³}{\ensuremath{{}^{3}}}
+\newunicodechar{⁴}{\ensuremath{{}^{4}}}
+\newunicodechar{⁵}{\ensuremath{{}^{5}}}
+\newunicodechar{⁶}{\ensuremath{{}^{6}}}
+\newunicodechar{⁷}{\ensuremath{{}^{7}}}
+\newunicodechar{⁸}{\ensuremath{{}^{8}}}
+\newunicodechar{ⁿ}{\ensuremath{{}^{n}}}
+\newunicodechar{ˣ}{\ensuremath{{}^{x}}}
+\newunicodechar{ᵀ}{\ensuremath{{}^{\mathsf{T}}}}
+\newunicodechar{ᵇ}{\ensuremath{{}^{b}}}
+\newunicodechar{⁻}{\ensuremath{{}^{-}}}
+\newunicodechar{⁺}{\ensuremath{{}^{+}}}
+\newunicodechar{₀}{\ensuremath{{}_{0}}}
+\newunicodechar{₁}{\ensuremath{{}_{1}}}
+\newunicodechar{₂}{\ensuremath{{}_{2}}}
+\newunicodechar{₃}{\ensuremath{{}_{3}}}
+\newunicodechar{ᵢ}{\ensuremath{{}_{i}}}
+\newunicodechar{ₐ}{\ensuremath{{}_{a}}}
+% accented letters
+\newunicodechar{î}{\ensuremath{\hat{\imath}}}
+\newunicodechar{ĵ}{\ensuremath{\hat{\jmath}}}
+\newunicodechar{ŷ}{\ensuremath{\hat{y}}}
+\newunicodechar{Ŷ}{\ensuremath{\hat{Y}}}
+\newunicodechar{ȳ}{\ensuremath{\bar{y}}}
+% private-use slots written by prep.py for combining-accent sequences
+\newunicodechar{}{\ensuremath{\hat{f}}}
+\newunicodechar{}{\ensuremath{\hat{\beta}}}
+\newunicodechar{}{\ensuremath{\hat{\sigma}}}
+\newunicodechar{}{\ensuremath{\hat{k}}}
+\newunicodechar{}{\ensuremath{\hat{\mu}}}
+\newunicodechar{}{\ensuremath{\bar{x}}}
+
+% --- layout -----------------------------------------------------------------
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,parsep=0.15em,topsep=0.3em}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{2.0ex plus .6ex minus .2ex}{1.0ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.6ex plus .5ex minus .2ex}{0.7ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{1.2ex plus .4ex minus .2ex}{0.5ex plus .2ex}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\footnotesize\nouppercase\leftmark}
+\fancyhead[R]{\footnotesize\textit{\notestitle}}
+\fancyfoot[C]{\footnotesize\thepage}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[C]{\footnotesize\thepage}}
+
+% keep display math from being torn off its paragraph too eagerly
+\allowdisplaybreaks
+\setlength{\abovedisplayskip}{0.6em}
+\setlength{\belowdisplayskip}{0.6em}
+\setlength{\emergencystretch}{3em}
+\sloppy
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Algorithms ��� Implementation Notes},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={NavyBlue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Algorithms ��� Implementation Notes}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+Idea, complexity, and notes for each algorithm in the
+\texttt{Algorithms/} package, reconciled against the code. Complexity
+claims describe \textbf{this repo's implementations} (e.g.~the naive
+suffix-array build), with faster variants noted as upgrades.
+\textbf{Code flag} lines mark spots where the implementation deviates or
+has a known bug (details in \texttt{01\_Mismatch\_report.md}). Notes for
+the \texttt{Data\_structures/} and \texttt{Problems/} packages live in
+their own files.
+
+\hypertarget{time-complexity-growth-rates-worth-recognizing}{%
+\subsection{Time complexity --- growth rates worth
+recognizing}\label{time-complexity-growth-rates-worth-recognizing}}
+
+A quick reference for the growth rates that keep appearing in this repo,
+with the shapes that produce them. The question to ask of any loop or
+recursion: \emph{how does the work shrink or accumulate as n grows?}
+
+\hypertarget{o1-constant}{%
+\subsubsection{O(1) --- constant}\label{o1-constant}}
+
+Work independent of input size: array indexing, hash-table average
+lookup, heap peek, the sparse table's two-block query.
+
+\hypertarget{olog-n-halving}{%
+\subsubsection{O(log n) --- halving}\label{olog-n-halving}}
+
+The input is \textbf{cut by a constant factor each step}, so the step
+count is ``how many times can I halve n'' = log₂ n.~Doubling n adds
+\emph{one} step. Recognize it in: binary search, BST/AVL walks (height
+of a balanced tree), heap sift up/down, Fenwick-tree loops (one step per
+set bit), the doubling branch of \texttt{Recursive\_multiplication}, and
+each delta-phase count in capacity scaling (log of max capacity). Base
+of the log doesn't matter asymptotically --- log₂, log₃, ln differ by a
+constant.
+
+\hypertarget{on-square-root}{%
+\subsubsection{O(√n) --- square root}\label{on-square-root}}
+
+Work proportional to the root of the input --- rarer, but a distinct
+shape worth spotting. Classic producers: \textbf{trial-division
+primality/factorization} (divisors pair up as d · n/d, so testing up to
+√n suffices), \textbf{square-root decomposition} (split an array into √n
+blocks of √n elements; a range query touches at most 2√n partial
+elements + √n whole blocks --- the ``poor man's segment tree''), and the
+baby-step-giant-step pattern (meet in the middle over √n-sized halves).
+Also the count of \emph{distinct values} of ⌊n/k⌋ --- a number-theory
+staple. Sits strictly between log n and n: for n = 10⁶, log n ≈ 20, √n =
+1000, n = 10⁶.
+
+\hypertarget{on-linear}{%
+\subsubsection{O(n) --- linear}\label{on-linear}}
+
+Touch every element a constant number of times: array scans, linked-list
+walks, \texttt{heapify} (the bottom-up build --- perhaps surprisingly
+not n log n, because most nodes are near the bottom with short sift
+paths), Kasai's LCP, one BFS/DFS pass counting V+E as ``the input
+size,'' Fenwick's O(n) constructor, \texttt{Three\_way\_min} (3T(n/3) +
+O(1) still visits every leaf).
+
+\hypertarget{on-log-n-linearithmic}{%
+\subsubsection{O(n log n) ---
+linearithmic}\label{on-log-n-linearithmic}}
+
+The two canonical producers: - \textbf{log n levels × O(n) work per
+level} --- merge sort's recursion tree, the sparse table's build (log n
+rows × n cells). - \textbf{n iterations × an O(log n) structure
+operation} --- n heap pushes/pops (heapsort, lazy Prim/Dijkstra's heap
+traffic per edge), sorting-based algorithms in general (comparison
+sorting has an n log n lower bound), prefix-doubling suffix-array
+rounds. Practically the ``still fine at n = 10⁶--10⁷'' class.
+
+\hypertarget{beyond}{%
+\subsubsection{Beyond}\label{beyond}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{O(n²), O(n³)} --- nested full scans: the naive LCP build,
+  Floyd-Warshall's triple loop.
+\item
+  \textbf{O(2ⁿ · n²), O(n!)} --- subset DP (Held-Karp TSP) and
+  permutation brute force; the wall where NP-hardness lives (see the
+  NP-hardness note below).
+\end{itemize}
+
+Rule-of-thumb budget at \textasciitilde10⁸ simple ops/sec: n ≤ 10⁶--10⁷
+for n log n, n ≤ \textasciitilde10⁴ for n², n ≤ \textasciitilde500 for
+n³, n ≤ \textasciitilde20 for 2ⁿ·n².
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{unique_substrings}{%
+\subsection{Unique\_substrings}\label{unique_substrings}}
+
+Count the distinct non-empty substrings of a string.
+
+\hypertarget{idea}{%
+\subsubsection{Idea}\label{idea}}
+
+Every substring is a prefix of exactly one suffix. Across all suffixes
+there are \texttt{n(n+1)/2} prefixes --- every substring counted
+\emph{with} duplicates. Adjacent suffixes in sorted order share
+\texttt{lcp{[}i{]}} leading characters, and those shared prefixes are
+exactly the double-counts, so subtract them:
+\texttt{distinct\ =\ n(n+1)/2\ −\ sum(lcp)}. The naive alternative
+(enumerate every substring into a hash set) is O(n³) time and O(n²)
+memory; this identity replaces all of it with one sum.
+
+\hypertarget{complexity}{%
+\subsubsection{Complexity}\label{complexity}}
+
+Dominated by the repo's \textbf{naive} suffix-array build: O(n² log n)
+time and O(n²) memory (all suffix strings are materialized; the LCP is
+direct adjacent comparison, not Kasai's). The final sum is O(n). With a
+prefix-doubling build + Kasai's, the whole thing drops to O(n log n) /
+O(n) --- the upgrade path, not the current state.
+
+\hypertarget{notes}{%
+\subsubsection{Notes}\label{notes}}
+
+\begin{itemize}
+\tightlist
+\item
+  The empty string short-circuits to 0; null throws.
+\item
+  \textbf{Code flag (C1):} \texttt{n(n+1)/2} is computed in
+  \textbf{\texttt{int}} (and the LCP sum via an int stream) even though
+  the method returns \texttt{long} --- it overflows once n passes
+  \textasciitilde65,535. The naive O(n²)-memory build gives out around
+  the same scale, but the int math is the sharper cliff; compute both in
+  \texttt{long}.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{longest_repeated_substring}{%
+\subsection{Longest\_repeated\_substring}\label{longest_repeated_substring}}
+
+Find the longest substring that occurs at least twice.
+
+\hypertarget{idea-1}{%
+\subsubsection{Idea}\label{idea-1}}
+
+A repeated substring is a common prefix of two \emph{distinct} suffixes,
+so the longest one has length \texttt{max(lcp)}. Recover it as that many
+leading characters of the suffix at the rank where the maximum sits
+(\texttt{suffixAt(rank)} hands the sorted suffix straight back).
+
+\hypertarget{complexity-1}{%
+\subsubsection{Complexity}\label{complexity-1}}
+
+Dominated by the naive suffix-array build: O(n² log n) time, O(n²)
+memory. The scan for the maximum LCP is O(n). (O(n log n) overall with
+the fast build.)
+
+\hypertarget{notes-1}{%
+\subsubsection{Notes}\label{notes-1}}
+
+\begin{itemize}
+\tightlist
+\item
+  If \texttt{max(lcp)\ ==\ 0} nothing repeats → return \texttt{""}
+  (empty input also returns \texttt{""}; null throws).
+\item
+  \textbf{Tie-break as implemented:} the scan uses strict
+  \texttt{\textgreater{}}, so the \emph{first} maximum in sorted-rank
+  order wins --- i.e.~the lexicographically smallest of the tied longest
+  repeats.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{longest_common_substring}{%
+\subsection{Longest\_common\_substring}\label{longest_common_substring}}
+
+Find the longest substring appearing in at least k of n input strings (2
+≤ k ≤ n).
+
+\hypertarget{idea-2}{%
+\subsubsection{Idea}\label{idea-2}}
+
+Concatenate the strings with a unique sentinel after each --- sentinels
+must be lexicographically smaller than every real character \emph{and}
+mutually distinct, so no suffix compares equal across a boundary.
+\textbf{As implemented:} every real character is shifted \textbf{up} by
+\texttt{41\ +\ numStrings}, and the sentinels are the raw code points
+\texttt{41,\ 42,\ 43,\ …} (one per string) --- cheap guaranteed
+separation without hunting for unused characters; the final answer is
+shifted back down before returning.
+
+Build the suffix array + LCP over the combined string, then color each
+suffix by which source string it came from. \textbf{As implemented:} a
+suffix's color is found by scanning it for the \emph{first sentinel
+character it contains} --- the nearest following boundary identifies the
+owner (an O(length) scan per suffix, O(N²) total; the positional
+arithmetic the textbook uses would be O(1) per suffix).
+
+Slide a window over the sorted ranks, skipping suffixes that begin with
+a sentinel: the substring shared by every suffix in a window has length
+equal to the minimum LCP strictly inside the window. Keep a
+\texttt{color\ →\ count} table; grow the window until it covers ≥ k
+distinct colors, then shrink from the left while recording candidates.
+The window-min LCP is the candidate length; keep the longest, recovered
+from the suffix at the window's left edge.
+
+\hypertarget{complexity-2}{%
+\subsubsection{Complexity}\label{complexity-2}}
+
+Dominated by the naive suffix-array build over the combined length N:
+O(N² log N) time, O(N²) memory. The window scan \textbf{as implemented}
+keeps the running minimum in the repo's own \texttt{Priority\_queue} ---
+whose \texttt{remove} is an O(size) scan --- so the scan itself is up to
+O(N²) too (a monotonic deque or a sparse table over the LCP array would
+make it O(N), the standard upgrade).
+
+\hypertarget{notes-2}{%
+\subsubsection{Notes}\label{notes-2}}
+
+\begin{itemize}
+\tightlist
+\item
+  The ≥ k colors test sorts the count table's values and checks that the
+  k-th largest is nonzero.
+\item
+  k = n is the all-strings case; k = 2 is ``shared by any pair.'' If no
+  window ever reaches k colors, return \texttt{""}.
+\item
+  \textbf{Code flag (C2):} the ``does this suffix start with a
+  sentinel?'' test compares against
+  \texttt{\textquotesingle{}A\textquotesingle{}\ +\ 41\ +\ numStrings},
+  which silently assumes every input character is ≥
+  \texttt{\textquotesingle{}A\textquotesingle{}} --- digits, spaces, or
+  punctuation below \texttt{\textquotesingle{}A\textquotesingle{}} would
+  be misclassified as sentinels. Fine for the letter-only tests; a real
+  fix compares against the true smallest shifted character (or uses
+  positional coloring).
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{divide-and-conquer}{%
+\subsection{Divide and conquer}\label{divide-and-conquer}}
+
+A problem-solving technique: break a problem into smaller, independent
+subproblems of the \emph{same type}, solve each (usually recursively),
+then combine their answers into the final result. It's recursion with a
+specific shape --- split into multiple subproblems and merge.
+
+\textbf{Master theorem.} For \(T(n)=a\,T(n/b)+f(n)\) with
+\(a\ge1,\ b>1\), compare \(f(n)\) against \(n^{\log_b a}\):
+
+\begin{equation*}
+T(n)=
+\begin{cases}
+\Theta\bigl(n^{\log_b a}\bigr) & f(n)=O\bigl(n^{\log_b a-\epsilon}\bigr)\quad\text{(leaves dominate)}\\[2pt]
+\Theta\bigl(n^{\log_b a}\log n\bigr) & f(n)=\Theta\bigl(n^{\log_b a}\bigr)\quad\text{(balanced)}\\[2pt]
+\Theta\bigl(f(n)\bigr) & f(n)=\Omega\bigl(n^{\log_b a+\epsilon}\bigr)\quad\text{(root dominates)}
+\end{cases}
+\end{equation*}
+
+\hypertarget{idea-3}{%
+\subsubsection{Idea}\label{idea-3}}
+
+Three steps: - \textbf{Divide} --- split the input into subproblems.
+Often two halves, but it can be any number of parts (a \emph{k-way}
+split into thirds, quarters, etc.). - \textbf{Conquer} --- solve each
+subproblem recursively; a base case handles inputs small enough to
+answer directly. - \textbf{Combine} --- merge the sub-results into the
+answer for the whole.
+
+The combine step is what distinguishes divide-and-conquer from plain
+single-branch recursion: there are several subproblems and their results
+have to be reconciled (the merge in merge sort, the min-of-parts in
+Three\_way\_min, the cross-boundary case in maximum-subarray).
+
+\hypertarget{complexity-3}{%
+\subsubsection{Complexity}\label{complexity-3}}
+
+Cost follows a recurrence \texttt{T(n)\ =\ a·T(n/b)\ +\ f(n)}, where
+\texttt{a} = number of subproblems, \texttt{n/b} = subproblem size, and
+\texttt{f(n)} = divide + combine work. The \textbf{Master Theorem}
+solves the common shapes: - Merge sort ---
+\texttt{T(n)\ =\ 2T(n/2)\ +\ O(n)} → O(n log n). - Binary search ---
+\texttt{T(n)\ =\ T(n/2)\ +\ O(1)} → O(log n). - Three-way min ---
+\texttt{T(n)\ =\ 3T(n/3)\ +\ O(1)} → O(n) (implemented in
+\texttt{Problems/}, see \texttt{Problems\_notes.md}).
+
+Splitting more ways doesn't beat O(n) when every element must be
+examined (as in min/max) --- the split count changes the recursion
+tree's shape, not the fact that all \texttt{n} leaves get visited.
+Divide-and-conquer wins big when the combine step lets you
+\emph{discard} work (binary search) or when a clever merge beats the
+naive bound (Karatsuba, FFT).
+
+\hypertarget{applications}{%
+\subsubsection{Applications}\label{applications}}
+
+Merge sort, quicksort, binary search, maximum-subarray, closest pair of
+points, Karatsuba integer multiplication, Strassen matrix
+multiplication, and the fast Fourier transform.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{merge_sort}{%
+\subsection{Merge\_sort}\label{merge_sort}}
+
+Sort a 1D array with divide and conquer: split in half, sort each half
+recursively, then merge the two sorted halves.
+
+\begin{equation*}
+T(n)=2T(n/2)+\Theta(n)
+\;\Longrightarrow\;
+T(n)=\Theta(n\log n)
+\qquad (a=b=2,\ \log_b a=1,\ \text{case 2})
+\end{equation*}
+
+\hypertarget{idea-4}{%
+\subsubsection{Idea}\label{idea-4}}
+
+Maps directly onto divide / conquer / combine: - \textbf{Divide} ---
+split the range at the midpoint \texttt{(lo\ +\ hi)\ /\ 2}. -
+\textbf{Conquer} --- recursively merge-sort each half. Base case: a
+single-element range returns a fresh one-element array (a \emph{copy},
+so the caller's array is never aliased or touched). - \textbf{Combine}
+--- \textbf{merge} two sorted halves into one sorted array with a
+two-pointer walk: compare the current front of each half, take the
+smaller, advance that pointer; when one half runs out, copy the rest of
+the other. This merge is the whole trick --- it turns two sorted pieces
+into one in linear time.
+
+The recursion tree has \texttt{log\ n} levels, and each level does O(n)
+total merging work across all its pieces --- that's the shape of the
+cost.
+
+\hypertarget{complexity-4}{%
+\subsubsection{Complexity}\label{complexity-4}}
+
+\texttt{T(n)\ =\ 2·T(n/2)\ +\ O(n)} → \textbf{O(n log n)} time in the
+worst, average, and best case (it always splits and always merges).
+Space is O(n) per level of live merge buffers --- this version allocates
+a new array at every merge rather than reusing one shared temp buffer.
+It is \textbf{stable}: the merge takes from the left half on ties
+(\texttt{\textless{}=}, not \texttt{\textless{}}), so equal elements
+keep their original relative order.
+
+\hypertarget{notes-3}{%
+\subsubsection{Notes}\label{notes-3}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Stability hinges on that merge tie rule.} Not observable for
+  bare \texttt{int}s, but it matters when sorting records by a key.
+\item
+  \textbf{Top-down vs bottom-up.} This recursive form is top-down.
+  Bottom-up merge sort iterates, merging runs of size 1, 2, 4, \ldots{}
+  --- same O(n log n), no recursion stack.
+\item
+  \textbf{Allocation.} Returning new arrays at each level is the
+  clearest form; the standard optimization is one shared temp buffer
+  allocated once. True in-place merge is possible but intricate and
+  rarely worth it.
+\item
+  \textbf{Non-destructive contract here:} the input array is provably
+  unchanged after sorting (the runner verifies), because every level
+  works on copies. Empty input returns a new empty array; null throws.
+\item
+  \textbf{Generic version.} Swap \texttt{int{[}{]}} for \texttt{T{[}{]}}
+  with \texttt{T\ extends\ Comparable\textless{}T\textgreater{}} (or a
+  \texttt{Comparator}) and compare via \texttt{compareTo} --- the
+  structure is identical.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{strassen_matrix_multiplication}{%
+\subsection{Strassen\_matrix\_multiplication}\label{strassen_matrix_multiplication}}
+
+\emph{(Skeleton stage --- written for the intended algorithm; reconcile
+against the code once implemented.)}
+
+\begin{equation*}
+T(n)=7\,T(n/2)+\Theta(n^2)
+\;\Longrightarrow\;
+T(n)=\Theta\bigl(n^{\log_2 7}\bigr)\approx\Theta(n^{2.807})
+\qquad\text{vs. }\Theta(n^3)\text{ naive}
+\end{equation*}
+
+Multiply two n×n matrices in sub-cubic time --- the classic ``a cleverer
+combine step beats the naive bound'' divide-and-conquer result.
+
+\hypertarget{idea-5}{%
+\subsubsection{Idea}\label{idea-5}}
+
+Split each matrix into four n/2 × n/2 quadrants. The naive block
+recursion computes the four result quadrants from \textbf{8}
+sub-multiplications --- \texttt{T(n)\ =\ 8T(n/2)\ +\ O(n²)} → O(n³), no
+better than three loops. Strassen's insight: \textbf{7 carefully chosen
+products of quadrant sums/differences suffice}:
+
+\begin{verbatim}
+M1 = (A11 + A22)(B11 + B22)      M5 = (A11 + A12) B22
+M2 = (A21 + A22) B11             M6 = (A21 − A11)(B11 + B12)
+M3 = A11 (B12 − B22)             M7 = (A12 − A22)(B21 + B22)
+M4 = A22 (B21 − B11)
+
+C11 = M1 + M4 − M5 + M7          C12 = M3 + M5
+C21 = M2 + M4                    C22 = M1 − M2 + M3 + M6
+\end{verbatim}
+
+Trading one multiplication for a pile of O(n²) additions changes the
+recurrence to \texttt{T(n)\ =\ 7T(n/2)\ +\ O(n²)} →
+\textbf{O(n\^{}log₂7) ≈ O(n\^{}2.81)} --- the same move as Karatsuba (3
+products instead of 4 for integer multiplication). Non-power-of-two
+sizes: zero-pad up to the next power of two, multiply, crop --- padding
+can't change the product, and at most doubles n (a constant factor).
+
+\hypertarget{complexity-5}{%
+\subsubsection{Complexity}\label{complexity-5}}
+
+O(n\^{}2.81) time, O(n²) memory per recursion level for the temporaries
+(O(n² ) total, geometric series). In practice the constant factor is
+large: real implementations recurse only down to a \textbf{cutoff}
+(\textasciitilde64--128) and switch to the naive kernel below it --- the
+skeleton's base-case hint.
+
+\hypertarget{notes-4}{%
+\subsubsection{Notes}\label{notes-4}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Verify against the naive multiplier, always} --- the seven
+  formulas are the easiest thing in this repo to mis-transcribe, and a
+  single sign error still produces plausible-looking numbers. The runner
+  cross-checks fixed constants \emph{and} random matrices against an
+  inline O(n³) reference.
+\item
+  Sub-cubic ≠ numerically identical: with floats, Strassen's extra
+  additions cost accuracy; with \texttt{long}s (this skeleton) results
+  are exact but intermediate sums grow --- entries up to
+  \textasciitilde√(MAX/n) are safe.
+\item
+  Asymptotically better algorithms exist (Coppersmith--Winograd line, ω
+  \textless{} 2.372) but are galactic --- Strassen is the one that's
+  actually used, and the pedagogical point: the Master Theorem's
+  \texttt{a} (subproblem count) is a knob you can sometimes turn down.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{huffman_encoding}{%
+\subsection{Huffman\_encoding}\label{huffman_encoding}}
+
+\emph{(Skeleton stage --- written for the intended algorithm; reconcile
+against the code once implemented.)}
+
+\begin{equation*}
+\text{expected bits/symbol}=\sum_{i} p_i\,\ell_i,
+\qquad
+H(X)=-\sum_i p_i\log_2 p_i \;\le\; \sum_i p_i\ell_i \;<\; H(X)+1
+\end{equation*}
+
+Build an optimal \textbf{prefix-free} binary code for a text: frequent
+characters get short codes, rare ones long --- the flagship greedy
+algorithm.
+
+\hypertarget{idea-6}{%
+\subsubsection{Idea}\label{idea-6}}
+
+A prefix-free code (no codeword is a prefix of another) is exactly a
+\textbf{binary tree with characters at the leaves}: left = 0, right = 1,
+code = root-to-leaf path; prefix-freeness is ``no character sits on the
+path to another.'' The cost to minimize is the weighted path length
+\texttt{Σ\ freq(c)\ ·\ depth(c)} --- the encoded bit total.
+
+\textbf{Huffman's greedy:} put every character in a min-heap keyed by
+frequency; repeatedly pop the two lightest nodes, hang them under a
+fresh internal node weighing their sum, push it back. Last node = root.
+The exchange argument for optimality: the two rarest symbols can always
+be assumed to be sibling leaves at maximum depth (swapping them down
+never increases cost), and after merging them the problem recurses on
+one fewer symbol.
+
+Encoding = concatenate codes; decoding = walk bits through the tree (or
+greedily match the code table --- prefix-freeness makes the match
+unambiguous, no separators needed).
+
+\hypertarget{complexity-6}{%
+\subsubsection{Complexity}\label{complexity-6}}
+
+O(k log k) for k distinct characters (k−1 heap merges) after an O(n)
+frequency count; encode/decode O(output length). The repo's
+\texttt{Priority\_queue} (comparator-ordered) is the natural heap here.
+
+\hypertarget{notes-5}{%
+\subsubsection{Notes}\label{notes-5}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The codes are not unique --- the total length is.} Tie-breaks
+  among equal weights flip siblings and reorder merges, producing
+  different but equally optimal tables. Tests must therefore assert the
+  \emph{total encoded length} (unique, = the sum of the two popped
+  weights over all merges), round-trip identity, and prefix-freeness ---
+  never specific bit strings.
+\item
+  \textbf{Single-distinct-character edge case:} the tree is one leaf,
+  path length 0 → an empty code encodes to nothing and can't be decoded.
+  Convention: assign \texttt{"0"}.
+\item
+  Huffman is optimal among per-symbol prefix codes given the
+  frequencies; arithmetic coding beats it by encoding fractional bits,
+  and adaptive Huffman drops the two-pass requirement --- the upgrade
+  paths, not this exercise.
+\item
+  Greedy contrast worth internalizing: Huffman and Job\_sequencing (in
+  \texttt{Problems\_notes.md}) both \emph{prove} their greedy via
+  exchange arguments --- the difference between ``greedy that works''
+  and ``greedy that feels right'' (0/1 knapsack) is exactly whether that
+  argument exists.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{graphs-overview}{%
+\section{Graphs --- Overview}\label{graphs-overview}}
+
+A \textbf{graph} is a set of vertices (nodes) connected by edges. It's
+the most general of the structures here: trees, linked lists, and grids
+are all special cases. Almost any ``things and the relationships between
+them'' problem is a graph problem.
+
+\hypertarget{kinds-of-graphs}{%
+\subsection{Kinds of graphs}\label{kinds-of-graphs}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Undirected} --- edges have no direction; \texttt{u—v} means
+  you can travel both ways.
+\item
+  \textbf{Directed (digraph)} --- edges are one-way arrows; \texttt{u→v}
+  does not imply \texttt{v→u}.
+\item
+  \textbf{Weighted} --- each edge carries a value (cost, distance,
+  capacity). Unweighted graphs are the weight-1 special case.
+\item
+  \textbf{Tree} --- a connected, acyclic undirected graph; \texttt{n}
+  vertices and exactly \texttt{n−1} edges, with a unique path between
+  any two vertices.
+\item
+  \textbf{Rooted tree} --- a tree with one vertex designated the root,
+  giving every edge a direction: an \textbf{out-tree} (edges point away
+  from the root, the usual case) or an \textbf{in-tree} (edges point
+  toward the root).
+\item
+  \textbf{DAG (directed acyclic graph)} --- a digraph with no directed
+  cycles. Models dependencies/orderings; admits a topological sort and
+  underlies most DP-on-graphs.
+\item
+  \textbf{Bipartite} --- vertices split into two sets with edges only
+  \emph{between} the sets. Equivalent to being \textbf{2-colorable} and
+  to having \textbf{no odd-length cycle}.
+\item
+  \textbf{Complete graph} --- every pair of distinct vertices is joined
+  by exactly one edge (\texttt{n(n−1)/2} edges undirected).
+\end{itemize}
+
+\hypertarget{representations}{%
+\subsection{Representations}\label{representations}}
+
+How you store the graph drives every algorithm's cost. Let \texttt{V} =
+vertices, \texttt{E} = edges.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Adjacency matrix} --- a \texttt{V\ ×\ V} grid; cell
+  \texttt{(u,\ v)} holds the edge (presence/weight). Edge and weight
+  lookup \textbf{O(1)}, but \textbf{O(V²)} memory and iterating all
+  edges is \textbf{O(V²)}. Best for \textbf{dense} graphs.
+\item
+  \textbf{Adjacency list} --- each vertex stores a list of its outgoing
+  edges. \textbf{O(V + E)} memory; iterating a vertex's neighbors is
+  \textbf{O(degree)}; a specific edge lookup is \textbf{O(degree)}. Best
+  for \textbf{sparse} graphs (the common case).
+\item
+  \textbf{Edge list} --- a flat list of \texttt{(u,\ v,\ w)} triples.
+  Compact, natural for algorithms that sweep all edges (Kruskal), poor
+  for ``who are v's neighbors?''.
+\end{itemize}
+
+\hypertarget{problems-algorithms-this-unlocks}{%
+\subsection{Problems \& algorithms this
+unlocks}\label{problems-algorithms-this-unlocks}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Shortest path} --- BFS (unweighted), Dijkstra (non-negative
+  weights), Bellman-Ford (handles negatives), Floyd-Warshall (all
+  pairs), one-pass relaxation on DAGs.
+\item
+  \textbf{Detecting negative cycles} --- Bellman-Ford and Floyd-Warshall
+  flag them.
+\item
+  \textbf{Strongly connected components} --- Tarjan's / Kosaraju's on
+  digraphs.
+\item
+  \textbf{Traveling salesman} --- min-cost tour visiting every vertex
+  (Held-Karp DP).
+\item
+  \textbf{Bridges and articulation points} --- a \textbf{bridge} is an
+  edge whose removal increases the number of connected components; the
+  vertex analogue is an \textbf{articulation point}. Found with a DFS
+  low-link pass.
+\item
+  \textbf{Minimum spanning tree} --- cheapest edge set connecting all
+  vertices (Kruskal, Prim).
+\item
+  \textbf{Maximum flow} --- most flow routable from source to sink
+  (Ford-Fulkerson family / Dinic's).
+\end{itemize}
+
+The two representations are implemented in \texttt{Data\_structures/}
+--- full Positives/Negatives/Algorithm notes for them are in
+\texttt{Data\_structures\_notes.md}.
+
+Most of these build on two traversals --- \textbf{DFS} and \textbf{BFS}
+--- so those come first.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{depth_first_search}{%
+\subsection{Depth\_first\_search}\label{depth_first_search}}
+
+Traverse a graph by diving as deep as possible along each branch before
+backtracking. DFS is the workhorse behind connectivity, cycle detection,
+topological sort, bridges/articulation points, and strongly connected
+components.
+
+\hypertarget{idea-7}{%
+\subsubsection{Idea}\label{idea-7}}
+
+\textbf{As implemented: iterative, with the repo's own \texttt{Stack},
+producing preorder.}
+
+\begin{verbatim}
+push start
+while stack not empty:
+    v = pop
+    if v not visited:
+        mark v visited; record v          # preorder = order of first visits
+        push v's neighbors in REVERSE order
+\end{verbatim}
+
+Two implementation choices carry the behavior: - \textbf{Reverse-order
+pushing.} Popping is LIFO, so pushing neighbors high-to-low makes the
+\emph{lowest} neighbor pop first --- the traversal explores ascending
+neighbors exactly like the recursive form would. - \textbf{Mark on pop,
+guard on pop.} A vertex can sit in the stack multiple times (once per
+discovering neighbor); the \texttt{if\ not\ visited} check on pop
+discards the duplicates. The stack can hold up to O(E) entries, but each
+vertex expands once and each edge pushes once, so the work is still
+O(V+E).
+
+The \textbf{visited set} is essential regardless of style: without it,
+cycles loop forever and shared vertices reprocess.
+
+Built on top of \texttt{preorder}: - \textbf{reachable(start)} --- run
+the traversal, mark everything it returned: the set reachable from
+\texttt{start}, verbatim. - \textbf{componentCount()} --- repeatedly
+launch \texttt{preorder} from a not-yet-covered vertex, merging each
+result into a global visited set, until every vertex is covered. Each
+launch is one \textbf{connected component} (meaningful for undirected
+graphs; for digraphs the analogous notion is SCCs, which need Tarjan's).
+
+There is \textbf{no postorder function} in this file ---
+reverse-postorder lives where it's needed, in
+\texttt{Topological\_sort\_dfs}.
+
+\hypertarget{complexity-7}{%
+\subsubsection{Complexity}\label{complexity-7}}
+
+O(V + E) --- each vertex expands once, each edge is pushed once (twice
+for undirected, once per stored direction). O(V) for visited plus
+up-to-O(E) stack entries in the duplicate-tolerant style.
+
+\hypertarget{notes-6}{%
+\subsubsection{Notes}\label{notes-6}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Iterative vs recursive:} same order, same cost; the explicit
+  stack sidesteps stack-overflow on deep graphs (V \textasciitilde{} 10⁵
+  paths), which is exactly why this form was chosen.
+\item
+  \textbf{DFS vs BFS.} Both O(V+E), both visit everything reachable;
+  they differ in \emph{order}. DFS (stack --- deep first) feeds
+  topological sort, cycle detection, low-link algorithms. BFS (queue ---
+  level by level) gives shortest paths in \textbf{unweighted} graphs;
+  DFS does not.
+\item
+  \textbf{Determinism.} Ascending neighbor visits make runs reproducible
+  --- currently guaranteed by the reverse-push plus how tests build
+  graphs (see the adjacency-list ordering flag).
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{breadth_first_search}{%
+\subsection{Breadth\_first\_search}\label{breadth_first_search}}
+
+Traverse a graph level by level: the start, then everything one edge
+away, then two, and so on. Because it reaches vertices in order of
+increasing distance, BFS gives \textbf{shortest paths in unweighted
+graphs} --- and recording where each vertex was first seen lets you
+rebuild the path.
+
+\hypertarget{idea-8}{%
+\subsubsection{Idea}\label{idea-8}}
+
+\textbf{As implemented --- a mark-on-dequeue variant with a parent
+guard:}
+
+\begin{verbatim}
+parent[*] = -1;  parent[start] = -2          # -2 marks the ROOT; -1 = undiscovered
+enqueue start
+while queue not empty:
+    v = dequeue
+    if v not visited:
+        mark v visited; record v in order
+        for each neighbor w of v (list order):
+            if parent[w] == -1: parent[w] = v   # first discovery wins
+            enqueue w                            # enqueued unconditionally
+\end{verbatim}
+
+The textbook discipline is to mark visited \textbf{on enqueue} so each
+vertex enters the queue once; this code marks \textbf{on dequeue}
+instead and lets duplicates into the queue. It stays correct for
+shortest paths because of the \texttt{parent{[}w{]}\ ==\ -1} guard: a
+vertex's parent is set the \emph{first} time any processed vertex sees
+it, and processed vertices leave the queue in nondecreasing distance
+order --- so the recorded parent always lies on a shortest path. The
+price is a fatter queue (up to O(E) entries) and redundant pops; total
+work is still O(V+E). Worth knowing both styles: mark-on-enqueue is the
+leaner discipline, this one trades queue size for a simpler loop.
+
+\textbf{There is no \texttt{dist{[}{]}} array.} Distance and path both
+come from the parent chain: - \textbf{shortestPath(start, target)} ---
+run the BFS, then walk \texttt{parent} backward from \texttt{target}
+until hitting the \texttt{-2} root marker, and reverse.
+\texttt{start\ ==\ target} short-circuits to \texttt{{[}start{]}}; an
+undiscovered target (\texttt{parent\ ==\ -1}) returns an empty array (no
+path). - \textbf{shortestPath\_compute\_once} --- the same backward walk
+\emph{without} re-running the BFS; it reuses the \texttt{parent} state
+left by a prior \texttt{order()} call (the parent array is a static
+field --- see notes). - \textbf{distances(start)} --- runs the BFS once,
+then for every vertex reconstructs its path and returns
+\texttt{length\ −\ 1}, with \textbf{−1 as the unreachable sentinel}
+(empty path → 0 − 1). Reconstructing per-vertex makes this
+\textbf{O(V²)} worst case (sum of all path lengths) --- a
+\texttt{dist{[}{]}} filled during the BFS would be the O(V+E) version.
+
+\hypertarget{complexity-8}{%
+\subsubsection{Complexity}\label{complexity-8}}
+
+O(V + E) time for the traversal itself (each edge enqueues once,
+duplicates pop in O(1)); O(E) worst-case queue. \texttt{distances()} is
+O(V²) worst case as described.
+
+\hypertarget{notes-7}{%
+\subsubsection{Notes}\label{notes-7}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\texttt{parent{[}start{]}\ =\ -2}} is the root marker and the
+  stop condition of every backward walk; \texttt{-1} strictly means
+  ``never discovered.''
+\item
+  \textbf{Shortest paths hold only for unweighted graphs} (or all-equal
+  weights). BFS counts \emph{edges}; with varying weights you need
+  Dijkstra. The ``first time reached = shortest'' guarantee comes from
+  level-by-level FIFO order.
+\item
+  \textbf{Ties.} When several shortest paths exist, which one you get
+  depends on neighbor order and first-parent-wins. All are equally
+  short; the length is unique even though the path isn't.
+\item
+  \textbf{Static state (C9):} \texttt{parent} is a static field shared
+  across calls --- \texttt{shortestPath\_compute\_once} silently depends
+  on which \texttt{order()} ran last, and nothing is thread-safe. Fine
+  for a study repo; a returned parent array would be the cleaner API.
+\item
+  \textbf{BFS vs DFS.} Same O(V+E), opposite order: queue (wide) vs
+  stack (deep). BFS → unweighted shortest paths, level structure,
+  bipartite checks. DFS → topo sort, cycle detection, SCC. Reach for BFS
+  whenever ``fewest edges'' or ``closest first'' matters.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{root_tree}{%
+\subsection{Root\_tree}\label{root_tree}}
+
+Turn an undirected tree (adjacency lists) into a rooted
+\texttt{Tree\_node} structure by choosing a root and orienting every
+edge away from it.
+
+\hypertarget{idea-9}{%
+\subsubsection{Idea}\label{idea-9}}
+
+An undirected tree has no inherent parent/child direction --- that
+appears only once you pick a root. \textbf{As implemented: iterative,
+with the repo's \texttt{Stack}, belt-and-suspenders guards.}
+
+\begin{verbatim}
+push new Tree_node(root, null)
+while stack not empty:
+    node = pop
+    if node.id not visited:
+        mark visited
+        for each neighbor w of node.id:
+            if node has a parent and w == parent.id: continue    # don't walk back up
+            child = new Tree_node(w, node); node.children.add(child); push child
+\end{verbatim}
+
+Children are attached at push time in adjacency order, so a node's
+\texttt{children} list mirrors its neighbor list (minus the parent)
+regardless of pop order. The root's parent is \texttt{null}, hence the
+\texttt{parent\ !=\ null} guard before the skip test.
+
+\hypertarget{complexity-9}{%
+\subsubsection{Complexity}\label{complexity-9}}
+
+O(n) --- each vertex and edge touched once. The explicit stack replaces
+recursion depth (a path-shaped tree would be O(n) deep).
+
+\hypertarget{notes-8}{%
+\subsubsection{Notes}\label{notes-8}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Two guards where one would do:} in a genuine tree, the
+  skip-the-parent check alone suffices (no other cycles exist) and each
+  node is pushed exactly once --- the \texttt{visited{[}{]}} array is
+  redundant. It's cheap insurance: on malformed input (a cycle), it
+  prevents infinite work, though the resulting ``tree'' would still
+  contain duplicate ids. Contract says tree; the guard just makes
+  failure graceful.
+\item
+  \textbf{Re-rooting the same tree gives a different structure.}
+  Parent/child relationships are relative to the root; rooting at a leaf
+  vs.~the center produces different shapes of the same underlying tree.
+\item
+  Validation: null adjacency throws, empty graph rejected, root
+  bounds-checked.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{leaf_node_sum}{%
+\subsection{Leaf\_node\_sum}\label{leaf_node_sum}}
+
+Sum the ids of all leaves in a rooted tree (a leaf is a node with no
+children).
+
+\hypertarget{idea-10}{%
+\subsubsection{Idea}\label{idea-10}}
+
+A post-order recursion: a node with no children is a leaf and
+contributes its own id; otherwise it contributes the summed
+contributions of its subtrees.
+
+\begin{verbatim}
+sum(node):
+    if node is a leaf: return node.id
+    return sum over children of sum(child)
+\end{verbatim}
+
+\hypertarget{complexity-10}{%
+\subsubsection{Complexity}\label{complexity-10}}
+
+O(n) time, O(height) stack. Sums in \texttt{long}.
+
+\hypertarget{notes-9}{%
+\subsubsection{Notes}\label{notes-9}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{A single-node tree is a leaf} --- its root has no children, so
+  it contributes its own id. Handle that base case; don't assume ``root
+  = internal.''
+\item
+  Trivially adapts to summing a stored value, counting leaves, or
+  finding the deepest leaf --- same tree walk, different per-node
+  contribution.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{tree_center}{%
+\subsection{Tree\_center}\label{tree_center}}
+
+Find the 1 or 2 vertices at the middle of an undirected tree (the center
+of its longest path).
+
+\hypertarget{idea-11}{%
+\subsubsection{Idea}\label{idea-11}}
+
+Peel leaves inward. Repeatedly remove every current leaf (degree ≤ 1) as
+a whole layer, decrementing neighbors' degrees so new leaves surface,
+until at most 2 vertices remain. The survivors are the center(s) --- a
+tree always has exactly one or two, depending on whether its longest
+path has an odd or even number of vertices.
+
+\textbf{As implemented:}
+
+\begin{verbatim}
+degree[v] = adj[v].size();  leaves = all v with degree <= 1;  removed = leaves.size()
+while removed < n:
+    next = []
+    for each leaf: for each neighbor: degree[neigh]--
+        if degree[neigh] <= 1 and not already processed and not already in next: next.add(neigh)
+    mark this layer processed;  leaves = next;  removed += next.size()
+return leaves
+\end{verbatim}
+
+The \texttt{processed{[}{]}} flag plus the not-already-queued check stop
+a vertex from entering a layer twice when several of its leaf-neighbors
+peel simultaneously.
+
+\hypertarget{complexity-11}{%
+\subsubsection{Complexity}\label{complexity-11}}
+
+O(n) peel overall --- each vertex leaves the frontier once. (One
+implementation nit: the \texttt{newleaves.contains} duplicate check is a
+linear scan of the layer; a boolean ``queued'' array would keep the
+layer-building strictly O(degree). Correctness unaffected.)
+
+\hypertarget{notes-10}{%
+\subsubsection{Notes}\label{notes-10}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Always 1 or 2 centers.} Odd-vertex longest path → one; even →
+  two adjacent. Never zero, never three.
+\item
+  \textbf{Small trees are base cases handled by the loop condition:}
+  \texttt{n\ ==\ 1} → the lone vertex (which enters \texttt{leaves} via
+  the \texttt{degree\ ==\ 0} case); \texttt{n\ ==\ 2} → both. Neither
+  enters the while loop.
+\item
+  This is the ``trim leaves layer by layer'' idea (a.k.a.
+  minimum-height-trees) --- the center minimizes tree height when chosen
+  as root, which is exactly why Tree\_isomorphism roots there.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{tree_isomorphism}{%
+\subsection{Tree\_isomorphism}\label{tree_isomorphism}}
+
+Decide whether two undirected trees have the same shape, ignoring vertex
+labels.
+
+\hypertarget{idea-12}{%
+\subsubsection{Idea}\label{idea-12}}
+
+Use the \textbf{AHU (Aho--Hopcroft--Ullman) canonical encoding}. First
+reduce the unrooted problem to a rooted one by rooting each tree at its
+\textbf{center} --- isomorphic trees have corresponding centers, so this
+anchors the comparison label-independently. Then encode each rooted tree
+canonically:
+
+\begin{verbatim}
+encode(node):
+    labels = [ encode(child) for each child ]
+    sort labels                       # sibling order must not matter
+    return "(" + concat(labels) + ")"
+\end{verbatim}
+
+A leaf encodes as \texttt{"()"}. Two rooted trees are isomorphic
+\textbf{iff their encodings are identical} --- sorting the child labels
+at every node is what makes the string independent of arbitrary neighbor
+order.
+
+\textbf{Handling two centers, as implemented:} tree A is rooted at its
+\emph{first} center only and encoded once; tree B is rooted at
+\emph{each} of its centers in turn, and the trees match if either of B's
+encodings equals A's. (Trying both on one side suffices --- which center
+corresponds to which isn't known in advance, but A's first center must
+map to \emph{one} of B's.)
+
+\hypertarget{complexity-12}{%
+\subsubsection{Complexity}\label{complexity-12}}
+
+Center + rooting are O(n). Encoding sorts child label strings at every
+node --- O(n log n) comparisons, up to O(n²) characters in the
+concatenation worst case (long path); fine at these sizes.
+
+\hypertarget{notes-11}{%
+\subsubsection{Notes}\label{notes-11}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Different sizes → immediately not isomorphic} (checked first);
+  two empty trees count as isomorphic.
+\item
+  \textbf{Root at the center, not an arbitrary vertex.} Rooting both at
+  vertex 0 would compare structure relative to labels --- wrong.
+\item
+  \textbf{Sorting siblings is essential.} Without it, the same tree with
+  children listed in a different order produces a different string and
+  falsely reads non-isomorphic.
+\item
+  Verified pairs in the runner: relabeled A ≅ B, A ≇ path, star ≇ path,
+  single ≅ single.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{lowest_common_ancestor}{%
+\subsection{Lowest\_common\_ancestor}\label{lowest_common_ancestor}}
+
+The lowest common ancestor of \texttt{u} and \texttt{v} in a rooted tree
+is the deepest node that is an ancestor of both.
+
+\hypertarget{idea-13}{%
+\subsubsection{Idea}\label{idea-13}}
+
+\textbf{As implemented: Euler tour + sparse-table range-minimum --- O(1)
+per query after O(n log n) preprocessing.} (This is the many-queries
+method; the simple ``equalize depths and climb parents'' alternative is
+sketched in the notes below.)
+
+The classical reduction: LCA on a tree \textbf{is} a range-minimum query
+on its Euler tour.
+
+\textbf{Preprocessing (constructor):} 1. Root the tree with
+\texttt{Root\_tree}. 2. DFS the rooted tree recording an \textbf{Euler
+tour}: visit the node on entry, and again after \emph{each} child
+returns. Two parallel lists grow together --- \texttt{nodes} (the tour)
+and \texttt{depth} (that visit's depth) --- plus a
+\texttt{last{[}id{]}\ =\ tour\ index} map recording each node's most
+recent appearance (any occurrence works; last is what the code keeps).
+3. Build the repo's \texttt{Sparse\_table} over the \texttt{depth} list
+with \texttt{Integer::min} --- its index-tracking argmin variant
+(\texttt{queryOverlap\_index\_min\_operation\_only}) exists precisely
+for this.
+
+\textbf{Query \texttt{lca(u,\ v)}:} take
+\texttt{l\ =\ min(last{[}u{]},\ last{[}v{]})}, \texttt{r\ =\ max(...)}.
+Between any occurrence of \texttt{u} and any occurrence of \texttt{v},
+the tour walks down and up through their meeting point --- the
+\textbf{shallowest node in that tour window is exactly the LCA}. One
+O(1) argmin over \texttt{depth{[}l..r{]}}, then read
+\texttt{nodes{[}that\ index{]}.id}.
+
+\hypertarget{complexity-13}{%
+\subsubsection{Complexity}\label{complexity-13}}
+
+O(n) tour (length 2n−1) + O(n log n) sparse-table build; \textbf{O(1)
+per query}. Preprocessing memory O(n log n).
+
+\hypertarget{notes-12}{%
+\subsubsection{Notes}\label{notes-12}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Why RMQ works:} the tour enters the LCA's subtree before
+  touching \texttt{u} or \texttt{v} and can't leave it between them, and
+  the LCA is the unique minimum-depth vertex the walk passes through on
+  the way from one to the other. Idempotent min → the sparse table's two
+  overlapping blocks answer it in O(1).
+\item
+  \textbf{Ancestry is relative to the root.} Re-rooting changes every
+  LCA. Root once (constructor), query many --- the shape this class
+  enforces.
+\item
+  \texttt{lca(u,\ u)\ ==\ u} falls out for free (a window of
+  width\ldots{} \texttt{l\ ==\ r} --- the argmin of one cell is that
+  cell). Out-of-range ids throw.
+\item
+  \textbf{The zero-structure alternative} (record \texttt{parent{[}{]}}
+  + \texttt{depth{[}{]}}, lift the deeper node, then climb in lockstep)
+  is O(height) per query with no extra machinery --- the right tool when
+  queries are few; \textbf{binary lifting} (O(log n)/query after O(n log
+  n)) sits between the two.
+\item
+  The DFS recursion is O(height) deep --- a path-shaped tree recurses n
+  deep; fine at test sizes.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{topological_sort_dfs}{%
+\subsection{Topological\_sort\_dfs}\label{topological_sort_dfs}}
+
+A topological ordering of a DAG lists its vertices so that every edge
+\texttt{u\ →\ v} has \texttt{u} before \texttt{v}. (Only directed
+\emph{acyclic} graphs have one.)
+
+\hypertarget{idea-14}{%
+\subsubsection{Idea}\label{idea-14}}
+
+DFS; a vertex is emitted when it \textbf{finishes} (after all its
+descendants are done), and reverse-finish-order is a topological order:
+a vertex finishes only after everything reachable from it, so reversing
+puts it before them.
+
+\textbf{As implemented:}
+
+\begin{verbatim}
+for each unvisited vertex i: dfs(i, launch = i)
+dfs(v, launch):
+    if v == launch and v is visited: throw     # cycle returned to the launch vertex
+    if v visited: return
+    mark v visited
+    for each out-neighbor w: dfs(w, launch)
+    order.add(0, v)                            # PREPEND on finish
+\end{verbatim}
+
+Two departures from the textbook sketch: - \textbf{Prepend instead of
+reverse.} Emitting each finished vertex at the \emph{front} of the list
+yields the topological order directly --- no reversal step to forget.
+The cost: \texttt{ArrayList.add(0,\ ·)} shifts the whole list, so
+order-building is O(V²) in the worst case (an
+\texttt{ArrayDeque.addFirst}, or append + reverse, is the O(V) version).
+- \textbf{Cycle detection is only partial --- code flag (B4).} The only
+check is ``the recursion returned to the very vertex this DFS was
+launched from.'' A cycle that doesn't pass through a launch vertex is
+missed entirely: \texttt{0→1→2→1} quietly returns
+\texttt{{[}0,\ 1,\ 2{]}} even though no valid ordering exists. Full
+detection needs the third color --- \emph{in-progress} (on the current
+recursion stack) vs \emph{done} --- where any edge to an in-progress
+vertex is a back edge ⇒ cycle. Two colors genuinely aren't enough: an
+edge to a \emph{done} vertex is a harmless cross/forward edge; only the
+on-stack case is a cycle.
+
+\texttt{sort\_with\_start\_node(g,\ start)} runs the launch loop but
+starts with a preferred vertex first --- used by the DAG shortest-path
+code so the source's reachable region is ordered before the strays;
+remaining unvisited vertices still get launched afterward, so the order
+always covers all V vertices.
+
+\hypertarget{complexity-14}{%
+\subsubsection{Complexity}\label{complexity-14}}
+
+O(V + E) traversal + O(V²) worst-case list prepending. O(V) recursion
+depth (deep DAGs can overflow the stack; Kahn's is the iterative
+escape).
+
+\hypertarget{notes-13}{%
+\subsubsection{Notes}\label{notes-13}}
+
+\begin{itemize}
+\tightlist
+\item
+  The output isn't unique; any order respecting all edges is valid ---
+  runners should verify the edge property, not one fixed sequence.
+\item
+  State is static (\texttt{order}, \texttt{visited}) --- one sort at a
+  time (C9).
+\item
+  \textbf{DFS-topo vs Kahn's:} same O(V+E), same ``any valid order.''
+  This one is terser and naturally produces the reverse-postorder that
+  SCC algorithms also use; Kahn's is iterative (no stack-depth risk),
+  detects \emph{all} cycles for free, and its intermediate state
+  (currently-available vertices) is meaningful.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{topological_sort_kahn}{%
+\subsection{Topological\_sort\_kahn}\label{topological_sort_kahn}}
+
+Same goal --- a topological order of a DAG --- built with in-degrees and
+a queue instead of recursion.
+
+\hypertarget{idea-15}{%
+\subsubsection{Idea}\label{idea-15}}
+
+A vertex can come next exactly when it has no remaining incoming edges.
+Compute every vertex's \textbf{in-degree} (one sweep over all adjacency
+lists), seed a queue with the in-degree-0 vertices, then repeatedly
+dequeue one, append it to the order, and ``remove'' its outgoing edges
+by decrementing each out-neighbor's in-degree --- enqueuing any that
+drop to 0.
+
+\begin{verbatim}
+compute indeg[v] for all v
+queue = all v with indeg[v] == 0
+while queue not empty:
+    v = dequeue; order.add(v)
+    for each out-neighbor w: indeg[w]--; if indeg[w] == 0: enqueue w
+if order.size() < V: cycle -> THROW IllegalArgumentException
+\end{verbatim}
+
+\hypertarget{complexity-15}{%
+\subsubsection{Complexity}\label{complexity-15}}
+
+O(V + E) --- each vertex enqueued once, each edge relaxed once. O(V) for
+the queue and in-degree array. Fully iterative --- no recursion-depth
+risk.
+
+\hypertarget{notes-14}{%
+\subsubsection{Notes}\label{notes-14}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The count is the cycle test --- and here it catches
+  \emph{every} cycle.} Vertices trapped in a cycle never reach in-degree
+  0, so the loop emits fewer than V and the code throws (contrast with
+  the DFS version's partial detection, flag B4). No coloring needed.
+\item
+  \textbf{Determinism:} swapping the plain queue for a min-priority
+  queue yields the lexicographically smallest valid order, if a
+  canonical one is ever needed.
+\item
+  Uses the repo's own \texttt{Queue}; state is static (C9).
+\item
+  \textbf{Code flag (C10):} this file also contains a full copy-paste
+  duplicate of \texttt{Root\_tree.rootTree} --- a straggler from a
+  working session; delete it and import the real one.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{dag_shortest_longest_path}{%
+\subsection{Dag\_shortest\_longest\_path}\label{dag_shortest_longest_path}}
+
+Single-source shortest (or longest) path in a \textbf{weighted DAG}.
+Because the graph is acyclic, one relaxation pass in topological order
+solves it --- no priority queue, no repeated passes, and negative
+weights are fine.
+
+\hypertarget{idea-16}{%
+\subsubsection{Idea}\label{idea-16}}
+
+Two steps: 1. \textbf{Topologically sort}, via
+\texttt{Topological\_sort\_dfs.sort\_with\_start\_node(g,\ source)} ---
+the source-first variant, so the source's region is ordered before
+unreachable strays (which still appear in the order and must be skipped
+during relaxation). 2. \textbf{Relax edges in topo order.}
+\texttt{dist{[}source{]}\ =\ 0}, everything else at a sentinel; walk
+vertices in order, relaxing each outgoing edge \texttt{u\ →\ v} with
+\texttt{dist{[}u{]}\ +\ w\ \textless{}\ dist{[}v{]}}.
+
+Why one pass works: in topological order, \textbf{every edge into
+\texttt{u} comes from a vertex that appears earlier}, so by the time
+\texttt{u} is processed, \texttt{dist{[}u{]}} is final. That's the whole
+payoff of acyclicity.
+
+\textbf{Longest paths, as implemented: the negation trick.}
+\texttt{longestPaths} negates every edge weight, runs the same
+shortest-path relaxation, and negates the results at the end. (The
+equivalent alternative --- flip the comparison and start from −∞ ---
+isn't what this code does.) A convenient accident makes the sentinel
+survive: \texttt{UNREACHABLE\_LONGEST\ =\ Long.MIN\_VALUE}, and
+\texttt{MIN\_VALUE\ *\ −1} overflows back to \texttt{MIN\_VALUE}, so
+untouched vertices keep their sentinel through the final negation.
+
+\hypertarget{complexity-16}{%
+\subsubsection{Complexity}\label{complexity-16}}
+
+O(V + E) --- topo sort plus one pass over every edge. Beats Dijkstra's
+O((V+E) log V) and, unlike Dijkstra, tolerates negative weights (a DAG
+can't contain a negative cycle --- it can't contain any cycle).
+Distances accumulate in \texttt{long}.
+
+\hypertarget{notes-15}{%
+\subsubsection{Notes}\label{notes-15}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Only for DAGs.} With a cycle no topological order exists.
+  Caveat inherited from flag B4: the underlying DFS topo sort only
+  \emph{throws} for cycles through a launch vertex --- other cyclic
+  graphs will be silently ``ordered'' and produce garbage distances.
+  Kahn's underneath would make the not-a-DAG rejection airtight.
+\item
+  \textbf{Skip unreachable vertices during relaxation.}
+  \texttt{shortestPaths} does this correctly (\texttt{continue} when
+  \texttt{dist{[}u{]}} is the sentinel --- adding a weight to
+  ``infinity'' is meaningless and overflows). \textbf{Code flag (B5):}
+  \texttt{longestPaths} is missing that guard.
+  \texttt{Long.MIN\_VALUE\ +\ weight} wraps to a huge positive, and the
+  \texttt{\textbar{}\textbar{}\ dist{[}neigh{]}\ ==\ UNREACHABLE\_LONGEST}
+  clause then happily installs the garbage --- so an unreachable vertex
+  fed by another unreachable vertex reports a bogus finite ``longest
+  path'' instead of the sentinel (reproduced: source 0 with a
+  disconnected edge 1→2 yields −9223372036854775803 at vertex 2). One
+  \texttt{continue} fixes it.
+\item
+  \textbf{Use \texttt{long} for distances} and keep sentinels out of
+  arithmetic --- the two rules this pair of methods demonstrates by
+  having one follow them and one not.
+\item
+  Verified in the runner: shortest from 0 →
+  \texttt{{[}0,2,3,9,6,8,∞{]}}, longest →
+  \texttt{{[}0,2,4,9,10,14,−∞{]}}; a negative-weight DAG routes through
+  the −4 edge.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{dijkstra}{%
+\subsection{Dijkstra}\label{dijkstra}}
+
+Single-source shortest paths on a graph with \textbf{non-negative} edge
+weights.
+
+\begin{equation*}
+\text{relax}(u,v):\quad d[v]\leftarrow\min\bigl(d[v],\,d[u]+w(u,v)\bigr)
+\qquad\text{requires } w\ge 0
+\end{equation*}
+
+\hypertarget{idea-17}{%
+\subsubsection{Idea}\label{idea-17}}
+
+Greedily settle vertices in increasing distance order. Keep tentative
+distances; repeatedly pop the unsettled vertex with the smallest
+tentative distance from a priority queue, finalize it, and relax its
+outgoing edges. Once a vertex is popped it's done --- its distance can
+never improve, \textbf{because all weights are non-negative}, so no
+later, longer-prefix path can undercut it.
+
+\textbf{As implemented} --- \texttt{java.util.PriorityQueue} over
+\texttt{(vertex,\ dist)} pairs ordered by distance, with both a
+lazy-deletion skip \emph{and} a visited array:
+
+\begin{verbatim}
+dist[source] = 0, rest = Long.MAX_VALUE (UNREACHABLE);  pq = {(source, 0)}
+while pq not empty:
+    (u, d) = pop-min;  visited[u] = true
+    if dist[u] < d: continue                 # stale entry, skip
+    for each edge u->v:  if visited[v]: continue
+        if dist[u] + w < dist[v]: dist[v] = dist[u] + w; push (v, dist[v])
+\end{verbatim}
+
+\hypertarget{complexity-17}{%
+\subsubsection{Complexity}\label{complexity-17}}
+
+O((V + E) log V) with the binary heap. An indexed PQ with decrease-key
+(the repo's \texttt{Indexed\_priority\_queue} fits exactly) trims heap
+size from O(E) to O(V); ``push duplicates, skip stale'' is simpler and
+asymptotically the same.
+
+\hypertarget{notes-16}{%
+\subsubsection{Notes}\label{notes-16}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Non-negative weights only.} A single negative edge breaks the
+  settled-is-final invariant --- Bellman-Ford handles those.
+\item
+  \textbf{Lazy deletion:} rather than decrease-key, push a fresh
+  \texttt{(v,\ dist)} on every improvement and discard a popped entry
+  whose stored distance is worse than the current \texttt{dist{[}u{]}}.
+  The \texttt{visited{[}{]}} skip on neighbors is belt-and-suspenders
+  --- the stale check alone suffices; skipping visited neighbors just
+  avoids pointless pushes.
+\item
+  Unreachable vertices keep the \texttt{Long.MAX\_VALUE} sentinel;
+  distances accumulate in \texttt{long} so sentinel + weight is never
+  computed (relaxation only proceeds from popped, hence reachable,
+  vertices).
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{bellman_ford}{%
+\subsection{Bellman\_ford}\label{bellman_ford}}
+
+Single-source shortest paths that tolerates \textbf{negative} weights
+and detects negative cycles.
+
+\begin{equation*}
+d^{(k)}[v]=\min_{(u,v)\in E}\bigl(d^{(k-1)}[v],\;d^{(k-1)}[u]+w(u,v)\bigr),
+\qquad k=1,\dots,|V|-1
+\end{equation*}
+
+\begin{equation*}
+\text{a further relaxation that still improves} \;\Longrightarrow\; \text{negative cycle}
+\end{equation*}
+
+\hypertarget{idea-18}{%
+\subsubsection{Idea}\label{idea-18}}
+
+A shortest path uses at most \texttt{V−1} edges, so relaxing
+\textbf{every edge} \texttt{V−1} times settles all finite shortest
+distances (each pass extends the correct frontier by at least one edge).
+Then run \texttt{V−1} \textbf{more} passes: any edge that can
+\emph{still} relax means its target is reachable from a negative cycle
+--- mark those \texttt{NEGATIVE\_INF} and let the marker propagate (a
+vertex fed by a −∞ vertex is also −∞, hence full sweeps, not one pass).
+
+\textbf{As implemented:} edges are iterated as ``for every vertex, for
+every out-neighbor'' over the \texttt{Graph} interface (adjacency form
+of the same edge sweep). Two methods share the skeleton: -
+\texttt{shortestPaths} --- phase 1 relaxes with a
+\texttt{dist{[}u{]}\ !=\ UNREACHABLE} guard; phase 2 marks
+\texttt{NEGATIVE\_INF} where improvement is still possible. -
+\texttt{hasNegativeCycle} --- same two phases, returning whether phase 2
+ever fired.
+
+\hypertarget{complexity-18}{%
+\subsubsection{Complexity}\label{complexity-18}}
+
+O(V·E) --- \texttt{V−1} sweeps twice. Slower than Dijkstra; that's the
+price of negatives.
+
+\hypertarget{notes-17}{%
+\subsubsection{Notes}\label{notes-17}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Guard every relaxation against the sentinels} ---
+  \texttt{UNREACHABLE\ +\ w} overflows \texttt{long} and leaks a bogus
+  finite distance. This is the rule; the implementation applies it
+  unevenly: \textbf{Code flag (B6):} \texttt{shortestPaths}'
+  \textbf{phase 2} has no \texttt{UNREACHABLE} guard ---
+  \texttt{MAX\_VALUE\ +\ w} wraps negative and ``improves,'' so a
+  merely-unreachable vertex fed by another unreachable vertex gets
+  falsely branded \texttt{NEGATIVE\_INF} (reproduced with a disconnected
+  edge 1→2, source 0). Mirror problem in \texttt{hasNegativeCycle}: its
+  \textbf{phase 1} lacks the guard, so wrapped values contaminate
+  distances there instead --- and on the same graph the two methods
+  disagree (\texttt{shortestPaths} shows a −∞; \texttt{hasNegativeCycle}
+  says false). Both fixes are the same one-line guard phase 2 of
+  \texttt{hasNegativeCycle} already has in spirit.
+\item
+  \textbf{Two-phase detection} is the elegant part: ``still improving
+  after V−1 passes'' \emph{is} the negative-cycle witness, and running
+  the marking phase V−1 times is what propagates −∞ to everything
+  downstream of the cycle.
+\item
+  \textbf{Early exit optimization} (stop when a full pass changes
+  nothing) isn't implemented --- worth adding; it makes the common
+  no-negative-cycle case much faster.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{floyd_warshall}{%
+\subsection{Floyd\_warshall}\label{floyd_warshall}}
+
+\textbf{All-pairs} shortest paths; handles negative edges and detects
+negative cycles.
+
+\begin{equation*}
+d^{(k)}[i][j]=\min\bigl(d^{(k-1)}[i][j],\;d^{(k-1)}[i][k]+d^{(k-1)}[k][j]\bigr)
+\qquad \Theta(V^3)
+\end{equation*}
+
+\hypertarget{idea-19}{%
+\subsubsection{Idea}\label{idea-19}}
+
+Allow paths to route through intermediate vertices
+\texttt{0,\ 1,\ …,\ k} one at a time. After incorporating intermediate
+\texttt{k}, \texttt{dp{[}i{]}{[}j{]}} is the shortest path using only
+intermediates from \texttt{\{0..k\}}. The update: could
+\texttt{i\ →\ k\ →\ j} beat the current \texttt{i\ →\ j}?
+
+\begin{verbatim}
+dp[i][j] = 0 on the diagonal, weight(i,j) if the edge exists, else UNREACHABLE
+for k: for i: for j:
+    if dp[i][k], dp[k][j] both finite and dp[i][k] + dp[k][j] < dp[i][j]:
+        dp[i][j] = that sum
+\end{verbatim}
+
+\textbf{k must be the outermost loop} --- the DP relies on
+\texttt{dp{[}i{]}{[}k{]}} and \texttt{dp{[}k{]}{[}j{]}} being final for
+the current \texttt{k} before moving on.
+
+\textbf{Negative-cycle handling, as implemented:} after the main triple
+loop, run the \textbf{same triple loop again}; any cell that can
+\emph{still} improve lies on a path through a negative cycle → set it to
+\texttt{NEGATIVE\_INF}. (The equivalent classic check ---
+\texttt{dp{[}i{]}{[}i{]}\ \textless{}\ 0} flags vertex \texttt{i} on a
+negative cycle --- isn't what this code uses; the
+rerun-and-detect-improvement sweep subsumes it and directly marks
+affected \emph{pairs}.)
+
+\hypertarget{complexity-19}{%
+\subsubsection{Complexity}\label{complexity-19}}
+
+O(V³) time (twice, with the detection sweep), O(V²) space. Beats running
+single-source algorithms from every vertex once the graph is dense, and
+it's dead simple to code.
+
+\hypertarget{notes-18}{%
+\subsubsection{Notes}\label{notes-18}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Overflow guard:} both loops skip when either operand is
+  \texttt{UNREACHABLE} --- the sentinel discipline done right here
+  (contrast Bellman-Ford's flag B6).
+\item
+  \textbf{Code flag (C10):} the code also fills a
+  \texttt{path{[}{]}{[}{]}} next-vertex matrix for route reconstruction
+  (\texttt{path{[}i{]}{[}j{]}\ =\ path{[}i{]}{[}k{]}} on improvement, −1
+  through negative cycles) --- but never returns or exposes it. Dead
+  weight: either add a \texttt{reconstructPath(i,\ j)} or drop the
+  matrix.
+\item
+  \textbf{Code flag (B9):} \texttt{hasNegativeCycle}'s initialization is
+  missing an \texttt{else} ---
+  \texttt{if\ (i==j)\{dp=0\}\ if\ (hasEdge)\{...\}\ else\ \{UNREACHABLE\}}
+  --- so a diagonal cell without a self-loop is set to 0 and immediately
+  overwritten with \texttt{UNREACHABLE}. \texttt{allPairsShortestPaths}
+  has the correct \texttt{else\ if} chain; make them match.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{tarjan_scc}{%
+\subsection{Tarjan\_scc}\label{tarjan_scc}}
+
+Strongly connected components of a \textbf{directed} graph in a single
+DFS. An SCC is a maximal set of vertices where every vertex can reach
+every other.
+
+\hypertarget{idea-20}{%
+\subsubsection{Idea}\label{idea-20}}
+
+DFS the graph, assigning each vertex an increasing \textbf{discovery
+index} and a \textbf{low value} --- the smallest index reachable from
+its DFS subtree using edges into vertices still on an auxiliary
+\textbf{stack}. Push each vertex on first visit. When a vertex
+\texttt{u} finishes with \texttt{low{[}u{]}\ ==\ index{[}u{]}}, it's the
+\textbf{root} of an SCC: pop the stack down to and including \texttt{u}
+--- those vertices are exactly one component.
+
+\textbf{As implemented:}
+
+\begin{verbatim}
+dfs(u):
+    ids[u] = low[u] = counter++;  push u;  onStack[u] = true
+    for each edge u->v:
+        if v unvisited: dfs(v)
+        if onStack[v]: low[u] = min(low[u], low[v])     # one rule for tree AND back edges
+    if ids[u] == low[u]:                                # u roots an SCC
+        pop the stack down through u; each popped vertex gets low[] = low[u]; off-stack them
+\end{verbatim}
+
+Two things worth naming precisely: - \textbf{One min rule, not two.} The
+textbook formulation distinguishes tree edges (\texttt{min} with the
+child's \emph{low}) from back edges (\texttt{min} with the neighbor's
+\emph{index}). This implementation uses
+\texttt{min(low{[}u{]},\ low{[}v{]})} for \textbf{any on-stack neighbor}
+--- the simplified variant (Fiset's, among others). It is
+\textbf{correct for identifying SCCs}: an on-stack neighbor's low always
+names some vertex in the same still-open region, so components pool to
+the right roots --- though the resulting \texttt{low} values aren't
+textbook low-links (they can undershoot). If you later build
+\emph{bridges/articulation points}, the distinction returns with teeth:
+there, using \texttt{low} where \texttt{index} belongs genuinely breaks
+the algorithm. - \textbf{\texttt{onStack} is the load-bearing guard.} A
+visited neighbor already assigned to a \emph{finished} SCC must be
+ignored --- otherwise you'd merge components that aren't mutually
+reachable.
+
+The public API: \texttt{sccIds} returns the \texttt{low} array after all
+DFS launches --- every member of a component holds its root's discovery
+index, so equal value ⇔ same component. \texttt{sccCount} counts the
+roots.
+
+\hypertarget{complexity-20}{%
+\subsubsection{Complexity}\label{complexity-20}}
+
+O(V + E) --- one DFS, optimal, single pass (unlike Kosaraju's two). O(V)
+for the arrays plus recursion depth.
+
+\hypertarget{notes-19}{%
+\subsubsection{Notes}\label{notes-19}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Components complete in reverse topological order} of the
+  condensation (the DAG of SCCs). The specific ids are arbitrary ---
+  test the \emph{partition} (same-id groups), not the numbers.
+\item
+  A DAG has V singleton SCCs; a single directed cycle is one SCC of size
+  V. Runner-verified: \texttt{\{0,1,2\},\{3,4\},\{5\}} for the
+  linked-cycles graph; DAG → singletons; ring → one component.
+\item
+  Uses the repo's own \texttt{Stack}; state is static (C9); deep graphs
+  recurse deep.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{articulation_points}{%
+\subsection{Articulation\_points}\label{articulation_points}}
+
+\emph{(Skeleton stage --- written for the intended algorithm; reconcile
+against the code once implemented.)}
+
+Find the \textbf{cut vertices} of an undirected graph --- vertices whose
+removal increases the number of connected components --- in one low-link
+DFS.
+
+\hypertarget{idea-21}{%
+\subsubsection{Idea}\label{idea-21}}
+
+Same instrument family as Tarjan SCC (discovery indices + low values),
+different tune --- and here the detail Tarjan's SCC variant blurs comes
+back with teeth. For undirected graphs define \texttt{low{[}v{]}} = the
+smallest discovery index reachable from v's DFS subtree using tree edges
+plus \textbf{at most one back edge}. Then:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Non-root v is an articulation point iff some DFS child c has
+  \texttt{low{[}c{]}\ \textgreater{}=\ ids{[}v{]}}} --- c's subtree
+  cannot climb strictly above v, so every path from that subtree to the
+  rest of the graph passes through v.
+\item
+  \textbf{The DFS root is a special case:} it's an articulation point
+  \textbf{iff it has ≥ 2 DFS children} (its low-link test is vacuous ---
+  everything is below it). Note: DFS children, not degree --- a root
+  inside a triangle has degree 2 but one DFS child, and is not a cut
+  vertex.
+\end{itemize}
+
+Updates during the DFS: tree edge →
+\texttt{low{[}v{]}\ =\ min(low{[}v{]},\ low{[}child{]})} after
+recursing; back edge to visited w (≠ the parent you arrived from) →
+\texttt{low{[}v{]}\ =\ min(low{[}v{]},\ ids{[}w{]})} ---
+\textbf{\texttt{ids{[}w{]}}, not \texttt{low{[}w{]}}}. Using
+\texttt{low} on back edges lets reachability ``teleport'' through
+vertices more than once and silently erases cut vertices; this is
+exactly the tree-vs-back-edge distinction the SCC note said would return
+with teeth.
+
+Disconnected graphs: launch a DFS per component, each launch its own
+root with its own root rule. The bridge analogue differs by one
+character --- \texttt{low{[}c{]}\ \textgreater{}\ ids{[}v{]}} (strict)
+marks edge (v, c) a \textbf{bridge}.
+
+\hypertarget{complexity-21}{%
+\subsubsection{Complexity}\label{complexity-21}}
+
+O(V + E), one DFS pass, O(V) arrays + recursion depth.
+
+\hypertarget{notes-20}{%
+\subsubsection{Notes}\label{notes-20}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The \texttt{\textgreater{}=} vs \texttt{\textgreater{}} pair
+  is the exam question:} \texttt{\textgreater{}=} for cut vertices (the
+  child may climb back \emph{to} v --- v is still the bottleneck),
+  \texttt{\textgreater{}} for bridges (climbing back to v means the edge
+  itself is bypassable).
+\item
+  \textbf{Parent handling:} skip only the edge you arrived by. In a
+  simple graph, skipping the parent's id suffices; with parallel edges
+  you'd skip by edge id instead.
+\item
+  Independent verification is cheap and worth it: v is a cut vertex iff
+  deleting it raises the component count --- the runner cross-checks
+  every case (and random graphs) against that O(V·(V+E)) brute force.
+\item
+  Applications: network single-points-of-failure, biconnected-component
+  decomposition (the regions between cut vertices), and robustness
+  analysis before adding redundancy.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{eulerian_path}{%
+\subsection{Eulerian\_path}\label{eulerian_path}}
+
+\textbf{Problem.} Find a trail through a directed graph that uses
+\textbf{every edge exactly once} (an Eulerian path), or determine none
+exists. Start == end makes it an Eulerian \textbf{circuit}. Vertices may
+repeat; edges may not.
+
+\hypertarget{idea-22}{%
+\subsubsection{Idea}\label{idea-22}}
+
+Two parts: \textbf{check existence} with degree conditions, then
+\textbf{build} the trail with Hierholzer's algorithm.
+
+\textbf{Existence (directed).} Compute in/out-degree per vertex (one
+sweep; the out-degree array will double as the edge pointer). An
+Eulerian path exists iff at most one vertex has
+\texttt{out\ −\ in\ ==\ +1} (the \textbf{start}), at most one has
+\texttt{in\ −\ out\ ==\ +1} (the \textbf{end}), every other vertex is
+balanced, and all edges lie in one connected piece (checked after the
+walk --- below). A lone start without an end (or vice versa), or any
+vertex off by more than one, rejects immediately. All balanced →
+circuit.
+
+\textbf{Build --- as implemented, recursive Hierholzer consuming each
+list from the back:}
+
+\begin{verbatim}
+dfs(v):
+    while out[v] > 0:
+        next = adj[v][ out[v] - 1 ]      # out-degree doubles as the edge pointer
+        out[v]--                          # consume that edge forever
+        dfs(next)
+    order.add(0, v)                       # emit on dead-end, PREPENDED
+\end{verbatim}
+
+Each vertex's remaining out-degree points one past its next unused edge,
+so edges are taken from the \textbf{end of the adjacency list backward}
+and never rescanned --- that monotone pointer is what keeps the walk
+linear. Emitting a vertex only when it's stuck (post-order) and building
+the path front-first correctly splices sub-loops together; prepending
+replaces the usual append-then-reverse.
+
+\textbf{Connectivity, as implemented:} after the walk, if \textbf{any
+vertex still has unused out-edges}, the degree conditions held but the
+edges spanned more than one component --- return \texttt{{[}{]}}.
+(Equivalent to the \texttt{path\ length\ ==\ E\ +\ 1} test, checked from
+the other side.) A graph with zero edges returns \texttt{{[}{]}} up
+front.
+
+\hypertarget{complexity-22}{%
+\subsubsection{Complexity}\label{complexity-22}}
+
+O(V + E) --- each edge consumed exactly once, each vertex stuck a
+bounded number of times. Caveats: \texttt{order.add(0,\ ·)} on an
+ArrayList is O(path) per emit → O(E²) worst case for the list-building
+alone (an ArrayDeque prepend fixes it), and the recursion goes as deep
+as the longest unstuck walk (up to E frames).
+
+\hypertarget{notes-21}{%
+\subsubsection{Notes}\label{notes-21}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Pick the right start.} A genuine path \emph{must} start at the
+  \texttt{out−in\ ==\ +1} vertex --- starting elsewhere strands edges.
+  For a circuit, any vertex \textbf{with an out-edge} works.
+  \textbf{Code flag (B7):} the circuit case hard-codes
+  \texttt{start\ =\ 0}. If vertex 0 happens to be isolated while a valid
+  circuit lives elsewhere (isolated 0, cycle 1→2→1), the walk consumes
+  nothing and the leftover-edges check rejects a graph that \emph{has}
+  an Eulerian circuit (reproduced). Fix: pick any vertex with
+  \texttt{out\ \textgreater{}\ 0}.
+\item
+  \textbf{Multi-edges and self-loops are fine} --- duplicates in the
+  adjacency list are just multiple edges; the countdown pointer treats
+  each entry as one edge.
+\item
+  \textbf{Undirected variant} swaps the degree rule (path iff 0 or 2
+  vertices of \textbf{odd} degree) and needs each undirected edge marked
+  used from both endpoints; the Hierholzer skeleton is otherwise the
+  same.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{prim_minimum_spanning_tree}{%
+\subsection{Prim\_minimum\_spanning\_tree}\label{prim_minimum_spanning_tree}}
+
+\textbf{Problem.} Given a connected, weighted, undirected graph, find a
+\textbf{minimum spanning tree} --- an edge subset connecting all
+vertices, acyclic, of smallest total weight.
+
+\hypertarget{idea-23}{%
+\subsubsection{Idea}\label{idea-23}}
+
+Grow one tree outward. Maintain the set of vertices already in the tree;
+repeatedly take the \textbf{cheapest edge crossing the boundary}
+(in-tree to out-of-tree), which pulls exactly one new vertex in. A
+priority queue supplies that minimum crossing edge.
+
+\textbf{Lazy Prim, as implemented} (fixed start at vertex 0,
+\texttt{java.util.PriorityQueue} of \texttt{(from,\ to,\ weight)}
+ordered by weight):
+
+\begin{verbatim}
+visited[0] = true;  push all edges leaving 0
+while pq not empty:
+    (from, to, w) = pop-min
+    if visited[to]: continue              # stale edge into the tree — discard
+    visited[to] = true;  record the edge;  weight += w
+    push to's edges leading to unvisited vertices
+if any vertex unvisited: disconnected -> weight = NO_SPANNING_TREE, edges = empty
+\end{verbatim}
+
+\textbf{Why the greedy choice is safe (cut property):} for any split of
+the vertices into in-tree vs out, the minimum-weight crossing edge
+belongs to some MST. Prim applies this repeatedly to the growing
+boundary.
+
+\textbf{Output shape, as implemented:} the recorded edges are normalized
+(\texttt{u\ \textless{}\ v} per edge) and sorted by endpoints, so
+\texttt{minimumSpanningEdges} returns a canonical, deterministic
+\texttt{{[}u,\ v,\ w{]}} list; \texttt{minimumSpanningWeight} runs the
+same routine and reports the accumulated weight --- or the
+\texttt{NO\_SPANNING\_TREE} sentinel (\texttt{Long.MAX\_VALUE}) for
+disconnected input. Trivial graphs (0 or 1 vertex) return an empty edge
+set with weight 0.
+
+\hypertarget{complexity-23}{%
+\subsubsection{Complexity}\label{complexity-23}}
+
+Lazy Prim: O(E log E) --- every edge may enter the heap once.
+\textbf{Eager Prim} with an indexed PQ (decrease-key: keep only the best
+crossing edge per outside vertex) is O(E log V) with O(V) heap --- the
+repo's \texttt{Indexed\_priority\_queue} is the exact upgrade part. (No
+\texttt{edgesUsed\ ==\ n−1} early exit here; the heap just drains ---
+same asymptotics.)
+
+\hypertarget{notes-22}{%
+\subsubsection{Notes}\label{notes-22}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Skip stale edges} --- the lazy heap's analogue of Dijkstra's
+  skip-stale-entry.
+\item
+  \textbf{Disconnected graphs have no spanning tree} --- sentinel, not a
+  partial-tree weight.
+\item
+  \textbf{Prim vs Kruskal.} Both ride the cut/cycle properties. Prim
+  grows one tree with a heap (dense-friendly, natural with adjacency
+  lists); Kruskal sorts all edges and unions with union-find
+  (sparse/edge-list-friendly). Same total weight; edge sets can differ
+  under ties.
+\item
+  \textbf{Ties → MST not unique.} Test the \emph{total weight} (and that
+  the returned edges form a spanning tree achieving it), not one
+  specific edge set --- the canonical sorted output makes exact-match
+  tests tempting, resist it where ties exist.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{ford_fulkerson}{%
+\subsection{Ford\_fulkerson}\label{ford_fulkerson}}
+
+\textbf{Problem.} In a flow network --- a directed graph where each edge
+has a capacity --- push as much flow as possible from a \textbf{source}
+to a \textbf{sink}, respecting capacities and conserving flow at every
+other vertex (in = out). Return the maximum total flow.
+
+\begin{equation*}
+|f|=\sum_{v}f(s,v)=\min_{(S,T)\text{ cut}}\ \sum_{u\in S,\,v\in T}c(u,v)
+\qquad\text{(max-flow = min-cut)}
+\end{equation*}
+
+\hypertarget{idea-24}{%
+\subsubsection{Idea}\label{idea-24}}
+
+Repeatedly find a source→sink path with spare capacity (an
+\textbf{augmenting path}) and push flow along it, until none remains.
+The key mechanism is the \textbf{residual graph}: alongside each edge's
+remaining forward capacity, a \textbf{reverse residual edge} lets a
+later path \emph{cancel} earlier flow if that frees a better routing.
+
+\textbf{As implemented --- generic Ford-Fulkerson with DFS path-finding
+on an \texttt{int{[}{]}{[}{]}} residual matrix:}
+
+\begin{verbatim}
+residual = deep copy of the capacity matrix
+while dfs(source, INF) returns f > 0:  maxflow += f;  bump the visit stamp
+
+dfs(node, flow):                        # flow = bottleneck so far
+    if node == sink: return flow
+    stamp node visited
+    for each i with residual[node][i] > 0 and i unstamped:
+        f = dfs(i, min(flow, residual[node][i]))
+        if f > 0:
+            residual[node][i] -= f;  residual[i][node] += f     # forward - , reverse +
+            return f
+    return 0
+\end{verbatim}
+
+The bottleneck is threaded \emph{down} the recursion as
+\texttt{min(flow,\ edge)} and the residual updates happen on the
+\emph{unwind} --- one pass per augmentation, no separate find-then-apply
+walk. The per-round visited set uses an \textbf{integer stamp}
+(\texttt{visited{[}v{]}\ ==\ round\#}) so nothing is cleared between
+rounds. A matrix representation makes reverse residual edges automatic:
+\texttt{residual{[}v{]}{[}u{]}} always exists as a slot, starting at 0
+and growing as flow is pushed.
+
+\hypertarget{complexity-24}{%
+\subsubsection{Complexity}\label{complexity-24}}
+
+Generic Ford-Fulkerson: \textbf{O(E · maxflow)} augmentations-wise ---
+each augmentation raises the flow by ≥ 1 with integer capacities, and a
+bad DFS order can take that many rounds. On the matrix, each DFS is
+O(V²), so O(V² · maxflow) here. Fine for small integer capacities (like
+the bipartite problems below); Edmonds-Karp's BFS choice is what removes
+the capacity dependence.
+
+\hypertarget{notes-23}{%
+\subsubsection{Notes}\label{notes-23}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The reverse residual edge is the whole trick.}
+  \texttt{residual{[}i{]}{[}node{]}\ +=\ f} is what lets a later path
+  \emph{undo} a suboptimal earlier commitment; without it a greedy first
+  path can strand the network below the true maximum (the runner's
+  ``needs residual reroute'' case exercises exactly this).
+\item
+  \textbf{Any augmenting path works for correctness} with integer
+  capacities --- the choice of path only affects speed. DFS (here) is
+  the simplest; BFS-shortest is Edmonds-Karp; wide-paths-first is
+  capacity scaling; blocking flows are Dinic's. Irrational capacities
+  can make generic FF fail to terminate --- pathological, but the
+  classical reason the refinements exist.
+\item
+  \textbf{Max-flow min-cut theorem:} the max flow equals the capacity of
+  the minimum source/sink cut; after the final failed search, the
+  vertices still reachable from the source in the residual graph form
+  one side of a min cut --- a handy way to verify or extract the cut.
+\item
+  Input validation: square non-null matrix, non-negative capacities,
+  distinct in-range source/sink. State is static (C9).
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{edmonds_karp}{%
+\subsection{Edmonds\_karp}\label{edmonds_karp}}
+
+Ford-Fulkerson that always augments along the \textbf{shortest}
+augmenting path (fewest edges), found by BFS.
+
+\begin{equation*}
+O(V E^2)
+\qquad\text{— each BFS augmentation is } O(E)\text{, and at most } O(VE) \text{ of them occur}
+\end{equation*}
+
+\hypertarget{idea-25}{%
+\subsubsection{Idea}\label{idea-25}}
+
+The only change from generic Ford-Fulkerson is \emph{how the path is
+picked}: BFS on the residual graph, so each augmenting path has the
+minimum number of edges. That single choice bounds the work ---
+source-to-sink residual distance never decreases and must increase
+within O(E) augmentations, capping the total at O(V·E) augmentations.
+
+\textbf{As implemented} (same matrix + visit-stamp scaffolding as the
+DFS version): each round, a BFS from the source records
+\texttt{prev{[}{]}} pointers and stops when the sink is dequeued; if the
+sink was never reached (\texttt{prev{[}t{]}\ ==\ −1}), done. Otherwise
+two backward walks along \texttt{prev}: one to take the \textbf{minimum
+residual on the path} (the bottleneck), one to apply it --- subtract
+along forward edges, add along the reverses.
+
+\hypertarget{complexity-25}{%
+\subsubsection{Complexity}\label{complexity-25}}
+
+\textbf{O(V·E²)} --- O(V·E) augmentations × O(E) per BFS (O(V²) per BFS
+on the matrix, so O(V³·E) matrix-flavored; the bound that matters is
+that it's \textbf{independent of capacity values}). Guaranteed
+termination even with huge capacities --- the fix for plain FF's
+O(E·maxflow).
+
+\hypertarget{notes-24}{%
+\subsubsection{Notes}\label{notes-24}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{BFS, not DFS, is the whole point.} DFS can pick long, silly
+  paths and take a number of augmentations proportional to the flow
+  value; BFS's shortest paths give the polynomial bound.
+\item
+  Everything else --- residual matrix, reverse edges, bottleneck --- is
+  identical to Ford-Fulkerson; here the bottleneck is found and applied
+  in two explicit passes (contrast the DFS version's single recursive
+  pass), which is the natural shape once a \texttt{prev{[}{]}} chain
+  exists.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{capacity_scaling}{%
+\subsection{Capacity\_scaling}\label{capacity_scaling}}
+
+Ford-Fulkerson that pushes \textbf{large amounts first}: only use
+augmenting paths whose every edge has residual ≥ a threshold
+\texttt{delta}, halving \texttt{delta} as each level exhausts.
+
+\hypertarget{idea-26}{%
+\subsubsection{Idea}\label{idea-26}}
+
+Set \texttt{delta} to the largest power of two ≤ the maximum edge
+capacity --- \textbf{as implemented,
+\texttt{Integer.highestOneBit(maxCapacity)}}, with the max capacity
+gathered during input validation. Repeatedly find augmenting paths
+restricted to edges with \texttt{residual\ \textgreater{}=\ delta} and
+saturate them; when none remain, halve \texttt{delta}. At
+\texttt{delta\ =\ 1} the restriction disappears and it degenerates into
+ordinary Ford-Fulkerson, which is exact --- so the final flow is
+maximum.
+
+The path search \textbf{as implemented} is the same recursive DFS as the
+plain Ford-Fulkerson (same matrix, same visit stamps, same on-the-unwind
+residual updates) with one extra parameter: the edge filter
+\texttt{capacity{[}node{]}{[}i{]}\ \textgreater{}=\ delta} instead of
+\texttt{\textgreater{}\ 0}. The graph searched is always the full
+residual graph --- only which edges the walk may traverse changes.
+
+\hypertarget{complexity-26}{%
+\subsubsection{Complexity}\label{complexity-26}}
+
+O(E² log U), \texttt{U} = max capacity: each delta-phase adds O(E)
+augmentations, and there are log U phases. Great when capacities are
+large but the graph is small --- the bulk of the flow moves in a few
+wide pushes before the algorithm fusses over small residuals.
+
+\hypertarget{notes-25}{%
+\subsubsection{Notes}\label{notes-25}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Delta phases = the bit-length of the max capacity} --- the
+  ``process the flow value bit by bit'' view of the same idea as the
+  doubling trick in Recursive\_multiplication.
+\item
+  Zero-capacity-everywhere input is handled by clamping the starting
+  delta to ≥ 1 (one vacuous phase, flow 0).
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{dinics}{%
+\subsection{Dinics}\label{dinics}}
+
+The fast general-purpose max-flow algorithm: alternate \textbf{BFS level
+graphs} with \textbf{DFS blocking flows}.
+
+\begin{equation*}
+O(V^2E)\ \text{ in general},
+\qquad
+O(E\sqrt{V})\ \text{ on unit-capacity / bipartite-matching graphs}
+\end{equation*}
+
+\hypertarget{idea-27}{%
+\subsubsection{Idea}\label{idea-27}}
+
+Each phase has two steps: 1. \textbf{BFS builds the level graph.} From
+the source, assign every vertex its BFS distance (\texttt{level{[}{]}})
+in the residual graph (unreached = −1). Only edges going from level
+\texttt{L} to level \texttt{L+1} count --- no shortcuts, no back-edges.
+If the sink got no level, the flow is maximum: done. 2. \textbf{DFS
+extracts a blocking flow.} Repeatedly push flow source→sink along
+level-respecting edges
+(\texttt{level{[}next{]}\ ==\ level{[}node{]}\ +\ 1}) until no
+augmenting path remains \emph{within this level graph}. Many paths per
+phase, not one.
+
+\textbf{As implemented:} the same residual-matrix scaffolding as the
+other three, with a \texttt{level{[}{]}} refilled by BFS each phase, and
+--- the crucial optimization --- a per-vertex \textbf{current-edge
+pointer} \texttt{next{[}{]}} (reset to 0 each phase): the DFS's neighbor
+loop is
+\texttt{for\ (;\ next{[}node{]}\ \textless{}\ V;\ next{[}node{]}++)}, so
+an edge that proved dead this phase is never rescanned by later DFS
+attempts. Bottleneck threads down as \texttt{min(flow,\ edge)};
+residuals update on the unwind --- the Ford-Fulkerson DFS wearing a
+level-graph seatbelt.
+
+\hypertarget{complexity-27}{%
+\subsubsection{Complexity}\label{complexity-27}}
+
+O(V²·E) in general. On \textbf{unit-capacity} graphs (including
+bipartite matching) it's O(E·√V) --- why Dinic's is the go-to for
+matching. Each phase strictly increases the source-sink residual
+distance, so there are at most V phases.
+
+\hypertarget{notes-26}{%
+\subsubsection{Notes}\label{notes-26}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Two nested ideas:} BFS gives the level structure
+  (Edmonds-Karp's shortest paths), but instead of one augmentation per
+  BFS, the DFS drains an entire \emph{blocking flow} at that distance
+  before levels are rebuilt. Fewer BFS rebuilds → faster.
+\item
+  \textbf{The current-arc pruning is mandatory for the bound} ---
+  re-scanning dead edges every DFS attempt is what it exists to prevent.
+  \texttt{level{[}{]}} and \texttt{next{[}{]}} describe \emph{this
+  phase's} residual graph, hence the per-phase reset.
+\item
+  \textbf{Only \texttt{level+1} edges in the DFS} --- that restriction
+  keeps the search acyclic and guarantees progress; wandering to same-
+  or lower-level vertices would reintroduce cycles.
+\item
+  \textbf{Code flag (C10):} the class still carries
+  \texttt{visited}/\texttt{visited\_count} fields (and bumps the
+  counter) copied over from the FF scaffold --- the level-graph +
+  pointer machinery replaced them and nothing reads them. Delete.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{hamiltonian-cycles-np-hardness}{%
+\subsection{Hamiltonian cycles \&
+NP-hardness}\label{hamiltonian-cycles-np-hardness}}
+
+The complexity wall this repo touches at \texttt{Traveling\_salesman}:
+what it means, and which famous problems live on the wrong side of it.
+
+\hypertarget{hamiltonian-path-cycle}{%
+\subsubsection{Hamiltonian path / cycle}\label{hamiltonian-path-cycle}}
+
+A \textbf{Hamiltonian path} visits every \textbf{vertex} exactly once; a
+\textbf{Hamiltonian cycle} additionally returns to its start. The
+instructive contrast is with the Eulerian path (every \textbf{edge}
+exactly once --- implemented in \texttt{Algorithms/Eulerian\_path}):
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Eulerian (edges)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hamiltonian (vertices)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Existence test & O(V+E) degree conditions & \textbf{NP-complete} --- no
+known efficient test \\
+Construction & Hierholzer's, O(V+E) & Exponential (brute force / DP over
+subsets) \\
+\end{longtable}
+
+That asymmetry is the whole lesson: two near-identical-sounding
+questions, one trivially checkable by local degree counting, the other
+with no known structure to exploit --- you essentially must search. Best
+known exact approaches are backtracking with pruning, or the
+Held-Karp-style \textbf{DP over subsets} in O(2ⁿ·n²) --- exactly the
+\texttt{Traveling\_salesman} machinery, since TSP is the weighted
+version of Hamiltonian cycle (Hamiltonian cycle = ``is there a tour of
+cost ≤ k'' with unit weights).
+
+\hypertarget{p-np-np-complete-np-hard-the-working-definitions}{%
+\subsubsection{P, NP, NP-complete, NP-hard --- the working
+definitions}\label{p-np-np-complete-np-hard-the-working-definitions}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{P} --- decision problems solvable in polynomial time.
+\item
+  \textbf{NP} --- problems whose \emph{yes}-answers can be
+  \textbf{verified} in polynomial time given a certificate (a proposed
+  Hamiltonian cycle is easy to check; finding one is the hard part).
+\item
+  \textbf{NP-complete} --- the hardest problems \emph{in} NP: everything
+  in NP reduces to them in polynomial time. Solve any one in polynomial
+  time and P = NP. (SAT was the first, by Cook--Levin; the rest follow
+  by reductions.)
+\item
+  \textbf{NP-hard} --- at least as hard as NP-complete, but not required
+  to be in NP itself (needn't be a decision problem, or verifiable).
+  Optimization forms usually sit here: ``find the \emph{minimum} tour''
+  is NP-hard; its decision form ``is there a tour ≤ k'' is NP-complete.
+\end{itemize}
+
+\hypertarget{common-np-hard-problems-worth-recognizing-on-sight}{%
+\subsubsection{Common NP-hard problems worth recognizing on
+sight}\label{common-np-hard-problems-worth-recognizing-on-sight}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{SAT / 3-SAT} --- satisfiability of boolean formulas; the
+  original NP-complete problem and the usual reduction source.
+\item
+  \textbf{Traveling salesman} (min-cost Hamiltonian cycle) --- in this
+  repo, exact via Held-Karp O(2ⁿ·n²).
+\item
+  \textbf{Hamiltonian path / cycle} --- above.
+\item
+  \textbf{0/1 Knapsack \& Subset sum} --- NP-complete, \emph{but}
+  pseudo-polynomial: the O(n·W) DP in \texttt{Problems/Knapsack\_01} is
+  efficient only because W is numerically small; the input size is
+  really the bit-length of W.
+\item
+  \textbf{Graph coloring} (≥ 3 colors; 2-coloring = bipartite check is
+  easy --- BFS layer parity).
+\item
+  \textbf{Maximum clique} and \textbf{Maximum independent set} ---
+  complements of each other.
+\item
+  \textbf{Minimum vertex cover} --- NP-hard, though König's theorem
+  makes it polynomial \emph{on bipartite graphs} via max matching
+  (i.e.~the max-flow machinery in this repo).
+\item
+  \textbf{Set cover / Steiner tree / Partition / Bin packing} --- the
+  classic Karp-21 crowd.
+\end{itemize}
+
+\hypertarget{what-to-do-when-a-problem-is-np-hard}{%
+\subsubsection{What to do when a problem is
+NP-hard}\label{what-to-do-when-a-problem-is-np-hard}}
+
+The practical playbook, in the order to try it: (1) \textbf{shrink the
+exponent's base} --- subset DP (2ⁿ), meet-in-the-middle (2\^{}(n/2)),
+branch and bound with pruning; (2) \textbf{exploit special structure}
+--- pseudo-polynomial DP when numbers are small (knapsack), polynomial
+special cases (vertex cover on bipartite graphs, 2-SAT, trees/DAGs
+generally); (3) \textbf{approximate} --- e.g.~Christofides gives ≤ 1.5×
+optimal for metric TSP, greedy set cover is ln n-competitive; (4)
+\textbf{heuristics} (local search, simulated annealing) when guarantees
+can go.
+
+\hypertarget{notes-27}{%
+\subsubsection{Notes}\label{notes-27}}
+
+\begin{itemize}
+\tightlist
+\item
+  ``Exponential'' is not ``hopeless'' --- n ≤ 20 is fine for 2ⁿ·n²
+  (Held-Karp's practical range), n ≤ 40 with meet-in-the-middle.
+\item
+  Recognizing an NP-hard core early saves you from hunting for a
+  polynomial algorithm that (as far as anyone knows) doesn't exist; the
+  interview-relevant skill is naming the reduction (``this is vertex
+  cover in disguise'') and then reaching for the playbook above.
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,889 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  10pt,
+  letterpaper,
+  onecolumn]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  % fontspec, NOT unicode-math: unicode-math makes math glyphs math-active,
+  % which breaks \newunicodechar mappings in text mode.
+  \usepackage{fontspec}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\IfFileExists{lmodern.sty}{\ifPDFTeX\usepackage{lmodern}\fi}{}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Latin Modern Roman}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=0.85in]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\newcommand{\notestitle}{Linear Algebra Notes}
+% ---------------------------------------------------------------------------
+%  Study-notes preamble (inlined by pandoc -H, so each .tex is standalone).
+%  Engine: XeLaTeX.  Class: article, 10pt, one column.
+% ---------------------------------------------------------------------------
+\usepackage{amsmath,amssymb}
+\usepackage{newunicodechar}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{microtype}
+
+% --- fonts ------------------------------------------------------------------
+% Latin Modern for text/math; DejaVu Sans Mono for code (wide Unicode coverage).
+\setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]
+
+% --- Unicode the text font cannot draw -> real math glyphs ------------------
+\newunicodechar{−}{\ensuremath{-}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{÷}{\ensuremath{\div}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{≅}{\ensuremath{\cong}}
+\newunicodechar{≇}{\ensuremath{\ncong}}
+\newunicodechar{∞}{\ensuremath{\infty}}
+\newunicodechar{√}{\ensuremath{\sqrt{\;}}}
+\newunicodechar{Σ}{\ensuremath{\Sigma}}
+\newunicodechar{∫}{\ensuremath{\int}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{∘}{\ensuremath{\circ}}
+\newunicodechar{‖}{\ensuremath{\|}}
+\newunicodechar{ℓ}{\ensuremath{\ell}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{⇐}{\ensuremath{\Leftarrow}}
+\newunicodechar{⇔}{\ensuremath{\Leftrightarrow}}
+\newunicodechar{⌈}{\ensuremath{\lceil}}
+\newunicodechar{⌉}{\ensuremath{\rceil}}
+\newunicodechar{⌊}{\ensuremath{\lfloor}}
+\newunicodechar{⌋}{\ensuremath{\rfloor}}
+\newunicodechar{°}{\ensuremath{{}^{\circ}}}
+\newunicodechar{✓}{\ensuremath{\checkmark}}
+% greek
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{β}{\ensuremath{\beta}}
+\newunicodechar{γ}{\ensuremath{\gamma}}
+\newunicodechar{ε}{\ensuremath{\epsilon}}
+\newunicodechar{η}{\ensuremath{\eta}}
+\newunicodechar{θ}{\ensuremath{\theta}}
+\newunicodechar{λ}{\ensuremath{\lambda}}
+\newunicodechar{μ}{\ensuremath{\mu}}
+\newunicodechar{π}{\ensuremath{\pi}}
+\newunicodechar{ρ}{\ensuremath{\rho}}
+\newunicodechar{σ}{\ensuremath{\sigma}}
+\newunicodechar{φ}{\ensuremath{\phi}}
+\newunicodechar{ω}{\ensuremath{\omega}}
+% super/subscripts
+\newunicodechar{¹}{\ensuremath{{}^{1}}}
+\newunicodechar{²}{\ensuremath{{}^{2}}}
+\newunicodechar{³}{\ensuremath{{}^{3}}}
+\newunicodechar{⁴}{\ensuremath{{}^{4}}}
+\newunicodechar{⁵}{\ensuremath{{}^{5}}}
+\newunicodechar{⁶}{\ensuremath{{}^{6}}}
+\newunicodechar{⁷}{\ensuremath{{}^{7}}}
+\newunicodechar{⁸}{\ensuremath{{}^{8}}}
+\newunicodechar{ⁿ}{\ensuremath{{}^{n}}}
+\newunicodechar{ˣ}{\ensuremath{{}^{x}}}
+\newunicodechar{ᵀ}{\ensuremath{{}^{\mathsf{T}}}}
+\newunicodechar{ᵇ}{\ensuremath{{}^{b}}}
+\newunicodechar{⁻}{\ensuremath{{}^{-}}}
+\newunicodechar{⁺}{\ensuremath{{}^{+}}}
+\newunicodechar{₀}{\ensuremath{{}_{0}}}
+\newunicodechar{₁}{\ensuremath{{}_{1}}}
+\newunicodechar{₂}{\ensuremath{{}_{2}}}
+\newunicodechar{₃}{\ensuremath{{}_{3}}}
+\newunicodechar{ᵢ}{\ensuremath{{}_{i}}}
+\newunicodechar{ₐ}{\ensuremath{{}_{a}}}
+% accented letters
+\newunicodechar{î}{\ensuremath{\hat{\imath}}}
+\newunicodechar{ĵ}{\ensuremath{\hat{\jmath}}}
+\newunicodechar{ŷ}{\ensuremath{\hat{y}}}
+\newunicodechar{Ŷ}{\ensuremath{\hat{Y}}}
+\newunicodechar{ȳ}{\ensuremath{\bar{y}}}
+% private-use slots written by prep.py for combining-accent sequences
+\newunicodechar{}{\ensuremath{\hat{f}}}
+\newunicodechar{}{\ensuremath{\hat{\beta}}}
+\newunicodechar{}{\ensuremath{\hat{\sigma}}}
+\newunicodechar{}{\ensuremath{\hat{k}}}
+\newunicodechar{}{\ensuremath{\hat{\mu}}}
+\newunicodechar{}{\ensuremath{\bar{x}}}
+
+% --- layout -----------------------------------------------------------------
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,parsep=0.15em,topsep=0.3em}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{2.0ex plus .6ex minus .2ex}{1.0ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.6ex plus .5ex minus .2ex}{0.7ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{1.2ex plus .4ex minus .2ex}{0.5ex plus .2ex}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\footnotesize\nouppercase\leftmark}
+\fancyhead[R]{\footnotesize\textit{\notestitle}}
+\fancyfoot[C]{\footnotesize\thepage}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[C]{\footnotesize\thepage}}
+
+% keep display math from being torn off its paragraph too eagerly
+\allowdisplaybreaks
+\setlength{\abovedisplayskip}{0.6em}
+\setlength{\belowdisplayskip}{0.6em}
+\setlength{\emergencystretch}{3em}
+\sloppy
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Linear Algebra Notes},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={NavyBlue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Linear Algebra Notes}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+A running file of linear-algebra concepts (with a short calculus
+appendix), in Definition / Intuition / Example / Notes form. Written to
+stand alone. Math is kept light but concrete: one-line formulas plus
+worked 2×2 / 3×3 examples, not proofs.
+
+Source: \textbf{3Blue1Brown --- Essence of Linear Algebra} (and
+\emph{Essence of Calculus} for the appendix). The through-line is
+geometric: matrices are \emph{transformations of space}, and everything
+else reads off that picture. Cross-references to the ML and statistics
+notes are marked \emph{(ML)} / \emph{(stat)}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{vectors-and-spaces-3blue1brown}{%
+\subsection{\texorpdfstring{Vectors and Spaces
+\emph{(3Blue1Brown)}}{Vectors and Spaces (3Blue1Brown)}}\label{vectors-and-spaces-3blue1brown}}
+
+\hypertarget{vectors}{%
+\subsubsection{Vectors}\label{vectors}}
+
+\textbf{Definition.} A vector can be read three ways: geometrically as
+an \textbf{arrow} from the origin with a length and direction;
+algebraically as an \textbf{ordered list of numbers} (its coordinates);
+and abstractly as anything you can add and scale. In 2D,
+\texttt{v\ =\ {[}3,\ 2{]}} means ``3 along x, 2 along y.''
+
+\begin{equation*}
+\mathbf{v}=\begin{bmatrix}v_1\\v_2\end{bmatrix},
+\qquad
+\|\mathbf{v}\|=\sqrt{v_1^2+v_2^2},
+\qquad
+a\mathbf{v}+b\mathbf{w}=\begin{bmatrix}av_1+bw_1\\av_2+bw_2\end{bmatrix}
+\end{equation*}
+
+\textbf{Intuition.} The arrow view and the list view are two languages
+for one object, and linear algebra is largely translating between them.
+Adding vectors = a tip-to-tail walk; scaling by a number =
+stretching/squishing the arrow (flipping it if the number is negative).
+
+\textbf{Example.} \texttt{{[}1,\ 2{]}\ +\ {[}3,\ 0{]}\ =\ {[}4,\ 2{]}};
+\texttt{2·{[}1,\ 2{]}\ =\ {[}2,\ 4{]}};
+\texttt{−1·{[}1,\ 2{]}\ =\ {[}−1,\ −2{]}} (same line, opposite way).
+
+\textbf{Notes.} Coordinates only mean something relative to a chosen
+basis. → Basis vectors and unit vectors, Linear combinations and span.
+
+\hypertarget{basis-vectors-and-unit-vectors}{%
+\subsubsection{Basis vectors and unit
+vectors}\label{basis-vectors-and-unit-vectors}}
+
+\textbf{Definition.} The \textbf{basis} of a coordinate system is a set
+of vectors whose combinations produce every vector in the space. In 2D
+the standard basis is the \textbf{unit vectors}
+\texttt{î\ =\ {[}1,\ 0{]}} and \texttt{ĵ\ =\ {[}0,\ 1{]}} (length 1,
+along the axes), and any \texttt{{[}x,\ y{]}\ =\ x·î\ +\ y·ĵ}.
+
+\begin{equation*}
+\begin{bmatrix}x\\y\end{bmatrix}=x\,\hat{\imath}+y\,\hat{\jmath},
+\qquad
+\hat{\mathbf{u}}=\frac{\mathbf{v}}{\|\mathbf{v}\|}
+\end{equation*}
+
+\textbf{Intuition.} Coordinates are just the scalars you multiply the
+basis vectors by --- the basis is the ``ruler.'' Pick a different basis
+and the same arrow gets different coordinates.
+
+\textbf{Example.} \texttt{{[}3,\ 2{]}\ =\ 3·î\ +\ 2·ĵ}. A unit vector
+has length 1: \texttt{{[}3,\ 4{]}} (length 5) normalizes to
+\texttt{{[}3/5,\ 4/5{]}}.
+
+\textbf{Notes.} Any linearly independent set that spans the space can
+serve as a basis. → Linear combinations and span, Change of basis.
+
+\hypertarget{linear-combinations-and-span}{%
+\subsubsection{Linear combinations and
+span}\label{linear-combinations-and-span}}
+
+\textbf{Definition.} A \textbf{linear combination} of vectors
+\texttt{v,\ w} is \texttt{a·v\ +\ b·w} for scalars \texttt{a,\ b}. Their
+\textbf{span} is the set of \emph{all} such combinations --- every point
+reachable by scaling and adding them.
+
+\textbf{Intuition.} Fix the vectors and sweep every scalar: you trace
+out their reachable region. In 2D, two vectors pointing in different
+directions span the \emph{whole plane}; if they point the same way (one
+is a scalar multiple of the other) the span collapses to a \emph{line}.
+
+\textbf{Example.} In 3D: one vector spans a line; two independent
+vectors span a plane (a ``sheet'' through the origin); three independent
+vectors span \emph{all} of 3D space.
+
+\textbf{Notes.} A span always passes through the origin (take
+\texttt{a\ =\ b\ =\ 0}). → Linear dependence and independence, Rank and
+column space.
+
+\hypertarget{linear-dependence-and-independence}{%
+\subsubsection{Linear dependence and
+independence}\label{linear-dependence-and-independence}}
+
+\textbf{Definition.} Vectors are \textbf{linearly dependent} if at least
+one can be written as a combination of the others (it lies in their span
+and adds no new direction). Otherwise they are \textbf{linearly
+independent}.
+
+\textbf{Intuition.} A dependent vector is redundant --- dropping it
+doesn't shrink the span. Independent vectors each contribute a genuinely
+new dimension.
+
+\textbf{Example.} \texttt{{[}1,\ 0{]}} and \texttt{{[}2,\ 0{]}} are
+dependent (\texttt{{[}2,\ 0{]}\ =\ 2·{[}1,\ 0{]}}; span is just a line).
+\texttt{{[}1,\ 0{]}} and \texttt{{[}0,\ 1{]}} are independent (span the
+plane).
+
+\textbf{Notes.} A basis is a linearly independent set that spans the
+space; its size is the space's dimension. → Linear combinations and
+span, Rank and column space.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{linear-transformations-and-matrices-3blue1brown}{%
+\subsection{\texorpdfstring{Linear Transformations and Matrices
+\emph{(3Blue1Brown)}}{Linear Transformations and Matrices (3Blue1Brown)}}\label{linear-transformations-and-matrices-3blue1brown}}
+
+\hypertarget{linear-transformations}{%
+\subsubsection{Linear transformations}\label{linear-transformations}}
+
+\textbf{Definition.} A transformation of space that (1) keeps every
+\textbf{line straight} (grid lines stay parallel and evenly spaced) and
+(2) keeps the \textbf{origin fixed}. It is fully determined by where it
+sends the basis vectors \texttt{î} and \texttt{ĵ}.
+
+\textbf{Intuition.} ``Linear'' = the grid stays a grid --- no curving,
+no moving the origin. Since any vector is \texttt{x·î\ +\ y·ĵ}, once you
+know where \texttt{î} and \texttt{ĵ} land you know where
+\emph{everything} lands: the image of \texttt{{[}x,\ y{]}} is
+\texttt{x·(new\ î)\ +\ y·(new\ ĵ)}.
+
+\textbf{Example.} A 90° counter-clockwise rotation sends
+\texttt{î\ =\ {[}1,\ 0{]}\ →\ {[}0,\ 1{]}} and
+\texttt{ĵ\ =\ {[}0,\ 1{]}\ →\ {[}−1,\ 0{]}}. So
+\texttt{{[}2,\ 1{]}\ →\ 2·{[}0,\ 1{]}\ +\ 1·{[}−1,\ 0{]}\ =\ {[}−1,\ 2{]}}.
+
+\textbf{Notes.} ``Track the basis vectors'' is exactly why matrices
+work. → Matrices as linear transformations.
+
+\hypertarget{matrices-as-linear-transformations}{%
+\subsubsection{Matrices as linear
+transformations}\label{matrices-as-linear-transformations}}
+
+\textbf{Definition.} A matrix stores a linear transformation: its
+\textbf{columns are the landing spots of the basis vectors}. The 2×2
+matrix \texttt{{[}{[}a,\ b{]},\ {[}c,\ d{]}{]}} sends
+\texttt{î\ →\ {[}a,\ c{]}} and \texttt{ĵ\ →\ {[}b,\ d{]}}, and applying
+it is
+\texttt{{[}{[}a,b{]},{[}c,d{]}{]}·{[}x,\ y{]}\ =\ {[}a·x\ +\ b·y,\ c·x\ +\ d·y{]}}.
+
+\begin{equation*}
+\begin{bmatrix}a&b\\c&d\end{bmatrix}
+\begin{bmatrix}x\\y\end{bmatrix}
+=x\begin{bmatrix}a\\c\end{bmatrix}+y\begin{bmatrix}b\\d\end{bmatrix}
+=\begin{bmatrix}ax+by\\cx+dy\end{bmatrix}
+\end{equation*}
+
+\textbf{Intuition.} Matrix-times-vector is just ``scale each landed
+basis vector by the matching input coordinate, then add'' --- reading
+the columns as the new \texttt{î} and \texttt{ĵ}.
+
+\textbf{Example.} The rotation matrix
+\texttt{{[}{[}0,\ −1{]},\ {[}1,\ 0{]}{]}} times \texttt{{[}2,\ 1{]}} =
+\texttt{{[}0·2\ +\ (−1)·1,\ 1·2\ +\ 0·1{]}\ =\ {[}−1,\ 2{]}} ---
+matching the rotation above.
+
+\textbf{Notes.} A matrix whose columns are linearly dependent squishes
+space onto a line or point (determinant 0). → Determinant, Matrix
+multiplication (composition).
+
+\hypertarget{matrix-multiplication-composition}{%
+\subsubsection{Matrix multiplication
+(composition)}\label{matrix-multiplication-composition}}
+
+\textbf{Definition.} The product \texttt{M₂·M₁} is the single
+transformation that does \texttt{M₁} \textbf{then} \texttt{M₂} (read
+right-to-left, like function composition). Compute it by applying
+\texttt{M₂} to each column of \texttt{M₁}.
+
+\begin{equation*}
+(M_2M_1)\mathbf{v}=M_2(M_1\mathbf{v}),
+\qquad
+(AB)_{ij}=\sum_{k}A_{ik}B_{kj},
+\qquad
+AB\ne BA \text{ in general}
+\end{equation*}
+
+\textbf{Intuition.} Multiplying matrices = chaining transformations.
+Order matters (\texttt{M₂·M₁\ ≠\ M₁·M₂} in general) because ``rotate
+then shear'' isn't ``shear then rotate.''
+
+\textbf{Example.}
+\texttt{{[}{[}0,−1{]},{[}1,0{]}{]}\ ·\ {[}{[}1,1{]},{[}0,1{]}{]}}
+(rotate ∘ shear): apply the rotation to the shear's columns ---
+\texttt{{[}1,0{]}\ →\ {[}0,1{]}} and \texttt{{[}1,1{]}\ →\ {[}−1,1{]}}
+--- giving \texttt{{[}{[}0,−1{]},{[}1,1{]}{]}}.
+
+\textbf{Notes.} Associative (\texttt{(AB)C\ =\ A(BC)}) but not
+commutative. → Matrices as linear transformations.
+
+\hypertarget{determinant}{%
+\subsubsection{Determinant}\label{determinant}}
+
+\textbf{Definition.} The \textbf{determinant} measures how much a
+transformation \textbf{scales areas} (2D) or \textbf{volumes} (3D). For
+2×2, \texttt{det{[}{[}a,b{]},{[}c,d{]}{]}\ =\ ad\ −\ bc}. For 3×3
+\texttt{{[}{[}a,b,c{]},{[}d,e,f{]},{[}g,h,i{]}{]}}, expand along the top
+row: \texttt{det\ =\ a(ei\ −\ fh)\ −\ b(di\ −\ fg)\ +\ c(dh\ −\ eg)}.
+
+\begin{equation*}
+\det\begin{bmatrix}a&b\\c&d\end{bmatrix}=ad-bc,
+\qquad
+\det\begin{bmatrix}a&b&c\\d&e&f\\g&h&i\end{bmatrix}=a(ei-fh)-b(di-fg)+c(dh-eg)
+\end{equation*}
+
+\begin{equation*}
+\det(AB)=\det(A)\det(B),
+\qquad
+\det(A)=0 \iff A \text{ collapses space (not invertible)}
+\end{equation*}
+
+\textbf{Intuition.} A unit square (area 1) becomes a parallelogram of
+area \texttt{\textbar{}det\textbar{}}. \texttt{det\ =\ 0} means space is
+squished into a lower dimension (columns are dependent). A
+\textbf{negative} determinant means orientation flipped --- space turned
+inside-out.
+
+\textbf{Example (2×2).}
+\texttt{det{[}{[}3,1{]},{[}0,2{]}{]}\ =\ 3·2\ −\ 1·0\ =\ 6} → areas
+scale ×6. \textbf{Example (3×3).}
+\texttt{det{[}{[}1,2,3{]},{[}0,1,4{]},{[}5,6,0{]}{]}\ =\ 1(1·0\ −\ 4·6)\ −\ 2(0·0\ −\ 4·5)\ +\ 3(0·6\ −\ 1·5)\ =\ −24\ +\ 40\ −\ 15\ =\ 1}.
+
+\textbf{Notes.} \texttt{det\ =\ 0} ⇔ no inverse ⇔ columns dependent ⇔
+rank drops. → Systems of linear equations and the matrix inverse, Rank
+and column space, Cross product.
+
+\hypertarget{systems-of-linear-equations-and-the-matrix-inverse}{%
+\subsubsection{Systems of linear equations and the matrix
+inverse}\label{systems-of-linear-equations-and-the-matrix-inverse}}
+
+\textbf{Definition.} A linear system is \texttt{A·x\ =\ b} for unknown
+\texttt{x}. If \texttt{A} is invertible (\texttt{det\ A\ ≠\ 0}), the
+unique solution is \texttt{x\ =\ A⁻¹·b}. For 2×2
+\texttt{A\ =\ {[}{[}a,b{]},{[}c,d{]}{]}},
+\texttt{A⁻¹\ =\ (1/det)·{[}{[}d,\ −b{]},\ {[}−c,\ a{]}{]}}. For 3×3,
+\texttt{A⁻¹\ =\ (1/det)·adjugate} (transpose of the cofactor matrix) ---
+or just solve by Gaussian elimination.
+
+\begin{equation*}
+A\mathbf{x}=\mathbf{b}
+\quad\Longrightarrow\quad
+\mathbf{x}=A^{-1}\mathbf{b}\ \ (\text{if }\det A\ne 0),
+\qquad
+\begin{bmatrix}a&b\\c&d\end{bmatrix}^{-1}=\frac{1}{ad-bc}\begin{bmatrix}d&-b\\-c&a\end{bmatrix}
+\end{equation*}
+
+\textbf{Intuition.} \texttt{A⁻¹} is the transformation that
+\emph{undoes} \texttt{A} (rotate back, un-stretch). Solving
+\texttt{A·x\ =\ b} asks ``which input lands on \texttt{b}?'' --- apply
+the reverse transformation to \texttt{b}.
+
+\textbf{Example (2×2).} \texttt{A\ =\ {[}{[}3,1{]},{[}0,2{]}{]}},
+\texttt{det\ =\ 6}, so \texttt{A⁻¹\ =\ (1/6){[}{[}2,−1{]},{[}0,3{]}{]}}.
+To solve \texttt{A·x\ =\ {[}5,\ 4{]}}:
+\texttt{x\ =\ A⁻¹{[}5,4{]}\ =\ (1/6){[}2·5\ −\ 1·4,\ 3·4{]}\ =\ (1/6){[}6,\ 12{]}\ =\ {[}1,\ 2{]}}
+(check: \texttt{A·{[}1,2{]}\ =\ {[}5,4{]}} ✓).
+
+\textbf{Notes.} If \texttt{det\ A\ =\ 0} there is no inverse, and the
+system has either no solution or infinitely many. → Determinant, Null
+space (kernel), Cramer's rule.
+
+\hypertarget{rank-and-column-space}{%
+\subsubsection{Rank and column space}\label{rank-and-column-space}}
+
+\textbf{Definition.} The \textbf{column space} is the span of a matrix's
+columns (all outputs \texttt{A·x}). The \textbf{rank} is the
+\emph{dimension} of that column space --- how many independent
+directions survive the transformation.
+
+\begin{equation*}
+\operatorname{rank}(A)+\dim\bigl(\operatorname{null}(A)\bigr)=n
+\qquad\text{(rank--nullity, }n=\text{number of columns)}
+\end{equation*}
+
+\textbf{Intuition.} Rank = ``how many dimensions come out the other
+side.'' A 2×2 matrix has rank 2 (full rank, output fills the plane),
+rank 1 (output collapses to a line), or rank 0 (everything → origin).
+Full rank ⇔ invertible ⇔ \texttt{det\ ≠\ 0}.
+
+\textbf{Example.} \texttt{{[}{[}1,2{]},{[}2,4{]}{]}} has rank 1 (column
+2 = 2× column 1, so the output is a line).
+\texttt{{[}{[}1,0{]},{[}0,1{]}{]}} has rank 2.
+
+\textbf{Notes.} Rank drop ⇔ determinant 0 ⇔ a non-trivial null space
+appears. → Null space (kernel), Determinant.
+
+\hypertarget{null-space-kernel}{%
+\subsubsection{Null space (kernel)}\label{null-space-kernel}}
+
+\textbf{Definition.} The \textbf{null space} (kernel) of \texttt{A} is
+every vector \texttt{x} with \texttt{A·x\ =\ 0} --- all the vectors the
+transformation squishes onto the origin.
+
+\textbf{Intuition.} When \texttt{A} collapses a dimension (rank drops),
+a whole line or plane of vectors gets crushed to zero; that set is the
+null space. For the homogeneous system \texttt{A·x\ =\ 0}, the null
+space \textbf{is} the complete set of solutions.
+
+\textbf{Example.} \texttt{A\ =\ {[}{[}1,2{]},{[}2,4{]}{]}} (rank 1):
+\texttt{A·{[}2,−1{]}\ =\ {[}1·2\ +\ 2·(−1),\ 2·2\ +\ 4·(−1){]}\ =\ {[}0,\ 0{]}},
+so \texttt{{[}2,−1{]}} and all its multiples form the null space --- a
+line.
+
+\textbf{Notes.} Full-rank (invertible) matrices have only the trivial
+null space \texttt{\{0\}}. → Rank and column space, Systems of linear
+equations and the matrix inverse.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{products-bases-and-eigen-things-3blue1brown}{%
+\subsection{\texorpdfstring{Products, Bases, and Eigen-things
+\emph{(3Blue1Brown)}}{Products, Bases, and Eigen-things (3Blue1Brown)}}\label{products-bases-and-eigen-things-3blue1brown}}
+
+\hypertarget{dot-product}{%
+\subsubsection{Dot product}\label{dot-product}}
+
+\textbf{Definition.} For vectors \texttt{a,\ b}, the \textbf{dot
+product} is
+\texttt{a·b\ =\ Σ\ aᵢbᵢ\ =\ \textbar{}a\textbar{}\textbar{}b\textbar{}cos\ θ},
+where \texttt{θ} is the angle between them. The result is a single
+number (a scalar).
+
+\begin{equation*}
+\mathbf{v}\cdot\mathbf{w}=\sum_i v_iw_i=\|\mathbf{v}\|\,\|\mathbf{w}\|\cos\theta
+\qquad
+(\;=0 \iff \text{perpendicular})
+\end{equation*}
+
+\textbf{Intuition.} It measures \textbf{alignment}: positive when the
+vectors point the same general way, zero when perpendicular, negative
+when opposing. Geometrically it's the length of \texttt{a}'s projection
+onto \texttt{b}, scaled by \texttt{\textbar{}b\textbar{}}.
+
+\textbf{Example.} \texttt{{[}3,4{]}·{[}2,1{]}\ =\ 3·2\ +\ 4·1\ =\ 10};
+\texttt{{[}1,0{]}·{[}0,1{]}\ =\ 0} (perpendicular).
+
+\textbf{Notes.} The workhorse of ML: it's the operation inside every
+matrix multiply, cosine similarity, and attention score. → Matrix
+multiplication (composition), Self-attention (ML).
+
+\hypertarget{cross-product}{%
+\subsubsection{Cross product}\label{cross-product}}
+
+\textbf{Definition.} In 3D, \texttt{a\ ×\ b} is a \textbf{vector}
+perpendicular to both, whose length
+\texttt{\textbar{}a\textbar{}\textbar{}b\textbar{}sin\ θ} equals the
+\textbf{area of the parallelogram} they span. Compute it as a symbolic
+determinant
+\texttt{det{[}{[}î,\ ĵ,\ {]},\ {[}a₁,\ a₂,\ a₃{]},\ {[}b₁,\ b₂,\ b₃{]}{]}}.
+
+\begin{equation*}
+\mathbf{v}\times\mathbf{w}=
+\det\begin{bmatrix}\hat{\imath}&\hat{\jmath}&\hat{k}\\v_1&v_2&v_3\\w_1&w_2&w_3\end{bmatrix},
+\qquad
+\|\mathbf{v}\times\mathbf{w}\|=\|\mathbf{v}\|\,\|\mathbf{w}\|\sin\theta
+\end{equation*}
+
+\textbf{Intuition.} Length encodes the parallelogram's area; direction
+(given by the \textbf{right-hand rule}) encodes orientation.
+\textbf{Order matters}: \texttt{a\ ×\ b\ =\ −(b\ ×\ a)}
+(anti-commutative) --- swapping the inputs flips the result.
+
+\textbf{Example.} \texttt{{[}1,0,0{]}\ ×\ {[}0,1,0{]}\ =\ {[}0,0,1{]}}
+(x cross y points along +z by the right-hand rule). In 2D the analogous
+signed area is
+\texttt{a₁b₂\ −\ a₂b₁\ =\ det{[}{[}a₁,b₁{]},{[}a₂,b₂{]}{]}}.
+
+\textbf{Notes.} The \texttt{î,\ ĵ,\ } determinant is a mnemonic for the
+formula, not a literal determinant. → Determinant.
+
+\hypertarget{cramers-rule}{%
+\subsubsection{Cramer's rule}\label{cramers-rule}}
+
+\textbf{Definition.} Solves a square system \texttt{A·x\ =\ b}
+(\texttt{det\ A\ ≠\ 0}) one coordinate at a time with determinants:
+\texttt{xᵢ\ =\ det(Aᵢ)\ /\ det(A)}, where \texttt{Aᵢ} is \texttt{A} with
+its \texttt{i}-th column replaced by \texttt{b}.
+
+\begin{equation*}
+x_i=\frac{\det(A_i)}{\det(A)}
+\qquad A_i=A \text{ with column } i \text{ replaced by } \mathbf{b}
+\end{equation*}
+
+\textbf{Intuition.} Swapping in \texttt{b} and taking a determinant
+ratio isolates each coordinate through signed-area/volume scaling.
+Elegant, but slow --- Gaussian elimination is far faster for real
+systems.
+
+\textbf{Example.} \texttt{A\ =\ {[}{[}2,1{]},{[}1,3{]}{]}},
+\texttt{b\ =\ {[}3,5{]}}, \texttt{det\ A\ =\ 5}.
+\texttt{x₁\ =\ det{[}{[}3,1{]},{[}5,3{]}{]}/5\ =\ (9−5)/5\ =\ 0.8};
+\texttt{x₂\ =\ det{[}{[}2,3{]},{[}1,5{]}{]}/5\ =\ (10−3)/5\ =\ 1.4}.
+
+\textbf{Notes.} Mainly of geometric/theoretical value; impractical for
+large \texttt{n}. → Determinant, Systems of linear equations and the
+matrix inverse.
+
+\hypertarget{change-of-basis}{%
+\subsubsection{Change of basis}\label{change-of-basis}}
+
+\textbf{Definition.} Translating a vector's coordinates from one basis
+to another. If \texttt{B}'s columns are an alternate basis written in
+standard coordinates, then \texttt{B·{[}v{]}\_B\ =\ {[}v{]}\_standard},
+and \texttt{B⁻¹·{[}v{]}\_standard\ =\ {[}v{]}\_B}. A transformation
+\texttt{A} becomes \texttt{B⁻¹\ A\ B} when expressed in the new basis.
+
+\begin{equation*}
+\mathbf{v}_{\text{ours}}=A\,\mathbf{v}_{\text{theirs}},
+\qquad
+M_{\text{theirs}}=A^{-1}MA
+\qquad\text{(conjugation = "translate, act, translate back")}
+\end{equation*}
+
+\textbf{Intuition.} The same arrow has different coordinate lists
+depending on the ``language'' (basis) describing it. \texttt{B}
+translates \emph{from} the alternate language \emph{to} standard;
+\texttt{B⁻¹} translates back. The \texttt{B⁻¹AB} sandwich means
+``translate in, apply the transformation, translate out.''
+
+\textbf{Example.} With alternate basis \texttt{{[}2,1{]}} and
+\texttt{{[}−1,1{]}} (the columns of \texttt{B}), a vector with alternate
+coordinates \texttt{{[}1,1{]}} is
+\texttt{B·{[}1,1{]}\ =\ {[}2\ −\ 1,\ 1\ +\ 1{]}\ =\ {[}1,\ 2{]}} in
+standard coordinates.
+
+\textbf{Notes.} Choosing an \emph{eigenbasis} makes a transformation
+diagonal (pure scaling) --- the cleanest possible coordinates. →
+Eigenvectors and eigenvalues, Basis vectors and unit vectors.
+
+\hypertarget{eigenvectors-and-eigenvalues}{%
+\subsubsection{Eigenvectors and
+eigenvalues}\label{eigenvectors-and-eigenvalues}}
+
+\textbf{Definition.} An \textbf{eigenvector} of \texttt{A} is a nonzero
+vector that stays on its own span under the transformation --- it only
+gets \textbf{stretched or squished}, never knocked off its line:
+\texttt{A·v\ =\ λ·v}. The scalar \texttt{λ} is its \textbf{eigenvalue}
+(the stretch factor). Find them by solving \texttt{det(A\ −\ λI)\ =\ 0}
+for the eigenvalues, then \texttt{(A\ −\ λI)v\ =\ 0} for each
+eigenvector.
+
+\begin{equation*}
+A\mathbf{v}=\lambda\mathbf{v}
+\qquad\Longleftrightarrow\qquad
+\det(A-\lambda I)=0
+\qquad\text{(characteristic polynomial)}
+\end{equation*}
+
+\textbf{Intuition.} Most vectors get rotated off their span by a
+transformation; eigenvectors are the special axes that merely scale,
+revealing the transformation's ``natural axes.''
+\texttt{det(A\ −\ λI)\ =\ 0} is required because \texttt{(A\ −\ λI)}
+must squish \texttt{v} to zero (be non-invertible) for a nonzero
+solution to exist.
+
+\textbf{Example (2×2).} \texttt{A\ =\ {[}{[}2,1{]},{[}0,3{]}{]}}.
+\texttt{det(A\ −\ λI)\ =\ (2−λ)(3−λ)\ =\ 0} → \texttt{λ\ =\ 2} or
+\texttt{3}. For \texttt{λ\ =\ 2}:
+\texttt{(A\ −\ 2I)\ =\ {[}{[}0,1{]},{[}0,1{]}{]}} ⇒ \texttt{y\ =\ 0} ⇒
+\texttt{v\ =\ {[}1,\ 0{]}}. For \texttt{λ\ =\ 3}:
+\texttt{(A\ −\ 3I)\ =\ {[}{[}−1,1{]},{[}0,0{]}{]}} ⇒ \texttt{y\ =\ x} ⇒
+\texttt{v\ =\ {[}1,\ 1{]}}. So \texttt{A} stretches \texttt{{[}1,0{]}}
+by 2 and \texttt{{[}1,1{]}} by 3.
+
+\textbf{Notes.} A 3×3 gives a cubic in \texttt{λ} (up to three
+eigenvalues), same recipe. A full basis of eigenvectors
+\emph{diagonalizes} \texttt{A} (→ change of basis), making powers
+\texttt{Aⁿ} trivial. In ML they underpin PCA (the top eigenvectors of
+the covariance matrix). → Change of basis, Determinant, Principal
+components analysis (PCA) (ML).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{calculus-foundations-3blue1brown}{%
+\subsection{\texorpdfstring{Calculus foundations
+\emph{(3Blue1Brown)}}{Calculus foundations (3Blue1Brown)}}\label{calculus-foundations-3blue1brown}}
+
+\hypertarget{derivatives}{%
+\subsubsection{Derivatives}\label{derivatives}}
+
+\textbf{Definition.} The \textbf{derivative}
+\texttt{f\textquotesingle{}(x)} is the instantaneous rate of change ---
+the slope of the tangent line:
+\texttt{f\textquotesingle{}(x)\ =\ lim\_\{h→0\}\ (f(x+h)\ −\ f(x))\ /\ h}.
+Core rules: power \texttt{d/dx\ xⁿ\ =\ n·xⁿ⁻¹}; sum (term by term);
+product
+\texttt{(fg)\textquotesingle{}\ =\ f\textquotesingle{}g\ +\ fg\textquotesingle{}};
+chain
+\texttt{(f(g(x)))\textquotesingle{}\ =\ f\textquotesingle{}(g(x))·g\textquotesingle{}(x)}.
+
+\begin{equation*}
+\frac{df}{dx}=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h},
+\qquad
+(fg)'=f'g+fg',
+\qquad
+\bigl(f(g(x))\bigr)'=f'(g(x))\,g'(x)
+\end{equation*}
+
+\textbf{Intuition.} Zoom into a curve until it looks straight; the
+derivative is that local slope --- how fast the output changes per tiny
+nudge of the input. The \textbf{chain rule} (a nudge propagating through
+composed functions) is exactly what backpropagation runs.
+
+\textbf{Example.} \texttt{f(x)\ =\ 3x²} →
+\texttt{f\textquotesingle{}(x)\ =\ 6x}, so at \texttt{x\ =\ 2} the curve
+rises 12 per unit of \texttt{x}. \texttt{d/dx\ sin(x²)\ =\ cos(x²)·2x}
+(chain rule).
+
+\textbf{Notes.} Handy standards: \texttt{d/dx\ eˣ\ =\ eˣ},
+\texttt{d/dx\ ln\ x\ =\ 1/x}, \texttt{d/dx\ sin\ x\ =\ cos\ x}. → Taylor
+series, Backpropagation (ML), Gradient descent (ML).
+
+\hypertarget{integrals-and-area-under-the-curve}{%
+\subsubsection{Integrals and area under the
+curve}\label{integrals-and-area-under-the-curve}}
+
+\textbf{Definition.} The \textbf{definite integral}
+\texttt{∫ₐᵇ\ f(x)\ dx} is the (signed) \textbf{area under the curve}
+from \texttt{a} to \texttt{b}. The \textbf{Fundamental Theorem of
+Calculus}: if \texttt{F\textquotesingle{}\ =\ f}, then
+\texttt{∫ₐᵇ\ f\ dx\ =\ F(b)\ −\ F(a)} --- integration undoes
+differentiation.
+
+\begin{equation*}
+\int_a^b f(x)\,dx=\lim_{\Delta x\to0}\sum_i f(x_i)\Delta x,
+\qquad
+\frac{d}{dx}\int_a^x f(t)\,dt=f(x)
+\quad\text{(fundamental theorem)}
+\end{equation*}
+
+\textbf{Intuition.} Chop the region into infinitely many thin rectangles
+of width \texttt{dx} and add them up. Finding an antiderivative
+\texttt{F} (a function whose slope is \texttt{f}) gives that area
+exactly, with no summing.
+
+\textbf{Example.} \texttt{∫₀²\ 3x²\ dx\ =\ {[}x³{]}₀²\ =\ 8\ −\ 0\ =\ 8}
+(since \texttt{d/dx\ x³\ =\ 3x²}). Area below the axis counts as
+negative.
+
+\textbf{Notes.} Basic antiderivatives: \texttt{∫\ xⁿ\ dx\ =\ xⁿ⁺¹/(n+1)}
+(n ≠ −1), \texttt{∫\ 1/x\ dx\ =\ ln\textbar{}x\textbar{}},
+\texttt{∫\ eˣ\ dx\ =\ eˣ}. Underlies probability densities, where area =
+probability. → Derivatives, Probability distributions (stat).
+
+\hypertarget{taylor-series}{%
+\subsubsection{Taylor series}\label{taylor-series}}
+
+\textbf{Definition.} Approximates a smooth function near a point
+\texttt{a} by a polynomial built from its derivatives:
+\texttt{f(x)\ ≈\ f(a)\ +\ f\textquotesingle{}(a)(x−a)\ +\ f\textquotesingle{}\textquotesingle{}(a)/2!·(x−a)²\ +\ f\textquotesingle{}\textquotesingle{}\textquotesingle{}(a)/3!·(x−a)³\ +\ …}.
+
+\begin{equation*}
+f(x)=\sum_{n=0}^{\infty}\frac{f^{(n)}(a)}{n!}(x-a)^n
+\qquad
+e^x=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\dots
+\end{equation*}
+
+\textbf{Intuition.} Match the function's value, then its slope, then its
+curvature, then higher bends --- each term corrects the previous fit, so
+more terms means a better local approximation. Near \texttt{a}, a
+handful of terms is often plenty.
+
+\textbf{Example.} Around \texttt{a\ =\ 0}:
+\texttt{eˣ\ ≈\ 1\ +\ x\ +\ x²/2\ +\ x³/6\ +\ …} and
+\texttt{cos\ x\ ≈\ 1\ −\ x²/2\ +\ x⁴/24\ −\ …}. At \texttt{x\ =\ 0.1},
+\texttt{e\^{}0.1\ ≈\ 1\ +\ 0.1\ +\ 0.005\ =\ 1.105} (true value 1.1052).
+
+\textbf{Notes.} The \texttt{n!} denominators fall out of repeatedly
+differentiating the polynomial. The first-order Taylor term is how
+optimization ``linearizes'' a function locally. → Derivatives.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{glossary}{%
+\subsection{Glossary}\label{glossary}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Basis} --- independent vectors whose combinations span the
+  space; the coordinate ``ruler.'' →
+  \protect\hyperlink{basis-vectors-and-unit-vectors}{Basis vectors and
+  unit vectors}.
+\item
+  \textbf{Change of basis} --- translate coordinates/transformations
+  between bases via \texttt{B} and \texttt{B⁻¹}. →
+  \protect\hyperlink{change-of-basis}{Change of basis}.
+\item
+  \textbf{Column space} --- the span of a matrix's columns (all its
+  outputs). → \protect\hyperlink{rank-and-column-space}{Rank and column
+  space}.
+\item
+  \textbf{Cramer's rule} --- solve \texttt{Ax=b} via ratios of
+  determinants. → \protect\hyperlink{cramers-rule}{Cramer's rule}.
+\item
+  \textbf{Cross product} --- 3D perpendicular vector; length =
+  parallelogram area; right-hand rule. →
+  \protect\hyperlink{cross-product}{Cross product}.
+\item
+  \textbf{Derivative} --- instantaneous slope;
+  \texttt{lim\ (f(x+h)−f(x))/h}. →
+  \protect\hyperlink{derivatives}{Derivatives}.
+\item
+  \textbf{Determinant} --- area/volume scaling factor of a
+  transformation; 0 ⇒ singular. →
+  \protect\hyperlink{determinant}{Determinant}.
+\item
+  \textbf{Dot product} ---
+  \texttt{Σ\ aᵢbᵢ\ =\ \textbar{}a\textbar{}\textbar{}b\textbar{}cos\ θ};
+  measures alignment. → \protect\hyperlink{dot-product}{Dot product}.
+\item
+  \textbf{Eigenvector / eigenvalue} --- vector that only scales under
+  \texttt{A} (\texttt{Av\ =\ λv}); \texttt{λ} is the factor. →
+  \protect\hyperlink{eigenvectors-and-eigenvalues}{Eigenvectors and
+  eigenvalues}.
+\item
+  \textbf{Integral} --- signed area under a curve; the inverse of the
+  derivative. →
+  \protect\hyperlink{integrals-and-area-under-the-curve}{Integrals and
+  area under the curve}.
+\item
+  \textbf{Linear combination} --- \texttt{a·v\ +\ b·w} of vectors. →
+  \protect\hyperlink{linear-combinations-and-span}{Linear combinations
+  and span}.
+\item
+  \textbf{Linear dependence / independence} --- redundant vs
+  genuinely-new directions. →
+  \protect\hyperlink{linear-dependence-and-independence}{Linear
+  dependence and independence}.
+\item
+  \textbf{Linear transformation} --- keeps lines straight and the origin
+  fixed; set by where the basis lands. →
+  \protect\hyperlink{linear-transformations}{Linear transformations}.
+\item
+  \textbf{Matrix} --- stores a linear transformation; its columns are
+  the images of the basis vectors. →
+  \protect\hyperlink{matrices-as-linear-transformations}{Matrices as
+  linear transformations}.
+\item
+  \textbf{Matrix inverse} --- undoes a transformation;
+  \texttt{x\ =\ A⁻¹b}; exists iff \texttt{det\ ≠\ 0}. →
+  \protect\hyperlink{systems-of-linear-equations-and-the-matrix-inverse}{Systems
+  of linear equations and the matrix inverse}.
+\item
+  \textbf{Matrix multiplication} --- composition of transformations
+  (applied right-to-left). →
+  \protect\hyperlink{matrix-multiplication-composition}{Matrix
+  multiplication (composition)}.
+\item
+  \textbf{Null space (kernel)} --- vectors mapped to 0; the solutions of
+  \texttt{Ax=0}. → \protect\hyperlink{null-space-kernel}{Null space
+  (kernel)}.
+\item
+  \textbf{Rank} --- dimension of the column space (surviving output
+  directions). → \protect\hyperlink{rank-and-column-space}{Rank and
+  column space}.
+\item
+  \textbf{Span} --- all linear combinations of a set of vectors. →
+  \protect\hyperlink{linear-combinations-and-span}{Linear combinations
+  and span}.
+\item
+  \textbf{Taylor series} --- polynomial approximation of a function from
+  its derivatives. → \protect\hyperlink{taylor-series}{Taylor series}.
+\item
+  \textbf{Unit vector} --- a length-1 vector; the standard basis is
+  \texttt{î,\ ĵ}. →
+  \protect\hyperlink{basis-vectors-and-unit-vectors}{Basis vectors and
+  unit vectors}.
+\item
+  \textbf{Vector} --- an arrow (length + direction) / an ordered list of
+  numbers. → \protect\hyperlink{vectors}{Vectors}.
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,410 @@
+% ---------------------------------------------------------------------------
+%  Notations — cheat sheet for the study-lab notes.
+%  Standalone document.  Engine: XeLaTeX.  article, 10pt, single column.
+%    xelatex Notations.tex   (twice, for the table of contents)
+% ---------------------------------------------------------------------------
+\documentclass[10pt,letterpaper,onecolumn]{article}
+
+\usepackage{amsmath,amssymb}
+\usepackage{fontspec}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage[dvipsnames,svgnames,x11names]{xcolor}
+\usepackage[colorlinks=true,linkcolor=Maroon,urlcolor=NavyBlue,
+            citecolor=Maroon]{hyperref}
+
+\setmainfont{Latin Modern Roman}
+\setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{0.6em}{}
+\titlespacing*{\section}{0pt}{2.0ex plus .6ex}{0.8ex}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\footnotesize\nouppercase\leftmark}
+\fancyhead[R]{\footnotesize\textit{Notations}}
+\fancyfoot[C]{\footnotesize\thepage}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}%
+  \fancyfoot[C]{\footnotesize\thepage}}
+
+% two-column symbol/meaning table used throughout
+\newenvironment{symtab}
+  {\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.26\textwidth}%
+                       >{\raggedright\arraybackslash}p{0.70\textwidth}@{}}
+   \toprule
+   \textbf{Symbol} & \textbf{Meaning} \\
+   \midrule
+   \endhead
+   \bottomrule
+   \endfoot}
+  {\end{longtable}}
+
+\newcommand{\T}{\mathsf{T}}
+
+\title{\vspace{-2em}\textbf{Notations — Cheat Sheet}\\[0.3em]
+       \large\normalfont Symbols used across the Linear Algebra, Statistics,
+       Machine Learning, Algorithms, Data Structures and Problems notes}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{plain}
+\vspace{-2em}
+
+{\small
+\tableofcontents
+}
+
+\vspace{1em}
+
+% ===========================================================================
+\section{General mathematics and sets}
+
+\begin{symtab}
+$\mathbb{R},\ \mathbb{R}^{n},\ \mathbb{R}^{m\times n}$ & The reals; column vectors of length $n$; $m$-by-$n$ matrices. \\
+$\in,\ \notin$ & Element of / not an element of. \\
+$\subset,\ \cup,\ \cap,\ \setminus$ & Subset; union; intersection; set difference. \\
+$|S|$ & Cardinality (number of elements) of the set $S$. \\
+$\{x : P(x)\}$ & The set of all $x$ satisfying the property $P$. \\
+$\emptyset$ & The empty set. \\
+$\forall,\ \exists$ & For all; there exists. \\
+$\Rightarrow,\ \iff$ & Implies; if and only if. \\
+$\land,\ \lor,\ \lnot$ & Logical and; or; not. \\
+$\sum_{i=1}^{n},\ \prod_{i=1}^{n}$ & Sum / product over $i = 1,\dots,n$. \\
+$\arg\max_{x} f(x)$ & The \emph{value of $x$} that maximises $f$ (not the maximum itself). \\
+$\arg\min_{x} f(x)$ & The value of $x$ that minimises $f$. \\
+$\lfloor x \rfloor,\ \lceil x \rceil$ & Floor (round down); ceiling (round up). \\
+$\mathbb{1}(\cdot)$ & Indicator: $1$ when the condition holds, $0$ otherwise. \\
+$\approx,\ \propto,\ \equiv$ & Approximately; proportional to; identically equal / defined as. \\
+$\ll,\ \gg$ & Much less than; much greater than. \\
+$n!$ & Factorial, $n\cdot(n-1)\cdots 1$. \\
+$\binom{n}{k}$ & Binomial coefficient, ``$n$ choose $k$''. \\
+$\log,\ \ln,\ \log_2$ & Logarithm (base implied by context); natural log; base-2 log. \\
+$e^{x},\ \exp(x)$ & The exponential function. \\
+$\to$ & In the notes' prose, ``see also'' (a cross-reference to another concept), \emph{not} a limit or a mapping. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Linear algebra}
+
+\begin{symtab}
+$\mathbf{v},\ \mathbf{w}$ & Vectors (bold lowercase). Written $[v_1, v_2]$ in the notes. \\
+$A,\ M,\ \mathbf{X}$ & Matrices (uppercase). $\mathbf{X}$ is usually the design matrix. \\
+$\hat{\imath},\ \hat{\jmath},\ \hat{k}$ & Standard basis vectors of $\mathbb{R}^2 / \mathbb{R}^3$: $[1,0]$, $[0,1]$, $[0,0,1]$. \\
+$\hat{\mathbf{u}}$ & A unit vector: $\mathbf{v}/\|\mathbf{v}\|$, length $1$. \\
+$\|\mathbf{v}\|,\ \|\mathbf{v}\|_2$ & Euclidean ($\ell_2$) norm, $\sqrt{\textstyle\sum_i v_i^2}$. \\
+$\|\mathbf{v}\|_1$ & $\ell_1$ (Manhattan) norm, $\sum_i |v_i|$ — the lasso penalty. \\
+$\mathbf{v}\cdot\mathbf{w},\ \mathbf{v}^{\T}\mathbf{w}$ & Dot / inner product, $\sum_i v_i w_i = \|\mathbf{v}\|\|\mathbf{w}\|\cos\theta$. \\
+$\mathbf{v}\times\mathbf{w}$ & Cross product (3D): perpendicular to both, length $=$ parallelogram area. \\
+$A^{\T}$ & Transpose (rows and columns swapped). \\
+$A^{-1}$ & Matrix inverse; exists only when $\det A \ne 0$. \\
+$\det(A),\ |A|$ & Determinant — the factor by which $A$ scales area (2D) or volume (3D). $\det A=0$ means space is collapsed onto a lower dimension. \\
+$I$ & Identity matrix (the transformation that does nothing). \\
+$\operatorname{rank}(A)$ & Dimension of the column space — how many dimensions survive $A$. \\
+$\operatorname{null}(A)$ & Null space / kernel: all $\mathbf{x}$ with $A\mathbf{x}=\mathbf{0}$. \\
+$\operatorname{span}\{\mathbf{v},\mathbf{w}\}$ & All linear combinations $a\mathbf{v}+b\mathbf{w}$. \\
+$\lambda$ & Eigenvalue: the stretch factor along an eigenvector, $A\mathbf{v}=\lambda\mathbf{v}$. (Also used for the regularisation strength — see \S\ref{sec:modelsel}.) \\
+$\Sigma$ & Covariance matrix (uppercase sigma). Distinguish from $\sum$, the summation sign. \\
+$\Sigma^{-1}$ & Precision matrix — appears in the LDA/QDA discriminants. \\
+$\begin{bmatrix}a & b\\ c & d\end{bmatrix}$ & A $2\times2$ matrix; its \emph{columns} $[a,c]$ and $[b,d]$ are where $\hat{\imath}$ and $\hat{\jmath}$ land. \\
+$A^{-1}MA$ & Change of basis: ``translate in, act, translate back.'' \\
+\end{symtab}
+
+% ===========================================================================
+\section{Calculus}
+
+\begin{symtab}
+$f'(x),\ \dfrac{df}{dx}$ & Derivative — instantaneous rate of change. \\
+$\dfrac{\partial f}{\partial x}$ & Partial derivative: vary $x$, hold every other input fixed. \\
+$\nabla_\theta L$ & Gradient — the vector of all partial derivatives of $L$ with respect to the parameters $\theta$. Points uphill; gradient descent steps against it. \\
+$f^{(n)}(a)$ & The $n$-th derivative evaluated at $a$ (Taylor series). \\
+$\displaystyle\int_a^b f(x)\,dx$ & Definite integral — signed area under $f$ from $a$ to $b$. \\
+$\lim_{h\to 0}$ & Limit as $h$ approaches $0$. \\
+$dx,\ \Delta x$ & An infinitesimal / a finite step in $x$. \\
+$\epsilon$ (in calculus) & An arbitrarily small positive quantity. Distinguish from $\varepsilon$, the error term. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Probability and distributions}
+
+\begin{symtab}
+$\Pr(A),\ P(A)$ & Probability of event $A$. \\
+$\Pr(A \mid B)$ & Conditional probability of $A$ \emph{given} $B$. \\
+$X \sim \mathcal{D}$ & The random variable $X$ is distributed according to $\mathcal{D}$. \\
+$\mathcal{N}(\mu,\sigma^2)$ & Normal (Gaussian) distribution with mean $\mu$, variance $\sigma^2$. \\
+$\mathcal{N}(x \mid \mu_k,\Sigma_k)$ & Multivariate normal density evaluated at $x$ — a GMM component. \\
+$\mathbb{E}[X]$ & Expected value (mean) of $X$. \\
+$\operatorname{Var}(X),\ \sigma^2$ & Variance; $\sigma$ is the standard deviation. \\
+$\operatorname{Cov}(X,Y)$ & Covariance. \\
+$\mu$ & Population mean. \\
+$f(x),\ F(x)$ & Probability density function; cumulative distribution function. \\
+$f_k(x)$ & Density of the predictors \emph{within} class $k$ (generative classifiers). \\
+$\pi_k$ & Prior probability that an observation belongs to class $k$. \\
+$\lambda$ (Poisson) & Rate / expected count, $\Pr(Y=k)=e^{-\lambda}\lambda^k / k!$. \\
+$\varepsilon$ & Irreducible error term — the part of $Y$ that $X$ can never explain. \\
+$\ell(\theta),\ \log\ell(\theta)$ & Likelihood; log-likelihood. \\
+$\theta$ & A generic parameter (or the full parameter vector of a model). \\
+\end{symtab}
+
+% ===========================================================================
+\section{Statistics: estimation and inference}
+
+\begin{symtab}
+$n$ & Number of observations (sample size). \\
+$p$ & Number of predictors / features. \\
+$d$ & Number of parameters in a model, or polynomial degree, or embedding dimension — context decides. \\
+$x_i,\ y_i$ & The $i$-th observation's predictor(s) and response. \\
+$\bar{x},\ \bar{y}$ & Sample means. \\
+$s$ & Sample standard deviation. \\
+$\hat{\ }$ (hat) & \textbf{An estimate from data}, not the true value: $\hat\beta$, $\hat f$, $\hat y$, $\hat\sigma$, $\hat p$. This is the single most important convention in the statistics notes. \\
+$\hat f(x)$ & The fitted model's prediction rule. \\
+$f(X)$ & The true, unknown function relating $X$ to $Y$. \\
+$\mathrm{SE}(\hat\beta)$ & Standard error — the typical size of the estimation error in $\hat\beta$. \\
+$\mathrm{SE}(\bar x) = s/\sqrt{n}$ & Standard error of the mean. \\
+$H_0,\ H_a$ & Null hypothesis; alternative hypothesis. \\
+$t$ & $t$-statistic, $(\hat\beta - 0)/\mathrm{SE}(\hat\beta)$. \\
+$z$ & Z-score, $(x-\mu)/\sigma$ — how many standard deviations from the mean. \\
+$F$ & $F$-statistic — tests whether \emph{any} predictor is useful. \\
+$p$-value & $\Pr(\text{a statistic this extreme} \mid H_0 \text{ true})$. Note the clash with $p$ = number of predictors. \\
+$\alpha$ & Significance level (typically $0.05$); also the FWER budget. \\
+$q$ & Target false discovery rate (Benjamini--Hochberg). \\
+$m$ & Number of simultaneous hypothesis tests. \\
+$p_{(j)}$ & The $j$-th smallest $p$-value (order statistic). \\
+$\mathrm{TP},\ \mathrm{FP},\ \mathrm{TN},\ \mathrm{FN}$ & True / false positives and negatives. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Regression and model fitting}
+
+\begin{symtab}
+$\beta_0$ & Intercept. \\
+$\beta_1,\dots,\beta_p$ & Slope coefficients, one per predictor. \\
+$\boldsymbol\beta$ & The coefficient vector. \\
+$\hat\beta$ & The least-squares (or penalised, or ML) \emph{estimate} of $\beta$. \\
+$e_i = y_i - \hat y_i$ & Residual for observation $i$. \\
+$\mathrm{RSS}$ & Residual sum of squares, $\sum_i e_i^2$ — what least squares minimises. \\
+$\mathrm{TSS}$ & Total sum of squares, $\sum_i (y_i - \bar y)^2$ — variance before fitting. \\
+$\mathrm{MSE}$ & Mean squared error, $\mathrm{RSS}/n$. \\
+$\mathrm{RSE}$ & Residual standard error, $\sqrt{\mathrm{RSS}/(n-p-1)}$. \\
+$R^2$ & Fraction of variance explained, $1 - \mathrm{RSS}/\mathrm{TSS}$. \\
+$b_k(x)$ & Basis function — the building block of polynomial, step-function and spline models. \\
+$f_j(x_j)$ & The smooth function applied to predictor $j$ in a GAM. \\
+$K$ & Number of knots (splines), classes (classification), clusters (k-means), or neighbours (KNN). Context decides. \\
+$\mathcal{N}_0$ & The set of $K$ training points nearest to $x_0$ (KNN). \\
+\end{symtab}
+
+% ===========================================================================
+\section{Classification and evaluation}
+
+\begin{symtab}
+$Y \in \{1,\dots,K\}$ & Class label. \\
+$p(X),\ \hat p$ & Predicted probability of the positive class. \\
+$\sigma(z) = 1/(1+e^{-z})$ & Logistic / sigmoid function — squashes any real number into $(0,1)$. \\
+$\operatorname{logit}(p) = \log\frac{p}{1-p}$ & Log-odds; the linear part of logistic regression. \\
+$\delta_k(x)$ & Discriminant score for class $k$ (LDA/QDA); predict the largest. \\
+Precision & $\mathrm{TP}/(\mathrm{TP}+\mathrm{FP})$ — of those flagged, how many were right. \\
+Recall / TPR / sensitivity & $\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$ — of the true positives, how many were caught. \\
+Specificity & $\mathrm{TN}/(\mathrm{TN}+\mathrm{FP})$. \\
+FPR & $\mathrm{FP}/(\mathrm{FP}+\mathrm{TN})$; the $x$-axis of an ROC curve. \\
+$F_1$ & Harmonic mean of precision and recall, $2PR/(P+R)$. \\
+AUC & Area under the ROC curve; $0.5$ is random, $1.0$ is perfect. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Model selection and regularisation}
+\label{sec:modelsel}
+
+\begin{symtab}
+$\lambda$ & Regularisation strength. $\lambda=0$ recovers ordinary least squares; $\lambda\to\infty$ shrinks every coefficient toward $0$. \\
+$\ell_2$ penalty & $\sum_j \beta_j^2$ — ridge. Shrinks, never zeroes. \\
+$\ell_1$ penalty & $\sum_j |\beta_j|$ — lasso. Drives coefficients exactly to $0$ (feature selection). \\
+$C_p$, AIC, BIC & Penalised training-error criteria; lower is better. BIC penalises size more heavily than AIC. \\
+Adjusted $R^2$ & $R^2$ corrected for the number of predictors. \\
+$k$-fold CV & Cross-validation: train on $k-1$ folds, validate on the held-out one, rotate. \\
+$\hat\sigma^2$ & Estimated irreducible-error variance, used inside $C_p$ and BIC. \\
+$|T|$ & Number of terminal nodes (leaves) in a tree. \\
+$\alpha$ (trees) & Cost-complexity tuning parameter — the price charged per leaf. \\
+$B$ & Number of bootstrap samples / trees in a bagged or boosted ensemble. \\
+$\hat f^{*b}$ & The model fit on the $b$-th bootstrap sample. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Trees, ensembles and SVMs}
+
+\begin{symtab}
+$R_m$ & The $m$-th terminal region (leaf) of a tree. \\
+$\hat y_{R_m}$ & The prediction in region $R_m$ (mean of its training responses). \\
+$\hat p_{mk}$ & Proportion of class-$k$ points in node $m$. \\
+$G$ & Gini index, $\sum_k \hat p_{mk}(1-\hat p_{mk})$ — node impurity. \\
+$D$ & Entropy, $-\sum_k \hat p_{mk}\log \hat p_{mk}$ — the other impurity measure. \\
+OOB & Out-of-bag: the $\approx\!1/3$ of observations left out of a given bootstrap sample, used as a free validation set. \\
+$m_{\text{try}}$ & Number of predictors considered at each split in a random forest ($\approx\sqrt{p}$). \\
+$\lambda$ (boosting) & Learning rate / shrinkage, typically $0.01$--$0.1$. \\
+$r_i$ & Working residual that boosting fits at each round. \\
+$M$ & Margin width — the distance from the separating hyperplane to the nearest point. \\
+$\epsilon_i$ & Slack variable: how far observation $i$ is allowed to violate the margin. \\
+$C$ & Total slack budget. Large $C$ $=$ wide, soft margin (more bias, less variance). \\
+$\mathcal{S}$ & The set of support vectors — the only points that affect the fit. \\
+$K(x,x')$ & Kernel: an inner product in an implicit high-dimensional space. \\
+$\gamma$ & RBF kernel width, $K = e^{-\gamma\|x-x'\|^2}$. Large $\gamma$ $=$ very local. \\
+$\alpha_i$ & Dual coefficients — nonzero only on support vectors. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Neural networks and deep learning}
+
+\begin{symtab}
+$\mathbf{W},\ \mathbf{b}$ & Weight matrix and bias vector of a layer. \\
+$z$ & Pre-activation (``logit''), $\mathbf{w}^{\T}\mathbf{x}+b$. \\
+$a = g(z)$ & Post-activation output of a neuron. \\
+$g(\cdot)$ & Activation function: ReLU $\max(0,z)$, sigmoid, or $\tanh$. \\
+$d_{\text{in}},\ d_{\text{out}}$ & Input and output widths of a layer. \\
+$L$ & Loss (the scalar being minimised). Also occasionally the number of layers. \\
+$\eta$ & Learning rate — the step size in $\theta \leftarrow \theta - \eta\nabla_\theta L$. \\
+$\theta$ & All learnable parameters, collected into one vector. \\
+$\mathcal{B}$ & A minibatch of examples. \\
+$\gamma,\ \beta$ (norm layers) & Learned scale and shift in batch/layer norm. Unrelated to regression's $\beta$. \\
+$\mu_{\mathcal{B}},\ \sigma^2_{\mathcal{B}}$ & Batch mean and variance. \\
+$\epsilon$ (norm layers) & Tiny constant added for numerical stability. \\
+NLL & Negative log-likelihood, $-\frac{1}{n}\sum_i \log p_\theta(y_i \mid x_i)$; equals cross-entropy. \\
+$\mathrm{softmax}(z)_k$ & $e^{z_k}/\sum_j e^{z_j}$ — turns logits into a probability distribution. \\
+$F,\ P,\ S$ (conv) & Filter size, padding, stride. Output size $=\lfloor (H+2P-F)/S \rfloor + 1$. \\
+$n_{\text{in}},\ n_{\text{out}}$ & Fan-in and fan-out, used in He / Xavier initialisation. \\
+$y = x + F(x)$ & A residual (skip) connection. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Transformers and language models}
+
+\begin{symtab}
+$Q,\ K,\ V$ & Query, key and value matrices. Note the clash: $K$ here is \emph{not} the number of classes. \\
+$d_k$ & Key dimension; the $\sqrt{d_k}$ divisor keeps dot products from saturating the softmax. \\
+$d_{\text{model}}$ & The residual-stream width of the transformer. \\
+$h$ & Number of attention heads. \\
+$W^{Q},W^{K},W^{V},W^{O}$ & Per-head projection matrices and the output projection. \\
+$pos,\ i$ & Token position and embedding-dimension index in the positional encoding. \\
+$\mathrm{FFN}(x)$ & Position-wise feed-forward block, inner width usually $4d_{\text{model}}$. \\
+$r$ (LoRA) & Adapter rank; $\Delta W = BA$ with $r \ll \min(d,k)$. \\
+$T$ & Context length / sequence length. \\
+BPE & Byte-pair encoding — the subword tokenisation scheme. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Unsupervised learning}
+
+\begin{symtab}
+$\phi_{j1}$ & Loading of feature $j$ on the first principal component. \\
+$Z_1,\ Z_2,\dots$ & Principal component scores (the projected coordinates). \\
+PVE & Proportion of variance explained by a component. \\
+$C_1,\dots,C_K$ & The $K$ clusters; $|C_k|$ is the size of cluster $k$. \\
+$\mu_k$ & Centroid of cluster $k$. \\
+$\pi_k$ (GMM) & Mixing weight of component $k$; $\sum_k \pi_k = 1$. \\
+$\Sigma_k$ & Covariance of GMM component $k$. \\
+$\|x_i - x_{i'}\|^2$ & Squared Euclidean distance — the within-cluster dissimilarity k-means minimises. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Survival analysis}
+
+\begin{symtab}
+$T$ & Survival time (the event time). \\
+$S(t) = \Pr(T>t)$ & Survival function — probability of surviving past $t$. \\
+$h(t)$ & Hazard: instantaneous event rate \emph{given} survival to $t$; equals $f(t)/S(t)$. \\
+$h_0(t)$ & Baseline hazard, left unspecified in the Cox model. \\
+$d_j,\ r_j$ & Events at time $t_j$; individuals still at risk just before $t_j$ (Kaplan--Meier). \\
+Censoring & The event was not observed by the end of the study — the observation is a lower bound, not a missing value. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Asymptotic and complexity notation}
+
+\begin{symtab}
+$O(f(n))$ & Upper bound — grows \emph{no faster than} $f(n)$, ignoring constants. The everyday ``worst case'' notation. \\
+$\Omega(f(n))$ & Lower bound — grows \emph{at least as fast as} $f(n)$. \\
+$\Theta(f(n))$ & Tight bound — both $O$ and $\Omega$. \\
+$o(f(n))$ & Strictly slower than $f(n)$. \\
+$n$ & Input size (elements, characters, nodes\dots). \\
+$T(n)$ & Running time on an input of size $n$. \\
+$T(n)=aT(n/b)+f(n)$ & Divide-and-conquer recurrence: $a$ subproblems of size $n/b$, plus $f(n)$ to split and combine. Solved by the master theorem. \\
+$n^{\log_b a}$ & The ``leaf work'' term the master theorem compares $f(n)$ against. \\
+$O(1)$ & Constant — independent of $n$. \\
+$O(\log n)$ & Halving (binary search, balanced-tree descent). \\
+$O(n\log n)$ & Sorting, and most divide-and-conquer with linear merge. \\
+$O(n^2),\ O(n^3)$ & Quadratic, cubic (nested loops; naive matrix multiply). \\
+$O(2^n),\ O(n!)$ & Exponential, factorial — subset enumeration, permutation search. \\
+$O(2^n n^2)$ & Held--Karp bitmask DP for TSP. \\
+Amortised $O(f)$ & Average cost per operation over a long sequence, even if one operation is occasionally expensive (e.g. dynamic-array growth). \\
+Pseudo-polynomial & Polynomial in the \emph{numeric value} of an input, not its bit length — e.g. knapsack's $O(nW)$. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Graphs and graph algorithms}
+
+\begin{symtab}
+$G=(V,E)$ & Graph with vertex set $V$ and edge set $E$. \\
+$|V|,\ |E|$ & Number of vertices and edges; often written plainly as $V$ and $E$ inside complexity bounds. \\
+$w(u,v)$ & Weight (cost) of the edge from $u$ to $v$. \\
+$d[v]$ & Current best known distance from the source to $v$. \\
+$\operatorname{relax}(u,v)$ & $d[v] \leftarrow \min(d[v],\, d[u]+w(u,v))$ — the single operation behind Dijkstra, Bellman--Ford and DAG shortest paths. \\
+$\operatorname{adj}(v)$ & Adjacency list of $v$. \\
+DAG & Directed acyclic graph. \\
+SCC & Strongly connected component. \\
+$s,\ t$ & Source and sink in a flow network. \\
+$c(u,v),\ f(u,v)$ & Edge capacity; flow currently pushed along the edge. \\
+$|f|$ & Value of a flow; max-flow $=$ min-cut. \\
+$(S,T)$ & A cut partitioning $V$ into the source side $S$ and sink side $T$. \\
+$O(VE^2)$ & Edmonds--Karp. $O(V^2E)$ is Dinic's; $O(E\sqrt{V})$ on unit capacities. \\
+MST & Minimum spanning tree (Prim, Kruskal). \\
+\end{symtab}
+
+% ===========================================================================
+\section{Dynamic programming and recursion}
+
+\begin{symtab}
+$dp[i][j]$ & The DP table: the answer to the subproblem indexed by $(i,j)$. \\
+State & One cell of the table — the minimal information needed to describe a subproblem. \\
+Transition & The recurrence that fills a state from previously-computed ones. \\
+Base case & The smallest subproblem, filled in directly. \\
+Runtime & $\#\text{states} \times \text{work per state}$. This is the whole cost model. \\
+$dp[S][j]$ & Bitmask DP: $S$ is a \emph{set} encoded as bits of an integer, $j$ the current position (TSP). \\
+$S \setminus \{j\}$ & The set $S$ with element $j$ removed — a bit cleared. \\
+Memoisation & Top-down recursion plus a cache. \\
+Tabulation & Bottom-up iteration filling the table in dependency order. \\
+Rolling array & Keeping only the last one or two rows, cutting space from $O(nW)$ to $O(W)$. \\
+$W$ & Knapsack capacity. \\
+$v_i,\ w_i$ & Value and weight of item $i$. \\
+Recursion depth & Number of stack frames alive at once — the memory risk, separate from the time cost. \\
+\end{symtab}
+
+% ===========================================================================
+\section{Typographic conventions in the notes}
+
+\begin{symtab}
+\texttt{monospace} & Inline formulas, code identifiers, class names and pseudocode, carried over from the original Markdown. \\
+\textbf{Definition.} & Opens each concept: the precise statement. \\
+\textbf{Intuition.} & The plain-language picture behind the definition. \\
+\textbf{Example.} & A small worked case, usually $2\times2$ or a short array. \\
+\textbf{Notes.} & Caveats, connections, and cross-references. \\
+$\to$ & At the end of a \textbf{Notes} block: ``see also \dots''. \\
+\emph{(ISL ch. N)} & Source tag on a section: \emph{An Introduction to Statistical Learning}, chapter N. Other tags name their book (\emph{Hands-On ML}, \emph{Karpathy}, \emph{3Blue1Brown}). \\
+\emph{(ML)}, \emph{(stat)} & Cross-reference to the Machine Learning or Statistics notes. \\
+\textbf{Idea} / \textbf{Complexity} / \textbf{Notes} & The three-part structure of each entry in the Algorithms, Data Structures and Problems notes. \\
+\end{symtab}
+
+\vfill
+{\footnotesize\itshape
+Where one symbol carries several meanings across topics ($K$, $\lambda$, $p$, $d$, $\alpha$,
+$\beta$, $\epsilon$, $\Sigma$), the clash is noted in the entry. Context — which
+document you are reading — resolves all of them.\par}
+
+\end{document}

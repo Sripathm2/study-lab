@@ -3,12 +3,12 @@
 # Jupyter notebooks under Machine_learning/.
 #
 #   make setup                    -> verify the toolchain (javac, python3, conda,
-#                                    pandoc, xelatex) — errors out naming whatever
+#                                    xelatex) — errors out naming whatever
 #                                    is missing and can't be auto-installed —
 #                                    then create/update the `ml` conda env from
 #                                    Machine_learning/environment.yml and register
-#                                    its Jupyter kernel. pandoc/xelatex are
-#                                    installed automatically via apt-get if absent.
+#                                    its Jupyter kernel. TeX Live is installed
+#                                    automatically via apt-get if absent.
 #   make run F=Stack              -> runs Data_structures.Stack_Main
 #   make run F=Merge_sort         -> runs Algorithms.Merge_sort_Main
 #   make run F=Magical_cows      -> runs Problems.Magical_cows_Main
@@ -22,9 +22,12 @@
 #                                    test-results.log, prints only failures
 #                                    (notebooks are skipped with a notice when
 #                                    neither conda nor jupyter is installed)
-#   make notes-pdf                -> converts every .md under Notes/ (recursively)
-#                                    into a same-named .pdf via pandoc+xelatex.
-#                                    Override sizing: make notes-pdf FONTSIZE=10pt MARGIN=0.8in
+#   make notes-pdf                -> compiles every .tex under Notes/ (recursively)
+#                                    into a same-named .pdf with xelatex, run twice
+#                                    so the table of contents resolves. Build one
+#                                    document only: make notes-pdf N=Stats
+#   make notes-clean              -> delete the LaTeX aux files under Notes/
+#                                    (.aux .log .toc .out .fls ...), keeping the PDFs
 #   make list                     -> list runnable classes + notebooks, newest first
 #   make clean                    -> delete .class files, .ipynb_checkpoints, and
 #                                    GENERATED artifacts under Machine_learning/
@@ -32,7 +35,8 @@
 #                                    Machine_learning/data/ — see below)
 #   make clean-all                -> clean + strip all output cells from every
 #                                    notebook under Machine_learning/ (commit-ready
-#                                    notebooks) + delete every generated PDF under Notes/
+#                                    notebooks) + delete every generated PDF and
+#                                    LaTeX aux file under Notes/
 #
 # clean's protected types under Machine_learning/ (never deleted): .ipynb .py
 # .yml .yaml .md, everything inside Machine_learning/data/, and hidden files.
@@ -53,14 +57,18 @@ ML_KEEP  := ipynb py yml yaml md
 NBS       = $(shell find $(ML_DIR) -name '*.ipynb' -not -path '*/.ipynb_checkpoints/*' 2>/dev/null)
 
 NOTES_DIR := Notes
-FONTSIZE  ?= 11pt
-MARGIN    ?= 1in
+# Each Notes/*.tex is a standalone document (article, 10pt, single column) with
+# its full preamble inlined — page geometry and font size live in the .tex, not
+# here. XeLaTeX is required: the notes use \newunicodechar and system fonts.
+TEX       := xelatex
+TEXFLAGS  := -interaction=nonstopmode -halt-on-error
+TEX_AUX   := aux log toc out fls fdb_latexmk synctex.gz nav snm vrb bbl blg
 
 # Run jupyter inside the ml conda env when conda exists; fall back to PATH.
 JUPYTER  := $(shell command -v conda >/dev/null 2>&1 && echo "conda run -n ml jupyter" || echo "jupyter")
 MLPY     := $(shell command -v conda >/dev/null 2>&1 && echo "conda run -n ml python" || echo "python3")
 
-.PHONY: setup run run-nb run-latest run-all notes-pdf list clean clean-all
+.PHONY: setup run run-nb run-latest run-all notes-pdf notes-clean list clean clean-all
 
 
 # One-time toolchain + environment setup. Fails fast, naming what's missing.
@@ -87,18 +95,34 @@ setup:
 	  conda env create -f $(ML_DIR)/environment.yml; \
 	fi; \
 	conda run -n ml python -m ipykernel install --user --name ml --display-name "Python (ml)"; \
-	echo "--- checking markdown-to-pdf toolchain (pandoc + LaTeX) ---"; \
-	if command -v pandoc >/dev/null 2>&1; then \
-	  echo "  pandoc : $$(pandoc --version | head -1)"; \
-	else \
-	  echo "pandoc not found — installing (sudo apt-get install -y pandoc)"; \
-	  sudo apt-get update && sudo apt-get install -y pandoc || { echo "ERROR: failed to install pandoc"; exit 1; }; \
-	fi; \
+	echo "--- checking latex-to-pdf toolchain (XeLaTeX + fonts) ---"; \
 	if command -v xelatex >/dev/null 2>&1; then \
 	  echo "  xelatex: $$(xelatex --version | head -1)"; \
 	else \
-	  echo "xelatex not found — installing texlive (sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-latex-extra)"; \
-	  sudo apt-get update && sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-latex-extra || { echo "ERROR: failed to install texlive"; exit 1; }; \
+	  echo "xelatex not found — installing TeX Live"; \
+	  sudo apt-get update && sudo apt-get install -y \
+	    texlive-xetex texlive-latex-recommended texlive-latex-extra \
+	    texlive-fonts-recommended fonts-dejavu-core \
+	    || { echo "ERROR: failed to install TeX Live"; exit 1; }; \
+	fi; \
+	missing=""; \
+	for sty in fontspec newunicodechar titlesec fancyhdr enumitem microtype \
+	           geometry hyperref longtable booktabs fancyvrb framed; do \
+	  kpsewhich $$sty.sty >/dev/null 2>&1 || missing="$$missing $$sty"; \
+	done; \
+	if [ -n "$$missing" ]; then \
+	  echo "  missing LaTeX packages:$$missing"; \
+	  echo "  installing (sudo apt-get install -y texlive-latex-recommended texlive-latex-extra)"; \
+	  sudo apt-get update && sudo apt-get install -y \
+	    texlive-latex-recommended texlive-latex-extra \
+	    || { echo "ERROR: failed to install the missing LaTeX packages"; exit 1; }; \
+	else echo "  latex pkgs: all present"; fi; \
+	if fc-list 2>/dev/null | grep -qi 'DejaVu Sans Mono'; then \
+	  echo "  fonts  : DejaVu Sans Mono found"; \
+	else \
+	  echo "DejaVu Sans Mono not found (the notes use it for code) — installing"; \
+	  sudo apt-get update && sudo apt-get install -y fonts-dejavu-core \
+	    || { echo "ERROR: failed to install fonts-dejavu-core"; exit 1; }; \
 	fi; \
 	echo "setup complete — 'conda activate ml' to work interactively"
 
@@ -180,25 +204,42 @@ run-all:
 	if [ $$fail -eq 0 ]; then echo "all runnables passed (see test-results.log)"; \
 	else echo "some runnables failed (see test-results.log)"; fi
 
-# Convert every Markdown file under Notes/ (recursively) into a same-named PDF,
-# via pandoc + xelatex. Override sizing on the command line, e.g.:
-#   make notes-pdf FONTSIZE=10pt MARGIN=0.8in
+# Compile every LaTeX file under Notes/ (recursively) into a same-named PDF.
+# Each .tex is standalone; xelatex runs twice so \tableofcontents resolves.
+# Build a single document with:  make notes-pdf N=Stats
 notes-pdf:
 	@if [ ! -d $(NOTES_DIR) ]; then echo "no $(NOTES_DIR)/ directory found"; exit 0; fi
-	@command -v pandoc >/dev/null 2>&1 || { echo "pandoc not found — run 'make setup' first"; exit 1; }
-	@command -v xelatex >/dev/null 2>&1 || { echo "xelatex not found — run 'make setup' first"; exit 1; }
-	@found=0; \
-	for f in $$(find $(NOTES_DIR) -name '*.md'); do \
-	  found=1; \
-	  out="$${f%.md}.pdf"; \
-	  echo "converting $$f -> $$out"; \
-	  pandoc "$$f" -o "$$out" \
-	    --pdf-engine=xelatex \
-	    -V fontsize=$(FONTSIZE) \
-	    -V geometry:margin=$(MARGIN) \
-	    -V mainfont="Latin Modern Roman" || echo "  FAILED: $$f"; \
+	@command -v $(TEX) >/dev/null 2>&1 || { echo "$(TEX) not found — run 'make setup' first"; exit 1; }
+	@if [ -n "$(N)" ]; then \
+	  texs=$$(find $(NOTES_DIR) -name "$(N).tex"); \
+	  [ -n "$$texs" ] || { echo "no $(N).tex found under $(NOTES_DIR)/"; exit 1; }; \
+	else \
+	  texs=$$(find $(NOTES_DIR) -name '*.tex' | sort); \
+	fi; \
+	if [ -z "$$texs" ]; then echo "no .tex files found under $(NOTES_DIR)/"; exit 0; fi; \
+	fail=0; \
+	for f in $$texs; do \
+	  dir=$$(dirname "$$f"); base=$$(basename "$$f" .tex); \
+	  echo "compiling $$f -> $$dir/$$base.pdf"; \
+	  ( cd "$$dir" && \
+	    $(TEX) $(TEXFLAGS) "$$base.tex" >"$$base.build.log" 2>&1 && \
+	    $(TEX) $(TEXFLAGS) "$$base.tex" >>"$$base.build.log" 2>&1 ) || { \
+	      echo "  FAILED: $$f — first errors:"; \
+	      grep -m5 -A3 '^!' "$$dir/$$base.build.log" | sed 's/^/    /'; \
+	      echo "    (full log: $$dir/$$base.build.log)"; \
+	      fail=1; continue; }; \
+	  rm -f "$$dir/$$base.build.log"; \
 	done; \
-	if [ $$found -eq 0 ]; then echo "no markdown files found under $(NOTES_DIR)/"; fi
+	$(MAKE) -s notes-clean; \
+	if [ $$fail -eq 0 ]; then echo "all notes compiled"; \
+	else echo "some notes failed to compile"; exit 1; fi
+
+# Delete LaTeX intermediates under Notes/, keeping the .tex sources and the PDFs.
+notes-clean:
+	@if [ -d $(NOTES_DIR) ]; then \
+	  find $(NOTES_DIR) -type f \( $(foreach e,$(TEX_AUX),-name '*.$(e)' -o) -false \) \
+	    -delete 2>/dev/null; \
+	fi
 
 # List runnable classes and notebooks, newest first.
 list:
@@ -223,8 +264,8 @@ clean:
 	rm -rf ./Machine_learning/lightning_logs
 
 # clean-all: clean + strip every notebook's output cells (small, diff-friendly
-# commits) + remove every generated PDF under Notes/.
-clean-all: clean
+# commits) + remove every generated PDF and LaTeX aux file under Notes/.
+clean-all: clean notes-clean
 	@if [ -n "$(NBS)" ]; then \
 	  echo "stripping notebook outputs:"; \
 	  for nb in $(NBS); do echo "  $$nb"; done; \

@@ -1,0 +1,3002 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  10pt,
+  letterpaper,
+  onecolumn]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  % fontspec, NOT unicode-math: unicode-math makes math glyphs math-active,
+  % which breaks \newunicodechar mappings in text mode.
+  \usepackage{fontspec}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\IfFileExists{lmodern.sty}{\ifPDFTeX\usepackage{lmodern}\fi}{}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Latin Modern Roman}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=0.85in]{geometry}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\newcommand{\notestitle}{Statistics Notes}
+% ---------------------------------------------------------------------------
+%  Study-notes preamble (inlined by pandoc -H, so each .tex is standalone).
+%  Engine: XeLaTeX.  Class: article, 10pt, one column.
+% ---------------------------------------------------------------------------
+\usepackage{amsmath,amssymb}
+\usepackage{newunicodechar}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{microtype}
+
+% --- fonts ------------------------------------------------------------------
+% Latin Modern for text/math; DejaVu Sans Mono for code (wide Unicode coverage).
+\setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]
+
+% --- Unicode the text font cannot draw -> real math glyphs ------------------
+\newunicodechar{−}{\ensuremath{-}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{÷}{\ensuremath{\div}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{≅}{\ensuremath{\cong}}
+\newunicodechar{≇}{\ensuremath{\ncong}}
+\newunicodechar{∞}{\ensuremath{\infty}}
+\newunicodechar{√}{\ensuremath{\sqrt{\;}}}
+\newunicodechar{Σ}{\ensuremath{\Sigma}}
+\newunicodechar{∫}{\ensuremath{\int}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{∘}{\ensuremath{\circ}}
+\newunicodechar{‖}{\ensuremath{\|}}
+\newunicodechar{ℓ}{\ensuremath{\ell}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{⇐}{\ensuremath{\Leftarrow}}
+\newunicodechar{⇔}{\ensuremath{\Leftrightarrow}}
+\newunicodechar{⌈}{\ensuremath{\lceil}}
+\newunicodechar{⌉}{\ensuremath{\rceil}}
+\newunicodechar{⌊}{\ensuremath{\lfloor}}
+\newunicodechar{⌋}{\ensuremath{\rfloor}}
+\newunicodechar{°}{\ensuremath{{}^{\circ}}}
+\newunicodechar{✓}{\ensuremath{\checkmark}}
+% greek
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{β}{\ensuremath{\beta}}
+\newunicodechar{γ}{\ensuremath{\gamma}}
+\newunicodechar{ε}{\ensuremath{\epsilon}}
+\newunicodechar{η}{\ensuremath{\eta}}
+\newunicodechar{θ}{\ensuremath{\theta}}
+\newunicodechar{λ}{\ensuremath{\lambda}}
+\newunicodechar{μ}{\ensuremath{\mu}}
+\newunicodechar{π}{\ensuremath{\pi}}
+\newunicodechar{ρ}{\ensuremath{\rho}}
+\newunicodechar{σ}{\ensuremath{\sigma}}
+\newunicodechar{φ}{\ensuremath{\phi}}
+\newunicodechar{ω}{\ensuremath{\omega}}
+% super/subscripts
+\newunicodechar{¹}{\ensuremath{{}^{1}}}
+\newunicodechar{²}{\ensuremath{{}^{2}}}
+\newunicodechar{³}{\ensuremath{{}^{3}}}
+\newunicodechar{⁴}{\ensuremath{{}^{4}}}
+\newunicodechar{⁵}{\ensuremath{{}^{5}}}
+\newunicodechar{⁶}{\ensuremath{{}^{6}}}
+\newunicodechar{⁷}{\ensuremath{{}^{7}}}
+\newunicodechar{⁸}{\ensuremath{{}^{8}}}
+\newunicodechar{ⁿ}{\ensuremath{{}^{n}}}
+\newunicodechar{ˣ}{\ensuremath{{}^{x}}}
+\newunicodechar{ᵀ}{\ensuremath{{}^{\mathsf{T}}}}
+\newunicodechar{ᵇ}{\ensuremath{{}^{b}}}
+\newunicodechar{⁻}{\ensuremath{{}^{-}}}
+\newunicodechar{⁺}{\ensuremath{{}^{+}}}
+\newunicodechar{₀}{\ensuremath{{}_{0}}}
+\newunicodechar{₁}{\ensuremath{{}_{1}}}
+\newunicodechar{₂}{\ensuremath{{}_{2}}}
+\newunicodechar{₃}{\ensuremath{{}_{3}}}
+\newunicodechar{ᵢ}{\ensuremath{{}_{i}}}
+\newunicodechar{ₐ}{\ensuremath{{}_{a}}}
+% accented letters
+\newunicodechar{î}{\ensuremath{\hat{\imath}}}
+\newunicodechar{ĵ}{\ensuremath{\hat{\jmath}}}
+\newunicodechar{ŷ}{\ensuremath{\hat{y}}}
+\newunicodechar{Ŷ}{\ensuremath{\hat{Y}}}
+\newunicodechar{ȳ}{\ensuremath{\bar{y}}}
+% private-use slots written by prep.py for combining-accent sequences
+\newunicodechar{}{\ensuremath{\hat{f}}}
+\newunicodechar{}{\ensuremath{\hat{\beta}}}
+\newunicodechar{}{\ensuremath{\hat{\sigma}}}
+\newunicodechar{}{\ensuremath{\hat{k}}}
+\newunicodechar{}{\ensuremath{\hat{\mu}}}
+\newunicodechar{}{\ensuremath{\bar{x}}}
+
+% --- layout -----------------------------------------------------------------
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,parsep=0.15em,topsep=0.3em}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{2.0ex plus .6ex minus .2ex}{1.0ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.6ex plus .5ex minus .2ex}{0.7ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{1.2ex plus .4ex minus .2ex}{0.5ex plus .2ex}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\footnotesize\nouppercase\leftmark}
+\fancyhead[R]{\footnotesize\textit{\notestitle}}
+\fancyfoot[C]{\footnotesize\thepage}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[C]{\footnotesize\thepage}}
+
+% keep display math from being torn off its paragraph too eagerly
+\allowdisplaybreaks
+\setlength{\abovedisplayskip}{0.6em}
+\setlength{\belowdisplayskip}{0.6em}
+\setlength{\emergencystretch}{3em}
+\sloppy
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Statistics Notes},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={NavyBlue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Statistics Notes}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+A running file of statistics and statistical-learning concepts, in
+Definition / Intuition / Notes form. Written to stand alone --- no book
+required to read them. Math is kept light: a one-line formula plus plain
+English, not derivations.
+
+Split out from the ML notes to keep the statistics track separate
+(companion to StatQuest). Machine-learning and deep-learning methods ---
+trees, SVMs, neural networks, transformers, unsupervised learning, and
+ML systems design --- live in a companion \textbf{ML\_notes.md}, and
+cross-references to them are marked \emph{(ML)}.
+
+Sources here: \emph{An Introduction to Statistical Learning} (ISL/ISLP)
+and StatQuest (Josh Starmer), with standard additions marked inline.
+Section tags show which pass a topic came from.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{statistical-learning-foundations-isl-ch.-2}{%
+\subsection{\texorpdfstring{Statistical Learning --- Foundations
+\emph{(ISL
+ch.~2)}}{Statistical Learning --- Foundations (ISL ch.~2)}}\label{statistical-learning-foundations-isl-ch.-2}}
+
+\hypertarget{statistical-learning}{%
+\subsubsection{Statistical learning}\label{statistical-learning}}
+
+\textbf{Definition.} A set of approaches for estimating an unknown
+function \texttt{f} that links inputs \texttt{X\ =\ (X\_1,\ …,\ X\_p)}
+to an output \texttt{Y}, modeled as \texttt{Y\ =\ f(X)\ +\ ε}, where
+\texttt{ε} is a random error term independent of \texttt{X} with mean
+zero.
+
+\textbf{Intuition.} We assume some systematic relationship \texttt{f}
+connects inputs to output, but it's buried in noise. Statistical
+learning is the toolkit for recovering as much of \texttt{f} as the data
+allows --- either to predict new outputs, or to understand how the
+inputs drive the output.
+
+\textbf{Notes.} \texttt{ε} is the \emph{irreducible error} (→ Reducible
+vs irreducible error). If every observation pairs inputs with a known
+\texttt{Y}, the problem is \emph{supervised}; with no \texttt{Y}, it's
+\emph{unsupervised}. Everything downstream --- parametric vs
+non-parametric, the bias--variance trade-off --- is about how well we
+can pin down \texttt{}.
+
+\hypertarget{supervised-vs-unsupervised-learning}{%
+\subsubsection{Supervised vs unsupervised
+learning}\label{supervised-vs-unsupervised-learning}}
+
+\textbf{Definition.} Supervised learning fits a model from observations
+that each pair predictors \texttt{x\_i} with a response \texttt{y\_i},
+for prediction or inference. Unsupervised learning has predictors
+\texttt{x\_i} but no response \texttt{y\_i}, so the goal is to find
+structure among observations rather than predict a labeled output.
+
+\textbf{Intuition.} Supervised = learning with an answer key: every
+example tells you the right output, so you can measure and correct
+error. Unsupervised = working blind: no answer key, so you look for
+patterns, groupings, or structure in the inputs themselves.
+
+\textbf{Notes.} Supervised methods here: linear regression, logistic
+regression, LDA/QDA, trees, GAMs, boosting, SVMs, most neural nets.
+Unsupervised can't fit a regression model --- there's no response to
+supervise it. Almost all model-accuracy machinery presumes a response to
+compare against. → Unsupervised learning (ML) (ch.~12), Semi-supervised
+learning.
+
+\hypertarget{semi-supervised-learning}{%
+\subsubsection{Semi-supervised
+learning}\label{semi-supervised-learning}}
+
+\textbf{Definition.} A setting with \texttt{n} observations where
+\texttt{m\ \textless{}\ n} have both predictors and a response, and the
+remaining \texttt{n\ −\ m} have predictors only; the aim is a method
+that uses both.
+
+\textbf{Intuition.} Common when predictors are cheap to measure but
+responses are expensive to collect. You don't want to discard the
+unlabeled majority, so you use them to sharpen an estimate anchored by
+the labeled few.
+
+\textbf{Notes.} Sits between supervised and unsupervised. \emph{(beyond
+ISL ch.~2 --- named but not developed there.)}
+
+\hypertarget{prediction-vs-inference}{%
+\subsubsection{Prediction vs inference}\label{prediction-vs-inference}}
+
+\textbf{Definition.} In prediction, the goal is an accurate \texttt{}
+giving good output estimates \texttt{Ŷ\ =\ (X)} for new inputs, and
+\texttt{} may be a black box. In inference, the goal is to understand
+the relationship between \texttt{X} and \texttt{Y} --- which predictors
+matter, in what direction, how --- so \texttt{} must be interpretable.
+
+\textbf{Intuition.} Prediction only cares that the answer is right; you
+needn't know why. Inference cares about the ``why,'' and will trade some
+predictive accuracy for a model you can read.
+
+\textbf{Notes.} This goal drives model choice: prediction can justify
+flexible black boxes; inference favors restrictive, interpretable models
+like linear regression. → Flexibility vs interpretability.
+
+\hypertarget{reducible-vs-irreducible-error}{%
+\subsubsection{Reducible vs irreducible
+error}\label{reducible-vs-irreducible-error}}
+
+\textbf{Definition.} For \texttt{Ŷ\ =\ (X)}, expected squared
+prediction error splits as
+\texttt{E{[}(Y\ −\ Ŷ)²{]}\ =\ {[}f(X)\ −\ (X){]}²\ +\ Var(ε)}. The
+first term is \emph{reducible error} (shrinks as \texttt{} improves);
+\texttt{Var(ε)} is the \emph{irreducible error}, a floor no model can
+remove.
+
+\textbf{Intuition.} Some error is your model's fault (a wrong or
+imprecise \texttt{}) --- you can chip away at it with better methods
+and more data. The rest is baked into the problem: unmeasured variables,
+inherent randomness. Even the true \texttt{f} wouldn't predict
+perfectly.
+
+\textbf{Notes.} \emph{Emphasized:} you can only ever attack the
+reducible part. \texttt{Var(ε)} reappears as the noise floor in the
+Bias--variance trade-off, and it's why test error bottoms out above
+zero. Its classification analogue is the Bayes error rate.
+
+\hypertarget{quantitative-vs-qualitative-variables}{%
+\subsubsection{Quantitative vs qualitative
+variables}\label{quantitative-vs-qualitative-variables}}
+
+\textbf{Definition.} Quantitative variables take numerical values
+(e.g.~salary, age). Qualitative (categorical) variables take values in
+one of \texttt{K} classes or categories (e.g.~brand, disease status).
+
+\textbf{Intuition.} Numbers you can average vs labels you can only
+count. The type of the \emph{response} decides what kind of problem you
+have.
+
+\textbf{Notes.} Quantitative response → regression; qualitative response
+→ classification. → Regression vs classification.
+
+\hypertarget{regression-vs-classification}{%
+\subsubsection{Regression vs
+classification}\label{regression-vs-classification}}
+
+\textbf{Definition.} Problems with a quantitative response are
+\emph{regression} problems; problems with a qualitative response are
+\emph{classification} problems.
+
+\textbf{Intuition.} Predicting ``how much / how many'' (a number) is
+regression; predicting ``which class'' (a label) is classification.
+
+\textbf{Notes.} The line isn't crisp. Logistic regression is a
+classification method but estimates class probabilities, so it has a
+regression flavor. Some methods --- KNN, boosting --- handle either
+response type. Two classification methods for qualitative responses
+covered later: Logistic regression (models the log-odds directly) and
+Linear discriminant analysis (models each class's distribution, then
+applies Bayes' rule) --- distinct methods, both detailed in the
+Classification section.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{estimating-f-isl-ch.-2}{%
+\subsection{\texorpdfstring{Estimating f \emph{(ISL
+ch.~2)}}{Estimating f (ISL ch.~2)}}\label{estimating-f-isl-ch.-2}}
+
+\hypertarget{parametric-methods}{%
+\subsubsection{Parametric methods}\label{parametric-methods}}
+
+\textbf{Definition.} A two-step, model-based approach to estimating
+\texttt{f}: (1) assume a functional form for \texttt{f} (e.g.~linear,
+\texttt{f(X)\ =\ β\_0\ +\ β\_1\ X\_1\ +\ …\ +\ β\_p\ X\_p}); (2) use
+training data to fit/train the model --- i.e.~estimate its parameters
+(for the linear form, the \texttt{p\ +\ 1} coefficients).
+
+\textbf{Intuition.} Rather than searching all possible functions, commit
+to a shape and tune its dials. Assuming linearity collapses an arbitrary
+\texttt{p}-dimensional function into just \texttt{p\ +\ 1} numbers to
+estimate --- far easier, and less data-hungry.
+
+\textbf{Notes.} The risk: if the assumed form is wrong, \texttt{} stays
+biased no matter how much data you have. Advantages: easy to fit, few
+coefficients, interpretable, easy significance tests. The linear form is
+typically fit by least squares. Contrast Non-parametric methods.
+
+\hypertarget{non-parametric-methods}{%
+\subsubsection{Non-parametric methods}\label{non-parametric-methods}}
+
+\textbf{Definition.} Methods that make no explicit assumption about the
+functional form of \texttt{f}; they seek an \texttt{} that gets as
+close to the data as possible without being too rough or wiggly.
+
+\textbf{Intuition.} You don't pre-commit to a shape --- you let the data
+draw \texttt{f}. This can capture relationships a linear model would
+miss.
+
+\textbf{Notes.} Cost: with no small parameter set to pin down, you need
+far more observations to estimate \texttt{f} accurately. You trade
+freedom from a possibly-wrong assumption for data-hunger and overfitting
+risk. KNN is the flagship example. Contrast Parametric methods.
+
+\hypertarget{overfitting}{%
+\subsubsection{Overfitting}\label{overfitting}}
+
+\textbf{Definition.} When a model follows the training data's noise too
+closely, producing a small training error but a large test error.
+
+\textbf{Intuition.} The model memorizes quirks of the training sample
+--- noise that won't recur --- instead of the underlying signal. Great
+on data it has seen, poor on data it hasn't.
+
+\textbf{Notes.} More flexible methods are more prone to it. It's why the
+test-error curve is U-shaped: past a point, added flexibility buys
+noise-fitting, not signal. In bias--variance terms, overfitting = low
+bias but high variance. (A modern wrinkle: past the \emph{interpolation}
+point test error can fall again --- see Double descent.) →
+Bias--variance trade-off, Training MSE vs test MSE.
+
+\hypertarget{flexibility-vs-interpretability}{%
+\subsubsection{Flexibility vs
+interpretability}\label{flexibility-vs-interpretability}}
+
+\textbf{Definition.} Methods trade off along a spectrum from
+inflexible/interpretable to flexible/opaque. Least squares linear
+regression is inflexible but highly interpretable; the lasso is similar;
+GAMs are more flexible while staying fairly interpretable; bagging,
+boosting, SVMs with non-linear kernels, and neural nets are highly
+flexible but hard to interpret.
+
+\textbf{Intuition.} Flexibility = how many shapes a method can bend to.
+More flexibility can fit complex truths but makes the model harder to
+read and easier to overfit. Want to explain the \texttt{X}--\texttt{Y}
+relationship (inference)? Reach for a restrictive, readable model.
+
+\textbf{Notes.} \emph{Emphasized:} more flexible ≠ more accurate.
+Because of overfitting, a less flexible method often predicts better on
+test data. Choosing the right level of flexibility is the central
+practical problem, in both regression and classification. → Prediction
+vs inference, Bias--variance trade-off, Neural networks.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{assessing-model-accuracy-isl-ch.-2}{%
+\subsection{\texorpdfstring{Assessing Model Accuracy \emph{(ISL
+ch.~2)}}{Assessing Model Accuracy (ISL ch.~2)}}\label{assessing-model-accuracy-isl-ch.-2}}
+
+\hypertarget{mean-squared-error-mse}{%
+\subsubsection{Mean squared error (MSE)}\label{mean-squared-error-mse}}
+
+\textbf{Definition.} In regression, the standard measure of fit quality:
+\texttt{MSE\ =\ (1/n)\ Σ\ (y\_i\ −\ (x\_i))²} --- the average squared
+gap between observed responses and predictions.
+
+\begin{equation*}
+\mathrm{MSE}=\frac{1}{n}\sum_{i=1}^{n}\bigl(y_i-\hat f(x_i)\bigr)^2
+\qquad\text{(train MSE on the fitting set, test MSE on held-out data)}
+\end{equation*}
+
+\textbf{Intuition.} How far off predictions are on average, with big
+misses penalized disproportionately (squaring). Small MSE = predictions
+land close to the truth.
+
+\textbf{Notes.} On the fitting data it's \emph{training MSE}; what
+matters is \emph{test MSE} on unseen data. → Training MSE vs test MSE.
+
+\hypertarget{training-mse-vs-test-mse}{%
+\subsubsection{Training MSE vs test
+MSE}\label{training-mse-vs-test-mse}}
+
+\textbf{Definition.} Training MSE is computed on the data used to fit
+the model; test MSE on previously unseen data. The objective is to
+minimize test MSE.
+
+\textbf{Intuition.} Acing questions you studied (training) doesn't prove
+you'll ace the exam (test). Only fresh data measures real predictive
+skill.
+
+\textbf{Notes.} \emph{Emphasized:} no guarantee the lowest-training-MSE
+method has the lowest test MSE --- often it's the reverse. As
+flexibility rises, training MSE falls \emph{monotonically} while test
+MSE traces a \emph{U-shape} (falls, then rises as overfitting sets in).
+A widening gap is the signature of overfitting. When no test set exists,
+resampling estimates test error → Cross-validation (Resampling Methods).
+
+\hypertarget{biasvariance-trade-off}{%
+\subsubsection{Bias--variance trade-off}\label{biasvariance-trade-off}}
+
+\textbf{Definition.} Expected test MSE at a point \texttt{x\_0}
+decomposes as
+\texttt{E{[}(y\_0\ −\ (x\_0))²{]}\ =\ Var((x\_0))\ +\ {[}Bias((x\_0)){]}²\ +\ Var(ε)}.
+Minimizing expected test error requires \emph{simultaneously} low
+variance and low bias; as flexibility changes, the two typically move in
+opposite directions.
+
+\begin{equation*}
+\mathbb{E}\bigl[(y_0-\hat f(x_0))^2\bigr]
+=\underbrace{\operatorname{Var}(\hat f(x_0))}_{\text{variance}}
++\underbrace{\bigl[\operatorname{Bias}(\hat f(x_0))\bigr]^2}_{\text{bias}^2}
++\underbrace{\operatorname{Var}(\varepsilon)}_{\text{irreducible}}
+\end{equation*}
+
+\textbf{Intuition.} Expected test error has three ingredients: how much
+the fit jumps around across different training sets (\emph{variance}),
+how much the model's simplifying assumptions distort the truth
+(\emph{bias²}), and the irreducible noise floor (\texttt{Var(ε)}). You
+can't zero out both bias and variance at once --- tighten one and the
+other usually loosens --- so you aim for the sweet spot that minimizes
+their sum. As flexibility rises, bias falls but variance rises. The
+U-shaped test-MSE curve \emph{is} this trade-off made visible.
+
+\textbf{Notes.} \texttt{Var(ε)} is the irreducible error; expected test
+MSE can never drop below it. Underfitting = high bias; overfitting =
+high variance. This trade-off touches nearly every method here.
+\emph{Modern caveat (ch.~10):} it describes behavior up to the point of
+interpolation; push flexibility further and test error can descend a
+second time --- see Double descent. → Bias, Variance, Overfitting.
+
+\hypertarget{bias}{%
+\subsubsection{Bias}\label{bias}}
+
+\textbf{Definition.} The error introduced by approximating a complicated
+real-world relationship with a much simpler model. As methods get more
+flexible, bias generally decreases.
+
+\textbf{Intuition.} Force a straight line through a curvy truth and
+you're systematically wrong in a way more data won't fix --- that's
+bias. Simpler, more restrictive models carry more of it.
+
+\textbf{Notes.} Low bias is one of the two things low test error needs;
+the other is low Variance. High bias = underfitting. Trades off against
+Variance.
+
+\hypertarget{variance}{%
+\subsubsection{Variance}\label{variance}}
+
+\textbf{Definition.} The amount by which \texttt{} would change if
+estimated on a different training set. More flexible methods generally
+have higher variance.
+
+\textbf{Intuition.} Refit on a fresh sample from the same population ---
+does the fit barely move, or swing wildly? Wild swings = high variance.
+Flexible methods bend to each sample's noise, so they're less stable.
+
+\textbf{Notes.} \emph{Emphasized:} small changes in training data
+producing large changes in \texttt{} is the hallmark of high variance.
+High variance = overfitting. Trades off against Bias. Bagging exists
+specifically to reduce variance.
+
+\hypertarget{classification-error-rate}{%
+\subsubsection{Classification error
+rate}\label{classification-error-rate}}
+
+\textbf{Definition.} In classification, fit quality is measured by the
+error rate --- the fraction of misclassified observations. The
+\emph{test error rate} on test observations \texttt{(x\_0,\ y\_0)} is
+\texttt{Ave(I(y\_0\ ≠\ ŷ\_0))}, the average of the indicator that the
+predicted label differs from the true one; the \emph{training error
+rate} is the same on training data.
+
+\textbf{Intuition.} The classification analogue of MSE --- instead of
+averaging squared numeric misses, you count how often you named the
+wrong class.
+
+\textbf{Notes.} \texttt{I(·)} is the indicator function (1 if true, else
+0). As with MSE, training error falls with flexibility while test error
+is U-shaped. A good classifier has a small \emph{test} error rate; its
+theoretical floor is the Bayes error rate.
+
+\hypertarget{bayes-classifier}{%
+\subsubsection{Bayes classifier}\label{bayes-classifier}}
+
+\textbf{Definition.} The classifier that assigns each observation with
+predictors \texttt{x\_0} to the most probable class given those
+predictors --- the class \texttt{j} maximizing
+\texttt{Pr(Y\ =\ j\ \textbar{}\ X\ =\ x\_0)}. Two-class: predict class 1
+if \texttt{Pr(Y\ =\ 1\ \textbar{}\ X\ =\ x\_0)\ \textgreater{}\ 0.5},
+else class 2.
+
+\begin{equation*}
+\hat y(x_0)=\arg\max_{j}\;\Pr(Y=j\mid X=x_0)
+\qquad
+\text{Bayes error}=1-\mathbb{E}\Bigl[\max_j \Pr(Y=j\mid X)\Bigr]
+\end{equation*}
+
+\textbf{Intuition.} If you knew the true class probabilities at every
+point, your best bet is always the most likely class. That's the Bayes
+classifier --- the gold standard every real classifier tries to
+approximate.
+
+\textbf{Notes.} In practice we don't know the true conditional
+distribution and must estimate it --- KNN estimates it locally;
+LDA/QDA/naive Bayes estimate it via Bayes' theorem. Produces the lowest
+possible test error rate (→ Bayes error rate) and defines the Bayes
+decision boundary.
+
+\hypertarget{bayes-decision-boundary}{%
+\subsubsection{Bayes decision boundary}\label{bayes-decision-boundary}}
+
+\textbf{Definition.} The set of points where the Bayes classifier is
+indifferent between classes --- two-class: where
+\texttt{Pr(Y\ =\ 1\ \textbar{}\ X\ =\ x\_0)\ =\ 0.5}. It partitions the
+predictor space into per-class regions.
+
+\textbf{Intuition.} The dividing line the perfect classifier would draw.
+One side, one class wins; the other side, the other.
+
+\textbf{Notes.} Real classifiers try to approximate it. A too-flexible
+fit (KNN with \texttt{K\ =\ 1}) yields a jagged boundary that chases
+noise instead of tracking the true boundary.
+
+\hypertarget{bayes-error-rate}{%
+\subsubsection{Bayes error rate}\label{bayes-error-rate}}
+
+\textbf{Definition.} The lowest possible test error rate, achieved by
+the Bayes classifier. Overall it equals
+\texttt{1\ −\ E{[}max\_j\ Pr(Y\ =\ j\ \textbar{}\ X){]}} (expectation
+over \texttt{X}); at a single point \texttt{x\_0} it is
+\texttt{1\ −\ max\_j\ Pr(Y\ =\ j\ \textbar{}\ X\ =\ x\_0)}.
+
+\textbf{Intuition.} Even the perfect classifier is wrong sometimes,
+because classes overlap --- at some \texttt{x}, more than one class
+carries real probability. The Bayes error rate is that unavoidable
+minimum.
+
+\textbf{Notes.} The classification analogue of irreducible error --- a
+floor no classifier beats.
+
+\hypertarget{k-nearest-neighbors-knn}{%
+\subsubsection{K-nearest neighbors
+(KNN)}\label{k-nearest-neighbors-knn}}
+
+\textbf{Definition.} A non-parametric classifier. Given \texttt{K} and a
+test point \texttt{x\_0}, KNN finds the \texttt{K} closest training
+points (\texttt{N\_0}), estimates each class's probability as the
+fraction of \texttt{N\_0} in that class, and assigns \texttt{x\_0} to
+the most probable class.
+
+\begin{equation*}
+\Pr(Y=j\mid X=x_0)\;\approx\;\frac{1}{K}\sum_{i\in\mathcal{N}_0}\mathbb{1}(y_i=j),
+\qquad \mathcal{N}_0=\text{the }K\text{ training points nearest }x_0
+\end{equation*}
+
+\textbf{Intuition.} Ask the \texttt{K} nearest neighbors to vote; go
+with the majority. It approximates the Bayes classifier by estimating
+the true probabilities locally from whoever's nearby.
+
+\textbf{Notes.} \emph{Emphasized:} the choice of \texttt{K} matters a
+lot, and \texttt{1/K} acts as the flexibility knob. \texttt{K\ =\ 1} is
+maximally flexible --- jagged, low-bias/high-variance, chasing noise;
+large \texttt{K} is smoother, higher-bias/lower-variance. Choosing
+\texttt{K} well \emph{is} the bias--variance trade-off in action. KNN
+also does regression → KNN regression. → Non-parametric methods, Bayes
+classifier.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{linear-regression-isl-ch.-3}{%
+\subsection{\texorpdfstring{Linear Regression \emph{(ISL
+ch.~3)}}{Linear Regression (ISL ch.~3)}}\label{linear-regression-isl-ch.-3}}
+
+\hypertarget{simple-linear-regression}{%
+\subsubsection{Simple linear
+regression}\label{simple-linear-regression}}
+
+\textbf{Definition.} Predicting a quantitative response \texttt{Y} from
+a single predictor \texttt{X} by assuming a straight-line relationship:
+\texttt{Y\ ≈\ β\_0\ +\ β\_1\ X}, where \texttt{β\_0} is the intercept
+and \texttt{β\_1} the slope. Fitting this is ``regressing \texttt{Y} on
+\texttt{X}.''
+
+\begin{equation*}
+Y=\beta_0+\beta_1X+\varepsilon,
+\qquad
+\hat\beta_1=\frac{\sum_i (x_i-\bar x)(y_i-\bar y)}{\sum_i (x_i-\bar x)^2},
+\qquad
+\hat\beta_0=\bar y-\hat\beta_1\bar x
+\end{equation*}
+
+\textbf{Intuition.} Draw the best straight line through a scatter of
+points. \texttt{β\_1} says how much \texttt{Y} moves per one-unit rise
+in \texttt{X}; \texttt{β\_0} is where the line crosses when
+\texttt{X\ =\ 0}.
+
+\textbf{Notes.} The simplest parametric model. Extends to many
+predictors → Multiple linear regression. Coefficients are estimated by
+least squares.
+
+\hypertarget{least-squares-and-residuals-rss}{%
+\subsubsection{Least squares and residuals
+(RSS)}\label{least-squares-and-residuals-rss}}
+
+\textbf{Definition.} The \texttt{i}-th \emph{residual} is
+\texttt{e\_i\ =\ y\_i\ −\ ŷ\_i}, the gap between the observed and
+predicted response. The \emph{residual sum of squares} is
+\texttt{RSS\ =\ e\_1²\ +\ …\ +\ e\_n²}. The \emph{least squares} fit
+chooses \texttt{\_0,\ \_1} to minimize RSS.
+
+\begin{equation*}
+e_i=y_i-\hat y_i,
+\qquad
+\mathrm{RSS}=\sum_{i=1}^{n}e_i^2=\sum_{i=1}^{n}\bigl(y_i-\hat\beta_0-\hat\beta_1x_i\bigr)^2
+\end{equation*}
+
+\textbf{Intuition.} Each residual is a miss; squaring makes big misses
+count more and keeps signs from cancelling. Least squares picks the line
+that makes the total squared miss as small as possible --- the line that
+``splits the difference'' best.
+
+\textbf{Notes.} For simple regression there are closed-form solutions
+for \texttt{\_0} and \texttt{\_1} in terms of the sample means and the
+spread of \texttt{X}. RSS also drives R², the F-statistic, and tree
+splitting. → R-squared and correlation.
+
+\hypertarget{population-regression-line-vs-least-squares-line}{%
+\subsubsection{Population regression line vs least squares
+line}\label{population-regression-line-vs-least-squares-line}}
+
+\textbf{Definition.} The \emph{population regression line} is the true
+best-fit line \texttt{Y\ =\ β\_0\ +\ β\_1\ X\ +\ ε} for the whole
+population (unobserved). The \emph{least squares line} is the estimate
+\texttt{ŷ\ =\ \_0\ +\ \_1\ x} computed from one sample.
+
+\textbf{Intuition.} Same idea as estimating a population mean from a
+sample mean: on one sample your line sits a little high, on another a
+little low, but averaged over many samples it lands on the truth. The
+least squares line is an \emph{unbiased} estimate of the population
+line.
+
+\textbf{Notes.} The gap between the two is why we need standard errors
+and confidence intervals --- to say how far our sample line might be
+from the truth.
+
+\hypertarget{standard-error-of-a-coefficient}{%
+\subsubsection{Standard error of a
+coefficient}\label{standard-error-of-a-coefficient}}
+
+\textbf{Definition.} The standard error \texttt{SE()} measures how much
+an estimated coefficient would vary across different samples. For the
+sample mean, \texttt{SE()²\ =\ σ²/n}, where \texttt{σ} is the standard
+deviation of each observation; analogous formulas give \texttt{SE(\_0)}
+and \texttt{SE(\_1)}, with \texttt{σ²\ =\ Var(ε)}.
+
+\begin{equation*}
+\mathrm{SE}(\hat\beta_1)^2=\frac{\sigma^2}{\sum_i (x_i-\bar x)^2},
+\qquad
+\mathrm{SE}(\hat\beta_0)^2=\sigma^2\left[\frac{1}{n}+\frac{\bar x^2}{\sum_i (x_i-\bar x)^2}\right]
+\end{equation*}
+
+\textbf{Intuition.} It's the typical wobble in an estimate. More data
+(larger \texttt{n}) and predictors spread over a wider range both shrink
+the wobble, giving you a more precise coefficient.
+
+\textbf{Notes.} Standard errors feed confidence intervals and hypothesis
+tests. Small \texttt{SE(\_1)} means even a modest \texttt{\_1} is
+convincing evidence of a real relationship. → Confidence interval,
+Hypothesis test.
+
+\hypertarget{confidence-interval}{%
+\subsubsection{Confidence interval}\label{confidence-interval}}
+
+\textbf{Definition.} A range that contains the true parameter with a
+stated probability (typically 95\%). For a regression coefficient, the
+95\% CI is approximately \texttt{\_1\ ±\ 2·SE(\_1)}; for a mean,
+\texttt{\ ±\ 2·SE} with \texttt{SE\ =\ σ/√n}. It can also be read
+straight off a bootstrap: the middle 95\% of the bootstrapped estimates.
+
+\textbf{Intuition.} ``We're 95\% confident the truth lies in here.''
+More precisely: if you repeated the sampling many times, about 95\% of
+the intervals you'd build this way would contain the true value. A value
+\emph{outside} the 95\% CI is one the data reject at
+\texttt{p\ \textless{}\ 0.05}, so a CI doubles as a visual hypothesis
+test.
+
+\textbf{Example.} Bootstrap the mean weight of a sample of mice 10,000
+times; the 2.5th--97.5th percentiles of those means, say
+\texttt{{[}19.4,\ 21.8{]}\ g}, are the 95\% CI. Since \texttt{18\ g}
+lies outside it, the true mean weight is greater than 18 g at
+\texttt{p\ \textless{}\ 0.05}. Comparing two groups: if the 95\% CIs for
+female and male mouse weight \textbf{don't overlap}, the difference is
+significant (\texttt{p\ \textless{}\ 0.05}); if they \textbf{do}
+overlap, it's inconclusive --- run a t-test.
+
+\textbf{Notes.} Width scales with the standard error, so more data →
+tighter interval. \emph{Caveat on the overlap rule:} non-overlapping CIs
+imply a significant difference, but overlapping CIs do \textbf{not}
+guarantee non-significance --- hence the follow-up t-test. → Standard
+error and the sampling distribution of the mean, The bootstrap, t-tests
+(one-sample, paired, two-sample), Standard error of a coefficient.
+\emph{(StatQuest)}
+
+\hypertarget{hypothesis-test-t-statistic-and-p-value}{%
+\subsubsection{Hypothesis test, t-statistic, and
+p-value}\label{hypothesis-test-t-statistic-and-p-value}}
+
+\textbf{Definition.} To test whether \texttt{X} is related to
+\texttt{Y}, test the \emph{null hypothesis} \texttt{H\_0:\ β\_1\ =\ 0}
+(no relationship) against the \emph{alternative}
+\texttt{H\_a:\ β\_1\ ≠\ 0}. Compute the \emph{t-statistic}
+\texttt{t\ =\ (\_1\ −\ 0)\ /\ SE(\_1)}, compare it to a
+t-distribution, and read off the \emph{p-value}.
+
+\begin{equation*}
+t=\frac{\hat\beta_1-0}{\mathrm{SE}(\hat\beta_1)}\sim t_{n-2}\ \text{under }H_0:\beta_1=0,
+\qquad
+p=\Pr\bigl(|T|\ge|t|\bigr)
+\end{equation*}
+
+\textbf{Intuition.} The t-statistic asks: how many standard errors is
+our estimate away from zero? Far from zero → unlikely to be a fluke. The
+p-value is the probability of seeing an association this strong purely
+by chance if there were really no relationship. Small p-value → reject
+the null and declare a real relationship.
+
+\textbf{Notes.} Small \texttt{SE(\_1)} makes even small \texttt{\_1}
+significant; large SE demands a big \texttt{\_1}. In classification
+(logistic regression) the analogue is the z-statistic. ``Significant'' ≠
+``large effect.'' (The four-step logic --- hypotheses → test statistic →
+p-value → decide --- generalizes to any hypothesis test; you never
+``accept'' \texttt{H\_0}, only ``fail to reject'' it.) → Type I and Type
+II errors.
+
+\hypertarget{residual-standard-error-rse}{%
+\subsubsection{Residual standard error
+(RSE)}\label{residual-standard-error-rse}}
+
+\textbf{Definition.} An estimate of the standard deviation of the noise
+\texttt{ε} --- roughly, the average amount the response deviates from
+the true regression line: \texttt{RSE\ =\ sqrt(RSS\ /\ (n\ −\ 2))} for
+simple regression.
+
+\begin{equation*}
+\mathrm{RSE}=\sqrt{\frac{\mathrm{RSS}}{n-p-1}}
+\end{equation*}
+
+\textbf{Intuition.} Even a perfect model can't predict exactly, because
+of \texttt{ε}. RSE says how big those inherent misses are, in the units
+of \texttt{Y}. Smaller RSE = tighter fit.
+
+\textbf{Notes.} An \emph{absolute} measure of lack of fit --- but being
+in \texttt{Y}'s units, ``good'' is context-dependent, which is why R² (a
+unit-free proportion) is often reported alongside. → R-squared and
+correlation.
+
+\hypertarget{r-squared-and-correlation}{%
+\subsubsection{R-squared and
+correlation}\label{r-squared-and-correlation}}
+
+\textbf{Definition.} \texttt{R²\ =\ 1\ −\ RSS/TSS}, where
+\texttt{TSS\ =\ Σ(y\_i\ −\ ȳ)²} is the total sum of squares.
+Equivalently, the \emph{variance-explained} form:
+\texttt{R²\ =\ (SS(mean)\ −\ SS(fit))\ /\ SS(mean)}, where
+\texttt{SS(mean)\ =\ Σ(y\_i\ −\ ȳ)²} is the variation around the mean
+and \texttt{SS(fit)\ =\ Σ(y\_i\ −\ ŷ\_i)²} the variation around the
+fitted line. It's the \emph{proportion of variance in \texttt{Y}
+explained} by the model, always between 0 and 1. Correlation
+\texttt{Cor(X,\ Y)\ =\ r} measures the linear relationship on
+\texttt{{[}−1,\ 1{]}}; in \emph{simple} linear regression,
+\texttt{R²\ =\ r²}.
+
+\begin{equation*}
+R^2=\frac{\mathrm{TSS}-\mathrm{RSS}}{\mathrm{TSS}}=1-\frac{\mathrm{RSS}}{\mathrm{TSS}},
+\qquad
+\mathrm{TSS}=\sum_i (y_i-\bar y)^2
+\end{equation*}
+
+\textbf{Intuition.} TSS is how much \texttt{Y} varies on its own; RSS is
+how much variation is left after the model. Their ratio is the fraction
+the model mopped up. Its big advantage over the raw correlation
+\texttt{r} is \emph{interpretability}: \texttt{r\ =\ 0.7} vs
+\texttt{r\ =\ 0.5} doesn't tell you ``how much better,'' but \texttt{R²}
+does --- \texttt{R²\ =\ 0.7} explains \textbf{1.4×} as much variance as
+\texttt{R²\ =\ 0.5} (0.7 / 0.5). The cost: \texttt{R²} drops the
+\emph{sign}, so unlike \texttt{r} it won't tell you whether the
+relationship is positive or negative.
+
+\textbf{Example.} Regress mouse weight on size; suppose the variation
+around the mean is \texttt{SS(mean)\ =\ 100} and around the fitted line
+\texttt{SS(fit)\ =\ 20}. Then \texttt{R²\ =\ (100\ −\ 20)/100\ =\ 0.80}
+--- size explains 80\% of the weight variation, leaving 20\%
+unexplained.
+
+\textbf{Notes.} Unit-free, unlike RSE, so easier to interpret across
+problems. \emph{Correction to the jotted formula:} it's
+\texttt{(SS(mean)\ −\ SS(fit))\ /\ SS(mean)} --- the subtraction sits
+\textbf{inside} the numerator (mind the parentheses), and each
+\texttt{SS} is a sum of \textbf{squared} deviations
+\texttt{Σ(x\_i\ −\ )²}, not \texttt{Σ(x\_i\ −\ )} (which is always 0).
+The \texttt{R²\ =\ r²} identity only holds for a single predictor; with
+multiple predictors R² generalizes but correlation doesn't directly.
+Adding predictors never decreases R² → motivates adjusted R². → Adjusted
+R-squared. \emph{(StatQuest)}
+
+\hypertarget{multiple-linear-regression}{%
+\subsubsection{Multiple linear
+regression}\label{multiple-linear-regression}}
+
+\textbf{Definition.} Extends simple regression to \texttt{p} predictors:
+\texttt{Y\ =\ β\_0\ +\ β\_1\ X\_1\ +\ …\ +\ β\_p\ X\_p\ +\ ε}. Each
+\texttt{β\_j} is the \emph{average effect on \texttt{Y} of a one-unit
+increase in \texttt{X\_j}, holding all other predictors fixed}.
+Coefficients are again estimated by least squares (minimizing RSS).
+
+\begin{equation*}
+Y=\beta_0+\sum_{j=1}^{p}\beta_jX_j+\varepsilon
+\qquad\Longleftrightarrow\qquad
+\hat{\boldsymbol\beta}=(\mathbf{X}^{\mathsf T}\mathbf{X})^{-1}\mathbf{X}^{\mathsf T}\mathbf{y}
+\end{equation*}
+
+\textbf{Intuition.} Instead of one slope you have one per predictor,
+each isolating that predictor's effect while the others are held
+constant. That ``holding fixed'' is crucial --- a predictor's solo
+effect can differ sharply from its effect alongside correlated others (→
+Confounding).
+
+\textbf{Example.} \texttt{price\ =\ 50\ +\ 0.15·size\ −\ 0.8·age} (price
+in \$k, size in sq ft, age in years): holding age fixed, each extra
+square foot adds \$150; holding size fixed, each extra year subtracts
+\$800. The age coefficient is age's effect \emph{beyond} what size
+already explains.
+
+\textbf{Notes.} To ask whether \emph{any} predictor matters, use the
+F-statistic, not \texttt{p} individual t-tests. Which predictors to
+include is Variable selection (→ Best subset selection, Forward and
+backward stepwise selection).
+
+\hypertarget{f-statistic}{%
+\subsubsection{F-statistic}\label{f-statistic}}
+
+\textbf{Definition.} Tests whether \emph{all} coefficients are zero:
+\texttt{H\_0:\ β\_1\ =\ …\ =\ β\_p\ =\ 0} vs \texttt{H\_a:} at least one
+is non-zero.
+\texttt{F\ =\ {[}(TSS\ −\ RSS)/p{]}\ /\ {[}RSS/(n\ −\ p\ −\ 1){]}}.
+Under \texttt{H\_0}, \texttt{F} is around 1; if some predictor matters,
+\texttt{F\ \textgreater{}\ 1}.
+
+\begin{equation*}
+F=\frac{(\mathrm{TSS}-\mathrm{RSS})/p}{\mathrm{RSS}/(n-p-1)}
+\qquad (F\approx 1 \text{ when } H_0:\beta_1=\dots=\beta_p=0 \text{ holds})
+\end{equation*}
+
+\textbf{Intuition.} It compares variance the model explains against
+variance it leaves behind. If the predictors do nothing, both are just
+noise and the ratio hovers near 1; if they help, the numerator swells
+and F climbs.
+
+\textbf{Notes.} Why not just look at individual t-tests? With many
+predictors, some will look significant by chance; the F-test gives one
+honest overall verdict. → Multiple linear regression.
+
+\hypertarget{qualitative-predictors-and-dummy-variables}{%
+\subsubsection{Qualitative predictors and dummy
+variables}\label{qualitative-predictors-and-dummy-variables}}
+
+\textbf{Definition.} To use a categorical predictor (e.g.~student:
+yes/no) in a regression, encode it as a \emph{dummy variable} (e.g.~1 if
+student, 0 otherwise) and include it like any numeric predictor. A
+\texttt{K}-level category needs \texttt{K\ −\ 1} dummies.
+
+\textbf{Intuition.} A dummy lets the model shift the intercept for one
+group versus a baseline --- ``students carry, on average, this much more
+balance than non-students.'' Quantitative and qualitative predictors mix
+freely in one model.
+
+\textbf{Notes.} Different coding schemes give different coefficients but
+equivalent fits; interpretation depends on the chosen baseline.
+Interactions between a dummy and a numeric predictor let the
+\emph{slope} differ by group, not just the intercept. → Interaction
+terms.
+
+\hypertarget{additivity-and-linearity-assumptions}{%
+\subsubsection{Additivity and linearity
+assumptions}\label{additivity-and-linearity-assumptions}}
+
+\textbf{Definition.} Standard linear regression assumes (1)
+\emph{additivity} --- the effect of \texttt{X\_j} on \texttt{Y} doesn't
+depend on the other predictors' values; and (2) \emph{linearity} --- the
+change in \texttt{Y} per one-unit change in \texttt{X\_j} is constant
+regardless of \texttt{X\_j}.
+
+\textbf{Intuition.} Additivity says predictors don't team up (no ``this
+drug only works with that one''). Linearity says the effect is a
+straight line, never bending. Both are convenient approximations that
+reality often violates.
+
+\textbf{Notes.} Relax additivity with Interaction terms; relax linearity
+with Polynomial regression and the methods in Moving Beyond Linearity.
+
+\hypertarget{interaction-terms}{%
+\subsubsection{Interaction terms}\label{interaction-terms}}
+
+\textbf{Definition.} A product predictor \texttt{X\_1\ ·\ X\_2} (with
+coefficient \texttt{β\_3}) added to a model to capture a \emph{synergy}
+/ \emph{interaction effect} --- where the effect of one predictor
+depends on another. Its presence makes the effective slope on
+\texttt{X\_1} a function of \texttt{X\_2}.
+
+\textbf{Intuition.} Rewriting shows the \texttt{X\_1} slope becomes
+\texttt{(β\_1\ +\ β\_3\ X\_2)} --- so changing \texttt{X\_2} changes how
+strongly \texttt{X\_1} acts on \texttt{Y}. That's exactly ``these two
+work together.'' Radio ad spend might boost the payoff of TV ad spend,
+and vice versa.
+
+\textbf{Notes.} \emph{Hierarchical principle:} if you include an
+interaction, include both main effects too, even if their own p-values
+look insignificant. Interactions apply to qualitative predictors as well
+(a quant×qual interaction lets a group have its own slope). → Additivity
+and linearity assumptions.
+
+\hypertarget{potential-problems-in-linear-regression}{%
+\subsubsection{Potential problems in linear
+regression}\label{potential-problems-in-linear-regression}}
+
+\textbf{Definition.} Six common ways a linear fit can go wrong, each
+with a diagnostic: - \textbf{Non-linearity} --- the true relationship
+isn't a straight line. Diagnose with a \emph{residual plot} (residuals
+vs fitted values); a clear pattern signals trouble. Fix with
+transformations or Polynomial regression. - \textbf{Correlated error
+terms} --- errors that track each other (common in \emph{time series}),
+which makes standard errors too small and confidence falsely tight. -
+\textbf{Heteroscedasticity} --- non-constant error variance, often a
+\emph{funnel shape} in the residual plot. Fix by transforming \texttt{Y}
+(e.g.~\texttt{log\ Y} or \texttt{√Y}) or by \emph{weighted least
+squares} (weight each point by the inverse of its variance). -
+\textbf{Outliers} --- points with an unusually large residual. Spot them
+with \emph{studentized residuals} (residual ÷ its estimated SE); a rule
+of thumb flags values beyond about ±3. - \textbf{High-leverage points}
+--- points with unusual \emph{predictor} values that yank the fitted
+line. Quantify with the \emph{leverage statistic} \texttt{h\_i} (always
+between \texttt{1/n} and 1); high leverage + large residual is
+especially dangerous. - \textbf{Collinearity} --- two or more predictors
+closely related, inflating coefficient standard errors so effects can't
+be separated. Spot pairwise collinearity in the correlation matrix; spot
+\emph{multicollinearity} (three-plus variables jointly related,
+invisible pairwise) with the \emph{variance inflation factor} (VIF). VIF
+≥ 1, and a VIF above \textasciitilde5--10 flags a problem. Fix by
+dropping one variable or combining the collinear ones.
+
+\textbf{Intuition.} The residual plot is your first stop for most of
+these --- a good fit leaves residuals looking like structureless static.
+Outliers hurt your error estimates; high-leverage points hurt the line
+itself; collinearity doesn't bias the fit but makes it impossible to say
+\emph{which} correlated predictor is responsible.
+
+\textbf{Notes.} An outlier may signal a data error (safe to remove) or a
+missing predictor (don't just delete it). VIF for \texttt{X\_j} is
+\texttt{1/(1\ −\ R²)} from regressing \texttt{X\_j} on the other
+predictors --- high shared variance → high VIF. Correlated errors
+connect to time-series methods (→ Autoregressive models and
+autocorrelation (ML)).
+
+\hypertarget{knn-regression}{%
+\subsubsection{KNN regression}\label{knn-regression}}
+
+\textbf{Definition.} The regression version of KNN: for a prediction
+point \texttt{x\_0}, find the \texttt{K} nearest training points
+\texttt{N\_0} and predict the \emph{average} of their responses,
+\texttt{(x\_0)\ =\ (1/K)\ Σ\_\{i\ ∈\ N\_0\}\ y\_i}.
+
+\textbf{Intuition.} ``What did the \texttt{K} most similar cases do?
+Average them.'' No functional form assumed --- the fit follows the data.
+Small \texttt{K} = wiggly and flexible; large \texttt{K} = smooth.
+
+\textbf{Notes.} Parametric (least squares) vs non-parametric (KNN)
+trade-off: KNN wins when the true \texttt{f} is far from linear; least
+squares wins when the assumed form is close to true, \emph{and} when
+there are few observations per predictor. KNN degrades badly as
+\texttt{p} grows (the \emph{curse of dimensionality} --- neighbors stop
+being near) \emph{(beyond ISL ch.~3)}. → K-nearest neighbors (classifier
+version).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{classification-isl-ch.-4}{%
+\subsection{\texorpdfstring{Classification \emph{(ISL
+ch.~4)}}{Classification (ISL ch.~4)}}\label{classification-isl-ch.-4}}
+
+\hypertarget{why-not-linear-regression-for-classification}{%
+\subsubsection{Why not linear regression for
+classification}\label{why-not-linear-regression-for-classification}}
+
+\textbf{Definition.} Two reasons linear regression is unsuitable for a
+qualitative response: (a) it can't handle a response with more than two
+classes (any numeric coding imposes a fake ordering and spacing); (b)
+even with two classes it can produce probability estimates outside
+\texttt{{[}0,\ 1{]}}, which are meaningless.
+
+\textbf{Intuition.} Coding classes as 1, 2, 3 tells the model ``class 3
+is three times class 1 and sits between 2 and beyond,'' which is
+nonsense for unordered labels. And a straight line, extended far enough,
+predicts probabilities below 0 or above 1.
+
+\textbf{Notes.} Motivates logistic regression (squashes output into
+\texttt{{[}0,\ 1{]}}) and the generative classifiers (LDA, QDA, naive
+Bayes). → Logistic regression, Generative classifiers and Bayes'
+theorem.
+
+\hypertarget{logistic-regression}{%
+\subsubsection{Logistic regression}\label{logistic-regression}}
+
+\textbf{Definition.} Models the \emph{probability} of a class rather
+than the class itself, using the logistic function
+\texttt{p(X)\ =\ e\^{}(β\_0\ +\ β\_1\ X)\ /\ (1\ +\ e\^{}(β\_0\ +\ β\_1\ X))},
+which always outputs a value in \texttt{(0,\ 1)}. Fit by maximum
+likelihood.
+
+\begin{equation*}
+p(X)=\frac{e^{\beta_0+\beta_1X}}{1+e^{\beta_0+\beta_1X}}=\sigma(\beta_0+\beta_1X),
+\qquad
+\sigma(z)=\frac{1}{1+e^{-z}}
+\end{equation*}
+
+\textbf{Intuition.} The logistic function bends any straight-line score
+into an S-curve pinned between 0 and 1, so you always get a sensible
+probability. Predict the class by thresholding (usually at 0.5). Despite
+the name, it's a \emph{classification} method.
+
+\textbf{Notes.} Coefficient significance is judged with a z-statistic
+(\texttt{\_1\ /\ SE(\_1)}), the classification analogue of the
+t-statistic. Extends to many predictors and to more than two classes. →
+Odds and log-odds, Maximum likelihood, Multinomial logistic regression.
+
+\hypertarget{odds-and-log-odds-logit}{%
+\subsubsection{Odds and log-odds
+(logit)}\label{odds-and-log-odds-logit}}
+
+\textbf{Definition.} The \emph{odds} are \texttt{p(X)\ /\ (1\ −\ p(X))},
+ranging from 0 to ∞. Taking the log gives the \emph{log-odds} or
+\emph{logit}: \texttt{log{[}p(X)/(1\ −\ p(X)){]}\ =\ β\_0\ +\ β\_1\ X}
+--- linear in \texttt{X}.
+
+\begin{equation*}
+\frac{p(X)}{1-p(X)}=e^{\beta_0+\beta_1X}
+\qquad\Longleftrightarrow\qquad
+\log\!\left(\frac{p(X)}{1-p(X)}\right)=\beta_0+\beta_1X
+\end{equation*}
+
+\textbf{Intuition.} Probability lives on \texttt{{[}0,1{]}}, which is
+awkward for a linear model. Odds stretch that to \texttt{{[}0,\ ∞)}, and
+the log stretches it to the full number line --- so the logit is where
+logistic regression is actually ``linear.'' A one-unit rise in
+\texttt{X} adds \texttt{β\_1} to the log-odds (multiplies the odds by
+\texttt{e\^{}(β\_1)}).
+
+\textbf{Notes.} Odds near 0 = very unlikely; near ∞ = near-certain. This
+log-odds-is-linear structure is what generalizes to multinomial logistic
+regression and, more broadly, GLMs.
+
+\hypertarget{maximum-likelihood}{%
+\subsubsection{Maximum likelihood}\label{maximum-likelihood}}
+
+\textbf{Definition.} The method used to fit logistic regression (and
+GLMs): choose the coefficients that make the \emph{likelihood} --- the
+probability of the observed data under the model --- as large as
+possible.
+
+\begin{equation*}
+\ell(\beta_0,\beta_1)=\prod_{i:y_i=1}p(x_i)\prod_{i':y_{i'}=0}\bigl(1-p(x_{i'})\bigr),
+\qquad
+\hat\beta=\arg\max_\beta \log \ell(\beta)
+\end{equation*}
+
+\textbf{Intuition.} Find the coefficients under which the events that
+actually happened look most probable: push predicted probabilities
+toward 1 for the cases that were positive and toward 0 for the cases
+that were negative. Least squares is actually a special case of maximum
+likelihood (for Gaussian errors).
+
+\textbf{Notes.} Preferred over ad-hoc fitting because of its good
+statistical properties. Also fits Poisson regression and the
+coefficients in GLMs generally.
+
+\hypertarget{multinomial-logistic-regression}{%
+\subsubsection{Multinomial logistic
+regression}\label{multinomial-logistic-regression}}
+
+\textbf{Definition.} Extends logistic regression to
+\texttt{K\ \textgreater{}\ 2} classes. Pick one class as a
+\emph{baseline}, then model the log-odds of every other class against it
+as linear in the predictors. The \emph{softmax} coding is an equivalent,
+symmetric alternative that avoids singling out a baseline.
+
+\textbf{Intuition.} With three-plus labels you can't use a single yes/no
+probability. So you model each class's probability relative to a
+reference, and the pieces are constrained to sum to 1. Softmax does the
+same thing without a privileged reference class.
+
+\textbf{Notes.} Coefficient interpretation depends on the baseline
+choice, so read them with care. Key model outputs (fitted probabilities,
+pairwise log-odds) are the same under either coding. Softmax reappears
+as the output layer of classification neural nets. → Output layer and
+loss (ML).
+
+\hypertarget{confounding}{%
+\subsubsection{Confounding}\label{confounding}}
+
+\textbf{Definition.} When the result of a single-predictor regression
+differs from --- even reverses --- the result using multiple predictors,
+because predictors are correlated and one stands in for another.
+
+\textbf{Intuition.} Alone, a predictor can look guilty just because it
+travels with the real culprit. Add the real driver and the impostor's
+effect shrinks or flips. The classic reminder that ``correlated with
+\texttt{Y}'' and ``causes \texttt{Y} holding others fixed'' are
+different questions.
+
+\textbf{Notes.} Why multiple regression coefficients (``holding others
+fixed'') can tell a very different story than simple regressions run one
+predictor at a time. → Multiple linear regression, Collinearity (in
+Potential problems).
+
+\hypertarget{generative-classifiers-and-bayes-theorem}{%
+\subsubsection{Generative classifiers and Bayes'
+theorem}\label{generative-classifiers-and-bayes-theorem}}
+
+\textbf{Definition.} Instead of modeling \texttt{Pr(Y\ \textbar{}\ X)}
+directly (as logistic regression does), \emph{generative} classifiers
+model how the predictors are distributed \emph{within each class} and
+invert with Bayes' theorem:
+\texttt{Pr(Y\ =\ k\ \textbar{}\ X\ =\ x)\ =\ π\_k\ f\_k(x)\ /\ Σ\_l\ π\_l\ f\_l(x)}.
+Here \texttt{π\_k} is the \emph{prior} (overall fraction in class
+\texttt{k}), \texttt{f\_k(x)} is the \emph{density} of \texttt{X} in
+class \texttt{k}, and the result \texttt{p\_k(x)} is the
+\emph{posterior} probability.
+
+\begin{equation*}
+\Pr(Y=k\mid X=x)=\frac{\pi_k f_k(x)}{\sum_{l=1}^{K}\pi_l f_l(x)}
+\qquad
+\pi_k=\text{prior},\; f_k(x)=\text{class-}k\text{ density}
+\end{equation*}
+
+\textbf{Intuition.} Learn what each class's data typically looks like,
+then for a new point ask ``which class's profile does this most
+resemble, weighted by how common that class is?'' Bayes' theorem turns
+``what does class \texttt{k} look like'' into ``given this look, how
+likely is class \texttt{k}.''
+
+\textbf{Notes.} \texttt{π\_k} is easy to estimate (class frequencies).
+The three generative methods --- LDA, QDA, naive Bayes --- differ only
+in how they estimate \texttt{f\_k(x)}. All approximate the Bayes
+classifier. → Linear discriminant analysis, Quadratic discriminant
+analysis, Naive Bayes.
+
+\hypertarget{linear-discriminant-analysis-lda}{%
+\subsubsection{Linear discriminant analysis
+(LDA)}\label{linear-discriminant-analysis-lda}}
+
+\textbf{Definition.} A generative classifier that separates classes by
+finding the axis that best \emph{pushes the class means apart while
+keeping each class tight}. Project the data onto a new axis chosen to
+maximize \texttt{(μ\_1\ −\ μ\_2)²\ /\ (s\_1²\ +\ s\_2²)} --- squared
+distance between class means over the total within-class scatter.
+Equivalently (ISL framing) it assumes each class is Gaussian with
+class-specific means but a \emph{shared covariance}, and plugs the
+means, shared variance, and priors into Bayes' theorem; the discriminant
+scores come out \emph{linear} in \texttt{x}.
+
+\begin{equation*}
+\delta_k(x)=x^{\mathsf T}\Sigma^{-1}\mu_k-\tfrac12\mu_k^{\mathsf T}\Sigma^{-1}\mu_k+\log\pi_k
+\qquad\text{(assign to the }k\text{ with the largest }\delta_k)
+\end{equation*}
+
+\textbf{Intuition.} Like PCA it builds a new axis out of the existing
+features, but with a supervised goal: PCA maximizes total spread, LDA
+maximizes \emph{separability}. Push the means apart (numerator) and
+squeeze each class's scatter (denominator) so the projected groups
+barely overlap. For \texttt{K\ \textgreater{}\ 2} groups, maximize the
+spread of the class means around the overall (central) mean while
+minimizing within-class scatter.
+
+\textbf{Example.} Two mouse groups measured on two genes where neither
+gene alone separates them: LDA finds the diagonal axis along which the
+group means are far apart \emph{and} each group stays compact, so
+projecting onto it makes them separable with a single threshold.
+
+\textbf{Notes.} \emph{Correction to the jotted formula:} the denominator
+is the \textbf{sum} of the within-group variances
+\texttt{s\_1²\ +\ s\_2²} (total within-class scatter), \textbf{not}
+their difference. Useful when classes are well-separated (where logistic
+regression coefficients get unstable) and with small, roughly-normal
+samples; extends naturally to \texttt{K\ \textgreater{}\ 2}. The
+multivariate case uses a \texttt{p}-dimensional Gaussian with a
+covariance matrix --- kept conceptual here. → Generative classifiers,
+QDA (drops the shared-covariance assumption), Principal components
+analysis (PCA) (ML). \emph{(StatQuest)}
+
+\hypertarget{quadratic-discriminant-analysis-qda}{%
+\subsubsection{Quadratic discriminant analysis
+(QDA)}\label{quadratic-discriminant-analysis-qda}}
+
+\textbf{Definition.} Like LDA, but each class gets its \emph{own}
+covariance matrix. This makes the discriminant scores \emph{quadratic}
+in \texttt{x}, allowing curved decision boundaries.
+
+\textbf{Intuition.} Let each class's bell have its own shape and spread,
+not just its own center. More flexible than LDA, so it can trace curved
+boundaries --- at the cost of estimating many more parameters.
+
+\textbf{Notes.} Bias--variance trade-off between the two: use LDA when
+data are scarce (fewer parameters, lower variance) or the
+shared-covariance assumption is reasonable; use QDA when the training
+set is large or that assumption is clearly wrong. → LDA, Bias--variance
+trade-off.
+
+\hypertarget{naive-bayes}{%
+\subsubsection{Naive Bayes}\label{naive-bayes}}
+
+\textbf{Definition.} A generative classifier that assumes, \emph{within
+each class, the predictors are independent} --- so the class density
+factorizes:
+\texttt{f\_k(x)\ =\ f\_\{k1\}(x\_1)\ ×\ …\ ×\ f\_\{kp\}(x\_p)}. Each
+one-dimensional density \texttt{f\_\{kj\}} is estimated separately
+(Gaussian, histogram, kernel, or class proportions for categoricals).
+
+\begin{equation*}
+f_k(x)=\prod_{j=1}^{p}f_{kj}(x_j)
+\qquad\text{(conditional independence of the }p\text{ features given the class)}
+\end{equation*}
+
+\textbf{Intuition.} Rather than model how predictors move together (hard
+in high dimensions), pretend they don't --- estimate each predictor's
+behavior per class on its own and multiply. The independence assumption
+is usually false, yet the classifier often works well because you only
+need the \emph{ranking} of class probabilities to be right.
+
+\textbf{Notes.} Trades bias for variance: the independence assumption
+adds bias but slashes the number of parameters, which helps when
+\texttt{p} is large or \texttt{n} is small. Related to LDA/QDA: LDA is a
+special case of naive Bayes with Gaussian, and naive Bayes with a
+Gaussian is LDA with a diagonal covariance; naive Bayes and QDA are not
+special cases of each other. → Generative classifiers.
+
+\hypertarget{confusion-matrix-and-error-types}{%
+\subsubsection{Confusion matrix and error
+types}\label{confusion-matrix-and-error-types}}
+
+\textbf{Definition.} A table cross-tabulating predicted vs actual
+classes, exposing the \emph{two types of error} in binary
+classification: false positives (predict yes when actually no) and false
+negatives (predict no when actually yes).
+
+\begin{equation*}
+\text{TPR (recall)}=\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}},\quad
+\text{FPR}=\frac{\mathrm{FP}}{\mathrm{FP}+\mathrm{TN}},\quad
+\text{precision}=\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}}
+\end{equation*}
+
+\textbf{Intuition.} A single error rate hides \emph{which} mistakes you
+make. In many settings (disease screening, default prediction) one error
+type is far costlier than the other, and the confusion matrix lets you
+see and trade between them.
+
+\textbf{Notes.} Moving the classification threshold away from 0.5 trades
+one error type for the other. Sweeping all thresholds produces the ROC
+curve. → ROC curve.
+
+\hypertarget{roc-curve}{%
+\subsubsection{ROC curve}\label{roc-curve}}
+
+\textbf{Definition.} A plot that displays the two classification error
+types across \emph{all} possible thresholds simultaneously, tracing
+true-positive rate against false-positive rate. (ROC = ``receiver
+operating characteristics,'' a name inherited from communications
+theory.)
+
+\textbf{Intuition.} Instead of committing to one threshold, see the
+whole menu of trade-offs at once. A curve hugging the top-left corner is
+excellent; the diagonal is random guessing.
+
+\textbf{Notes.} The \emph{area under the curve (AUC)} summarizes overall
+performance in one number: it equals the probability that a random
+positive case is scored higher than a random negative one, so a larger
+AUC is better. Useful for comparing classifiers independent of a
+specific threshold. → Confusion matrix and error types.
+
+\hypertarget{poisson-regression}{%
+\subsubsection{Poisson regression}\label{poisson-regression}}
+
+\textbf{Definition.} A GLM for \emph{count} responses
+(\texttt{Y\ ∈\ \{0,\ 1,\ 2,\ …\}}), which assumes \texttt{Y} follows a
+Poisson distribution and models its mean as
+\texttt{λ(X)\ =\ e\^{}(β\_0\ +\ β\_1\ X\_1\ +\ …\ +\ β\_p\ X\_p)}. Fit
+by maximum likelihood.
+
+\begin{equation*}
+\Pr(Y=k)=\frac{e^{-\lambda}\lambda^{k}}{k!},
+\qquad
+\log\lambda(X)=\beta_0+\beta_1X_1+\dots+\beta_pX_p
+\end{equation*}
+
+\textbf{Intuition.} Counts can't be negative and their spread grows with
+their average --- a straight-line model ignores both. Poisson regression
+uses a log link so predictions stay non-negative, and a one-unit rise in
+\texttt{X\_j} \emph{multiplies} the expected count by
+\texttt{e\^{}(β\_j)} (e.g.~\texttt{e\^{}(−0.08)\ ≈\ 0.923} → about 8\%
+fewer).
+
+\textbf{Intuition (mean--variance).} The Poisson assumes mean =
+variance, so it naturally lets variability grow where the counts are
+large --- something ordinary linear regression, with its constant
+variance, can't do.
+
+\textbf{Notes.} Advantages over linear regression on counts: never
+predicts negative values, and it captures the mean--variance link. An
+example GLM alongside linear and logistic regression. → Generalized
+linear models.
+
+\hypertarget{generalized-linear-models-glms}{%
+\subsubsection{Generalized linear models
+(GLMs)}\label{generalized-linear-models-glms}}
+
+\textbf{Definition.} A family that unifies linear, logistic, and Poisson
+regression: model a transformation (link) of the response's mean as a
+linear function of the predictors, and fit by maximum likelihood.
+
+\textbf{Intuition.} Same linear-predictor engine, different link and
+response distribution: identity link + Gaussian = linear regression;
+logit link + binomial = logistic regression; log link + Poisson =
+Poisson regression. One framework, three familiar tools.
+
+\textbf{Notes.} Logistic regression served as the jumping-off point for
+this generalization. → Logistic regression, Poisson regression.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{resampling-methods-isl-ch.-5}{%
+\subsection{\texorpdfstring{Resampling Methods \emph{(ISL
+ch.~5)}}{Resampling Methods (ISL ch.~5)}}\label{resampling-methods-isl-ch.-5}}
+
+\hypertarget{resampling-methods}{%
+\subsubsection{Resampling methods}\label{resampling-methods}}
+
+\textbf{Definition.} Techniques that repeatedly draw different subsets
+from the training data, refit the model on each, and examine how the
+fits vary --- to estimate test error or the variability of an estimate.
+The two workhorses are cross-validation and the bootstrap.
+
+\textbf{Intuition.} You usually can't get fresh data on demand, so you
+\emph{simulate} having many datasets by resampling the one you have. The
+spread of the refits tells you how much your model or estimate would
+wobble on new data.
+
+\textbf{Notes.} Computationally expensive (fit the same method many
+times) but broadly applicable. → Validation set approach, k-fold
+cross-validation, The bootstrap.
+
+\hypertarget{model-assessment-vs-model-selection}{%
+\subsubsection{Model assessment vs model
+selection}\label{model-assessment-vs-model-selection}}
+
+\textbf{Definition.} \emph{Model assessment} = estimating a chosen
+model's test-set performance. \emph{Model selection} = choosing the
+right level of flexibility (or the right model) in the first place.
+
+\textbf{Intuition.} Two different jobs resampling handles: ``how good is
+this model?'' vs ``which model should I use?'' Cross-validation serves
+both.
+
+\textbf{Notes.} Selection often means picking a tuning parameter (K in
+KNN, λ in ridge/lasso, tree size, \texttt{d} in polynomials) by
+minimizing cross-validated error. → k-fold cross-validation.
+
+\hypertarget{validation-set-approach}{%
+\subsubsection{Validation set approach}\label{validation-set-approach}}
+
+\textbf{Definition.} Randomly split the data into a training set and a
+\emph{validation (hold-out) set}; fit on the training half and estimate
+test error on the validation half.
+
+\textbf{Intuition.} The simplest honest test: keep some data hidden,
+train, then grade yourself on the hidden part. Easy to implement, but
+crude.
+
+\textbf{Notes.} Two drawbacks: (1) the estimate is \emph{highly
+variable} --- it swings depending on which points landed in which half;
+(2) it \emph{overestimates} test error, because the model was trained on
+only part of the data and methods do worse with less data.
+Cross-validation fixes both. → Leave-one-out cross-validation, k-fold
+cross-validation.
+
+\hypertarget{leave-one-out-cross-validation-loocv}{%
+\subsubsection{Leave-one-out cross-validation
+(LOOCV)}\label{leave-one-out-cross-validation-loocv}}
+
+\textbf{Definition.} Hold out a \emph{single} observation as the
+validation set, train on the other \texttt{n\ −\ 1}, predict the
+held-out point, and repeat for all \texttt{n} points; average the
+\texttt{n} errors.
+
+\textbf{Intuition.} Push the validation idea to its extreme: hold out
+just one point at a time, so almost all the data trains the model every
+round. This removes the ``trained on too little data'' bias of the
+validation-set approach and, by averaging over every point, removes the
+randomness of the split.
+
+\textbf{Notes.} Downside: it fits the model \texttt{n} times, which is
+costly for large \texttt{n} --- \emph{except} for least-squares
+linear/polynomial regression, where a shortcut formula (using leverage
+\texttt{h\_i}) makes LOOCV cost the same as a single fit. Each
+single-point error is unbiased but very noisy on its own; the average is
+what's useful. → k-fold cross-validation (cheaper alternative).
+
+\hypertarget{k-fold-cross-validation}{%
+\subsubsection{k-fold cross-validation}\label{k-fold-cross-validation}}
+
+\textbf{Definition.} Randomly split the data into \texttt{k} roughly
+equal \emph{folds}. In turn, hold out each fold as the validation set,
+train on the other \texttt{k\ −\ 1}, and record the error; average the
+\texttt{k} errors for the CV estimate. (LOOCV is the special case
+\texttt{k\ =\ n}.)
+
+\textbf{Intuition.} A middle ground: hold out a chunk at a time instead
+of one point, so you refit only \texttt{k} times (typically 5 or 10)
+instead of \texttt{n}. You still train on most of the data each round,
+so bias stays low, and averaging tames the split randomness.
+
+\textbf{Notes.} Cheaper than LOOCV and often has \emph{lower variance}
+as a test-error estimate. In classification, swap MSE for the
+misclassification rate. This is the standard tool for tuning-parameter
+selection (λ, K, tree size). → Model assessment vs model selection.
+
+\hypertarget{the-bootstrap}{%
+\subsubsection{The bootstrap}\label{the-bootstrap}}
+
+\textbf{Definition.} A general tool for quantifying the uncertainty of
+an estimator: repeatedly draw \emph{bootstrap samples} of size
+\texttt{n} from the data \emph{with replacement}, recompute the estimate
+(mean, median, slope, \ldots) on each, and use the spread of those
+\texttt{B} estimates as a standard error --- or their percentiles as a
+confidence interval.
+
+\textbf{Intuition.} Treat your sample as a stand-in for the population
+and ``resample your resample.'' Because it draws with replacement, each
+bootstrap dataset repeats some points and omits others, mimicking the
+variation you'd see across genuinely new samples. The scatter of the
+recomputed estimates is your uncertainty.
+
+\textbf{Example.} From 12 measured mouse weights, draw 12 \emph{with
+replacement} (some repeat, some drop out) and record the mean; repeat
+10,000 times. The standard deviation of those 10,000 means estimates the
+standard error, and their 2.5th--97.5th percentiles give a 95\% CI ---
+no formula required.
+
+\textbf{Notes.} Works for quantities with no tidy standard-error
+formula. Sampling \emph{with} replacement is the crux --- it's what
+makes each bootstrap dataset differ. Wants a reasonable sample to
+resample from (a rough rule of thumb is \textasciitilde10+
+observations). Bootstrap aggregation of this idea over trees is Bagging.
+→ Bagging (ML), Standard error and the sampling distribution of the
+mean, Confidence interval. \emph{(StatQuest)}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{linear-model-selection-and-regularization-isl-ch.-6}{%
+\subsection{\texorpdfstring{Linear Model Selection and Regularization
+\emph{(ISL
+ch.~6)}}{Linear Model Selection and Regularization (ISL ch.~6)}}\label{linear-model-selection-and-regularization-isl-ch.-6}}
+
+\hypertarget{why-move-beyond-least-squares}{%
+\subsubsection{Why move beyond least
+squares}\label{why-move-beyond-least-squares}}
+
+\textbf{Definition.} Alternatives to plain least squares can improve
+\emph{prediction accuracy} and \emph{interpretability}. Three families:
+\emph{subset selection} (keep a subset of predictors),
+\emph{shrinkage/regularization} (fit all predictors but shrink
+coefficients toward zero), and \emph{dimension reduction} (project
+predictors into fewer combined directions).
+
+\textbf{Intuition.} Least squares has low bias but can have high
+variance when \texttt{n} isn't much bigger than \texttt{p}
+(overfitting), and when \texttt{p\ \textgreater{}\ n} it has no unique
+solution at all. It also never zeroes out useless predictors, leaving
+cluttered models. These methods trade a little bias for a lot less
+variance and simpler models.
+
+\textbf{Notes.} Shrinkage reduces variance; subset selection and the
+lasso also improve interpretability by dropping variables. → Best subset
+selection, Ridge regression, The lasso, Principal components regression.
+
+\hypertarget{best-subset-selection}{%
+\subsubsection{Best subset selection}\label{best-subset-selection}}
+
+\textbf{Definition.} Fit a separate least-squares model for \emph{every}
+possible subset of the \texttt{p} predictors (\texttt{2\^{}p} models),
+pick the best model of each size by RSS/R², then choose among those
+using an estimate of \emph{test} error (Cp, AIC, BIC, adjusted R², or
+cross-validation).
+
+\textbf{Intuition.} Brute force: try every combination and keep the
+best. Note the two-stage logic --- RSS picks the best model
+\emph{within} a size (bigger is always better on training data), but you
+need a test-error estimate to compare \emph{across} sizes fairly.
+
+\textbf{Notes.} Conceptually clean but computationally explosive
+(\texttt{2\^{}p} grows fast), and a huge search space risks finding
+models that look good by chance → overfitting. Stepwise methods are the
+practical alternatives. → Forward and backward stepwise selection.
+
+\hypertarget{forward-and-backward-stepwise-selection}{%
+\subsubsection{Forward and backward stepwise
+selection}\label{forward-and-backward-stepwise-selection}}
+
+\textbf{Definition.} Greedy alternatives that explore far fewer models.
+\emph{Forward}: start with no predictors, add the one that most improves
+the fit, repeat. \emph{Backward}: start with all predictors, drop the
+least useful (largest p-value), repeat. \emph{Mixed}: add like forward
+but drop any variable whose value fades as others enter.
+
+\textbf{Intuition.} Instead of all \texttt{2\^{}p} models, walk a path
+one variable at a time. Much faster and usable when \texttt{p} is large.
+Forward can even start when \texttt{p\ \textgreater{}\ n}; backward
+needs \texttt{n\ \textgreater{}\ p} to begin.
+
+\textbf{Notes.} Not guaranteed to find the best subset --- an early
+greedy choice can lock out a better later combination. Mixed selection
+mimics best-subset behavior while keeping the speed. As with best
+subset, compare across sizes with Cp/AIC/BIC/adjusted R² or CV. → Cp,
+AIC, BIC, and adjusted R-squared.
+
+\hypertarget{cp-aic-bic-and-adjusted-r-squared}{%
+\subsubsection{Cp, AIC, BIC, and adjusted
+R-squared}\label{cp-aic-bic-and-adjusted-r-squared}}
+
+\textbf{Definition.} Four ways to estimate \emph{test} error from
+\emph{training} error by penalizing model size, so you can compare
+models with different numbers of predictors. Mallow's \texttt{Cp} and
+\texttt{AIC} add a \texttt{2d²}-style penalty to training RSS;
+\texttt{BIC} uses a heavier \texttt{log(n)·d²} penalty; \emph{adjusted
+R²} modifies R² to reward fit only when a new variable earns its keep.
+
+\begin{equation*}
+C_p=\tfrac{1}{n}\bigl(\mathrm{RSS}+2d\hat\sigma^2\bigr),\quad
+\mathrm{AIC}=-2\log\ell+2d,\quad
+\mathrm{BIC}=\tfrac{1}{n}\bigl(\mathrm{RSS}+d\hat\sigma^2\log n\bigr)
+\end{equation*}
+
+\begin{equation*}
+\text{Adjusted } R^2=1-\frac{\mathrm{RSS}/(n-d-1)}{\mathrm{TSS}/(n-1)}
+\end{equation*}
+
+\textbf{Intuition.} Training error always drops as you add predictors,
+so it's a biased, over-optimistic gauge. These criteria charge a
+``complexity tax'' per predictor to undo that bias. For Cp/AIC/BIC,
+\emph{smaller is better}; for adjusted R², \emph{larger is better}.
+
+\textbf{Notes.} BIC's steeper penalty favors smaller models than Cp/AIC.
+All are cheaper than cross-validation but rest on more assumptions. →
+Best subset selection, One-standard-error rule.
+
+\hypertarget{one-standard-error-rule}{%
+\subsubsection{One-standard-error rule}\label{one-standard-error-rule}}
+
+\textbf{Definition.} After computing cross-validated (or penalized)
+test-error estimates for each model size, pick the \emph{simplest} model
+whose error is within one standard error of the best model's error.
+
+\textbf{Intuition.} If several models are statistically tied, prefer the
+simplest one. A slightly smaller, more interpretable model that's
+essentially as accurate beats a bigger one whose edge is within the
+noise.
+
+\textbf{Notes.} A general principle, applicable wherever you tune
+complexity by cross-validation (subset size, λ, tree size). → k-fold
+cross-validation.
+
+\hypertarget{ridge-regression}{%
+\subsubsection{Ridge regression}\label{ridge-regression}}
+
+\textbf{Definition.} Fits all \texttt{p} predictors but minimizes
+\texttt{RSS\ +\ λ\ Σ\ β\_j²} (a squared, ``L2'' \emph{shrinkage
+penalty}). The tuning parameter \texttt{λ\ ≥\ 0} controls how hard
+coefficients are pulled toward zero; \texttt{λ\ =\ 0} recovers least
+squares, \texttt{λ\ →\ ∞} drives coefficients toward (but not exactly
+to) zero.
+
+\begin{equation*}
+\hat\beta^{\text{ridge}}=\arg\min_\beta\;\mathrm{RSS}+\lambda\sum_{j=1}^{p}\beta_j^2
+\qquad (\ell_2\text{ penalty; shrinks, never zeroes})
+\end{equation*}
+
+\textbf{Intuition.} Add a cost for large coefficients, so the fit
+prefers smaller, steadier ones. This \emph{shrinkage} trades a bit of
+bias for a big drop in variance --- very helpful when predictors are
+many or correlated. Because the penalty scales with coefficient size,
+standardize predictors first so the penalty is fair across them.
+
+\textbf{Notes.} Ridge keeps \emph{all} \texttt{p} predictors
+(coefficients shrink but rarely hit zero), so it doesn't simplify
+interpretation. Efficient: fitting for all \texttt{λ} at once costs
+about as much as one least-squares fit. Choose \texttt{λ} by
+cross-validation. → The lasso (which does drop variables), Ridge vs
+lasso.
+
+\hypertarget{the-lasso}{%
+\subsubsection{The lasso}\label{the-lasso}}
+
+\textbf{Definition.} Like ridge, but with an absolute-value (``L1'')
+penalty: minimize \texttt{RSS\ +\ λ\ Σ\ \textbar{}β\_j\textbar{}}. This
+penalty can force some coefficients \emph{exactly} to zero, so the lasso
+performs \emph{variable selection} and yields \emph{sparse} models.
+
+\begin{equation*}
+\hat\beta^{\text{lasso}}=\arg\min_\beta\;\mathrm{RSS}+\lambda\sum_{j=1}^{p}|\beta_j|
+\qquad (\ell_1\text{ penalty; drives coefficients exactly to }0)
+\end{equation*}
+
+\textbf{Intuition.} The corner-shaped L1 penalty makes it optimal to
+snap small coefficients all the way to zero rather than merely shrink
+them. So the lasso both regularizes \emph{and} selects --- you get a
+smaller, more interpretable model automatically. Mechanically it shaves
+a constant \texttt{λ/2} off each coefficient (soft-thresholding),
+zeroing any smaller than that.
+
+\textbf{Notes.} Big interpretability win over ridge (a subset of
+predictors, not all \texttt{p}). Choose \texttt{λ} by cross-validation.
+→ Ridge vs lasso.
+
+\hypertarget{ridge-vs-lasso}{%
+\subsubsection{Ridge vs lasso}\label{ridge-vs-lasso}}
+
+\textbf{Definition.} Ridge shrinks all coefficients proportionally and
+keeps every predictor; the lasso can zero coefficients out and select a
+subset. Neither dominates.
+
+\textbf{Intuition.} Lasso tends to win when only a \emph{few} predictors
+truly matter and the rest are near-zero --- it cleanly discards the
+deadwood. Ridge tends to win when the response depends on \emph{many}
+predictors of similar size --- it keeps them all, gently. Since you
+never know which regime you're in, let cross-validation decide.
+
+\textbf{Notes.} Both reduce variance via shrinkage; the difference is
+sparsity. → Ridge regression, The lasso.
+
+\hypertarget{principal-components-regression-pcr}{%
+\subsubsection{Principal components regression
+(PCR)}\label{principal-components-regression-pcr}}
+
+\textbf{Definition.} A dimension-reduction method: replace the
+\texttt{p} predictors with \texttt{M\ \textless{}\ p} \emph{principal
+components} (linear combinations capturing the most variance in the
+predictors), then regress \texttt{Y} on those \texttt{M} components by
+least squares.
+
+\textbf{Intuition.} Instead of using every correlated predictor, distill
+them into a few directions that capture most of their variation, and
+regress on those. Fewer, uncorrelated inputs → lower variance. The first
+component is the single direction the data spread out along most; each
+next one is the biggest remaining spread, perpendicular to the earlier
+ones.
+
+\textbf{Notes.} The components are chosen \emph{unsupervised} --- using
+only \texttt{X}, ignoring \texttt{Y} --- so there's no guarantee the
+highest-variance directions are the best \emph{predictors}. Partial
+least squares fixes the ``ignores \texttt{Y}'' gap. The
+component-finding procedure itself is Principal components analysis
+(PCA), also an unsupervised tool in its own right. → Partial least
+squares, Principal components analysis (PCA) (ML), High-dimensional
+data.
+
+\hypertarget{partial-least-squares-pls}{%
+\subsubsection{Partial least squares
+(PLS)}\label{partial-least-squares-pls}}
+
+\textbf{Definition.} A \emph{supervised} dimension-reduction method:
+like PCR, but the derived directions are chosen using \texttt{Y} too,
+weighting each predictor by its correlation with the response.
+
+\textbf{Intuition.} Same ``combine predictors into a few directions''
+idea as PCR, but aimed --- build directions that not only summarize the
+predictors but also relate to the response. It places the most weight on
+the predictors most correlated with \texttt{Y}.
+
+\textbf{Notes.} Addresses PCR's blind spot (high-variance ≠
+high-predictive directions), though in practice the gain over PCR is
+often modest. → Principal components regression.
+
+\hypertarget{high-dimensional-data}{%
+\subsubsection{High-dimensional data}\label{high-dimensional-data}}
+
+\textbf{Definition.} The setting where the number of features \texttt{p}
+is large relative to (or exceeds) the number of observations \texttt{n}
+--- increasingly common in genomics, finance, marketing.
+
+\textbf{Intuition.} When \texttt{p\ ≥\ n}, least squares can fit the
+training data \emph{perfectly} regardless of whether the predictors mean
+anything --- which is disastrous overfitting. Training R² marches to 1
+and training MSE to 0 as you add features, while \emph{test} error
+explodes, because each added predictor inflates variance.
+
+\textbf{Notes.} \emph{Emphasized:} adding features truly related to
+\texttt{Y} helps; adding noise features hurts, raising test error.
+Methods that regularize or reduce dimension (forward selection, ridge,
+lasso, PCR) are essential here. A face of the curse of dimensionality. →
+Why move beyond least squares, The lasso.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{moving-beyond-linearity-isl-ch.-7}{%
+\subsection{\texorpdfstring{Moving Beyond Linearity \emph{(ISL
+ch.~7)}}{Moving Beyond Linearity (ISL ch.~7)}}\label{moving-beyond-linearity-isl-ch.-7}}
+
+\hypertarget{polynomial-regression}{%
+\subsubsection{Polynomial regression}\label{polynomial-regression}}
+
+\textbf{Definition.} Extends linear regression by adding powers of a
+predictor as extra terms --- e.g.~cubic regression uses \texttt{X},
+\texttt{X²}, \texttt{X³}. Still a linear model (in the coefficients),
+just with transformed predictors.
+
+\begin{equation*}
+y_i=\beta_0+\beta_1x_i+\beta_2x_i^2+\dots+\beta_dx_i^d+\varepsilon_i
+\end{equation*}
+
+\textbf{Intuition.} Let the fit curve by feeding it \texttt{X} and its
+powers. A cheap first step toward non-linearity.
+
+\textbf{Notes.} Degrees above 3--4 are rarely used --- high-degree
+polynomials wiggle wildly, especially near the edges of the data. They
+impose one \emph{global} shape on the whole range, which motivates the
+piecewise methods below. → Step functions, Regression splines.
+
+\hypertarget{step-functions}{%
+\subsubsection{Step functions}\label{step-functions}}
+
+\textbf{Definition.} Cut the range of \texttt{X} into \texttt{K} bins
+and fit a separate \emph{constant} in each --- a piecewise-constant fit.
+This turns a continuous predictor into an ordered categorical one.
+
+\textbf{Intuition.} Rather than one global curve, chop \texttt{X} into
+regions and predict a flat level in each, like a staircase. Avoids
+imposing a single global structure.
+
+\textbf{Notes.} Weakness: unless there are natural breakpoints, the flat
+steps can miss the action between cut points. A special case of the
+basis-function approach. → Basis functions.
+
+\hypertarget{basis-functions}{%
+\subsubsection{Basis functions}\label{basis-functions}}
+
+\textbf{Definition.} A general framework: fit
+\texttt{y\ =\ β\_0\ +\ β\_1\ b\_1(X)\ +\ …\ +\ β\_K\ b\_K(X)}, where the
+\texttt{b\_j} are \emph{fixed, known} transformations of \texttt{X}.
+Polynomials and step functions are both special cases (with
+\texttt{b\_j(X)\ =\ X\^{}j} or bin indicators); other choices include
+splines, wavelets, and Fourier series.
+
+\begin{equation*}
+y_i=\beta_0+\sum_{k=1}^{K}\beta_k\,b_k(x_i)+\varepsilon_i
+\qquad\text{(still linear in }\beta\text{, so ordinary least squares applies)}
+\end{equation*}
+
+\textbf{Intuition.} Pick a menu of building-block functions, transform
+\texttt{X} through them, then fit an ordinary linear model on the
+transformed inputs. All the machinery of linear regression (standard
+errors, tests) still applies.
+
+\textbf{Notes.} The unifying idea behind polynomial regression, step
+functions, and Regression splines.
+
+\hypertarget{regression-splines}{%
+\subsubsection{Regression splines}\label{regression-splines}}
+
+\textbf{Definition.} Divide the range of \texttt{X} at \emph{knots} into
+regions and fit a low-degree polynomial (commonly cubic) within each,
+constrained so the pieces join \emph{smoothly} at the knots (continuous
+value and first/second derivatives). More knots → more flexibility.
+
+\textbf{Intuition.} Instead of one high-degree polynomial across the
+whole range, stitch together many low-degree ones and force smooth seams
+--- flexible where you need it without the wild global swings of
+high-degree polynomials. Each smoothness constraint at a knot ``costs''
+one degree of freedom.
+
+\textbf{Notes.} Splines add flexibility by adding \emph{knots} while
+keeping the degree fixed --- usually giving better results than raising
+a polynomial's degree. Where to place knots: often uniformly; more knots
+where the function changes fast. → Natural splines, Smoothing splines,
+Basis functions.
+
+\hypertarget{natural-splines}{%
+\subsubsection{Natural splines}\label{natural-splines}}
+
+\textbf{Definition.} A regression spline with extra \emph{boundary
+constraints}: the fit is forced to be linear beyond the outermost knots.
+
+\textbf{Intuition.} Regular splines behave erratically at the edges
+(little data, high variance). Pinning the tails to straight lines tames
+that boundary wildness, giving more sensible extrapolation.
+
+\textbf{Notes.} Typically produces a more reasonable fit near the
+boundaries than an unconstrained spline or a high-degree polynomial. →
+Regression splines.
+
+\hypertarget{smoothing-splines}{%
+\subsubsection{Smoothing splines}\label{smoothing-splines}}
+
+\textbf{Definition.} Fit a smooth curve \texttt{g} by minimizing
+\texttt{Σ(y\_i\ −\ g(x\_i))²\ +\ λ\ ∫\ g\textquotesingle{}\textquotesingle{}(t)²\ dt}
+--- a fit-the-data term plus a \emph{roughness penalty} on the curve's
+wiggliness, tuned by \texttt{λ}.
+
+\textbf{Intuition.} You could make training error zero by threading a
+curve through every point, but that curve would be absurdly wiggly. The
+penalty on the second derivative (a measure of roughness) discourages
+that. \texttt{λ} sets the trade-off: \texttt{λ\ =\ 0} interpolates
+everything; \texttt{λ\ →\ ∞} forces a straight line.
+
+\textbf{Notes.} No need to choose knots --- there's effectively one at
+every observation; instead you choose \texttt{λ}, naturally by
+cross-validation (LOOCV is especially cheap here). The second derivative
+measures roughness because it tracks how fast the slope changes. →
+Regression splines, k-fold cross-validation.
+
+\hypertarget{local-regression}{%
+\subsubsection{Local regression}\label{local-regression}}
+
+\textbf{Definition.} Estimate the fit at a target point \texttt{x\_0}
+using only nearby training points, weighting closer points more, and
+fitting a small (often linear) weighted least-squares model there.
+Repeat for each target point. The key tuning knob is the \emph{span}
+\texttt{s} --- the fraction of points used.
+
+\textbf{Intuition.} Slide a weighted window along \texttt{X}; at each
+spot fit a tiny local line using mostly the neighbors. Small span →
+local and wiggly; large span → smooth and global. Like KNN, it's
+``memory-based'': it needs all the training data at prediction time.
+
+\textbf{Example.} Fit \textbf{LOESS} to a noisy expression-vs-time
+scatter with span 0.3: at each time point it fits a weighted line to the
+\textasciitilde30\% nearest points, tracing a smooth trend curve that
+follows local bumps without the wild edge swings of a high-degree
+polynomial.
+
+\textbf{Notes.} Neighborhoods overlap smoothly, unlike the hard bins of
+step functions. Extends to \emph{varying-coefficient} models. Commonly
+called \textbf{LOWESS}/\textbf{LOESS} (locally weighted scatterplot
+smoothing) --- the smooth curve drawn through a noisy scatter. →
+K-nearest neighbors, Step functions. \emph{(StatQuest)}
+
+\hypertarget{generalized-additive-models-gams}{%
+\subsubsection{Generalized additive models
+(GAMs)}\label{generalized-additive-models-gams}}
+
+\textbf{Definition.} Extend multiple linear regression by replacing each
+linear term \texttt{β\_j\ x\_j} with a smooth non-linear function
+\texttt{f\_j(x\_j)}, then \emph{adding} the pieces:
+\texttt{y\ =\ β\_0\ +\ f\_1(x\_1)\ +\ …\ +\ f\_p(x\_p)\ +\ ε}. Works for
+quantitative and qualitative responses.
+
+\begin{equation*}
+y_i=\beta_0+\sum_{j=1}^{p}f_j(x_{ij})+\varepsilon_i
+\qquad\text{(one smooth function per predictor, added together)}
+\end{equation*}
+
+\textbf{Intuition.} Give every predictor its own flexible curve, but
+keep them \emph{additive} --- the total is still a sum of per-predictor
+effects. This automatically models non-linearities linear regression
+would miss, without hand-picking transformations, while staying
+readable: you can see each predictor's individual effect holding others
+fixed.
+
+\textbf{Notes.} Each \texttt{f\_j}'s flexibility is summarized by its
+degrees of freedom. Main limitation: pure additivity misses interactions
+among predictors --- though you can add interaction terms or
+low-dimensional joint functions \texttt{f\_\{jk\}(x\_j,\ x\_k)} by hand.
+A sweet spot between interpretable linear models and fully flexible
+black boxes. → Flexibility vs interpretability, Smoothing splines.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{survival-analysis-and-censored-data-isl-ch.-11}{%
+\subsection{\texorpdfstring{Survival Analysis and Censored Data
+\emph{(ISL
+ch.~11)}}{Survival Analysis and Censored Data (ISL ch.~11)}}\label{survival-analysis-and-censored-data-isl-ch.-11}}
+
+\hypertarget{survival-analysis-and-censored-data}{%
+\subsubsection{Survival analysis and censored
+data}\label{survival-analysis-and-censored-data}}
+
+\textbf{Definition.} Methods for a response that is the \emph{time until
+an event} (death, failure, churn). Data are \emph{censored} when the
+event hasn't occurred by the end of observation --- you know the
+survival time exceeds some value but not its exact value.
+
+\textbf{Intuition.} A patient still alive at a study's end gives real
+information (``survived at least 5 years'') that you shouldn't discard,
+yet can't treat as an ordinary observed time either. Survival analysis
+is built to use complete and censored observations together.
+
+\textbf{Notes.} Ordinary regression can't handle censoring directly. →
+Survival function, Hazard function, Cox proportional hazards model.
+
+\hypertarget{survival-function}{%
+\subsubsection{Survival function}\label{survival-function}}
+
+\textbf{Definition.} \texttt{S(t)\ =\ Pr(T\ \textgreater{}\ t)} --- the
+probability of surviving (not yet experiencing the event) past time
+\texttt{t}. A decreasing function of \texttt{t}.
+
+\begin{equation*}
+S(t)=\Pr(T>t)=1-F(t)
+\qquad\text{non-increasing, }S(0)=1
+\end{equation*}
+
+\textbf{Intuition.} ``What fraction are still event-free at time
+\texttt{t}?'' Starts at 1 and falls toward 0.
+
+\textbf{Notes.} Estimated from censored data by the Kaplan-Meier curve.
+→ Kaplan-Meier estimator, Hazard function.
+
+\hypertarget{kaplan-meier-estimator}{%
+\subsubsection{Kaplan-Meier estimator}\label{kaplan-meier-estimator}}
+
+\textbf{Definition.} A non-parametric estimate of the survival function,
+formed as a running product of ``survived this step'' probabilities
+across the observed event times, giving a step-like curve.
+
+\begin{equation*}
+\hat S(t)=\prod_{j:\,t_j\le t}\left(1-\frac{d_j}{r_j}\right)
+\qquad d_j=\text{deaths at }t_j,\; r_j=\text{at risk just before }t_j
+\end{equation*}
+
+\textbf{Intuition.} At each time an event occurs, multiply in the
+fraction who made it through that step; censored subjects drop out
+without counting as events. The curve steps down at each event time.
+
+\textbf{Notes.} The standard descriptive tool for survival data. →
+Survival function, Log-rank test.
+
+\hypertarget{log-rank-test}{%
+\subsubsection{Log-rank test}\label{log-rank-test}}
+
+\textbf{Definition.} A hypothesis test comparing the survival curves of
+two (or more) groups, built as a standardized statistic
+\texttt{W\ =\ (observed\ −\ expected)\ /\ sqrt(variance)} accumulated
+over event times.
+
+\textbf{Intuition.} At each event time, compare how many events actually
+occurred in a group to how many you'd expect if the groups shared one
+survival curve; sum the discrepancies. A large statistic means the
+curves differ.
+
+\textbf{Notes.} The survival analogue of a two-sample test. →
+Kaplan-Meier estimator.
+
+\hypertarget{hazard-function}{%
+\subsubsection{Hazard function}\label{hazard-function}}
+
+\textbf{Definition.} The \emph{hazard rate} \texttt{h(t)} is the
+instantaneous event rate at time \texttt{t} given survival up to
+\texttt{t}: \texttt{h(t)\ =\ f(t)\ /\ S(t)}, where \texttt{f(t)} is the
+event-time density and \texttt{S(t)} the survival function.
+
+\begin{equation*}
+h(t)=\lim_{\Delta t\to 0}\frac{\Pr(t\le T<t+\Delta t\mid T\ge t)}{\Delta t}
+=\frac{f(t)}{S(t)}
+\end{equation*}
+
+\textbf{Intuition.} ``Given you've made it to time \texttt{t}, how
+likely is the event right now?'' The survival function \texttt{S(t)},
+density \texttt{f(t)}, and hazard \texttt{h(t)} are three equivalent
+ways to describe the same event-time distribution.
+
+\textbf{Notes.} Central to the Cox model. → Cox proportional hazards
+model, Survival function.
+
+\hypertarget{cox-proportional-hazards-model}{%
+\subsubsection{Cox proportional hazards
+model}\label{cox-proportional-hazards-model}}
+
+\textbf{Definition.} A regression for survival data:
+\texttt{h(t\ \textbar{}\ x)\ =\ h\_0(t)\ ·\ exp(Σ\_j\ x\_j\ β\_j)},
+where \texttt{h\_0(t)} is an unspecified \emph{baseline hazard} (the
+hazard when all predictors are zero). It estimates the coefficients
+\texttt{β} \emph{without} specifying the form of \texttt{h\_0(t)}.
+
+\begin{equation*}
+h(t\mid x)=h_0(t)\,\exp\!\Bigl(\sum_{j=1}^{p}\beta_jx_j\Bigr)
+\qquad h_0(t)\text{ left unspecified (semi-parametric)}
+\end{equation*}
+
+\textbf{Intuition.} Predictors don't reshape the baseline risk over time
+--- they only scale it up or down by a constant factor
+\texttt{exp(Σ\ x\_j\ β\_j)} (hence ``proportional hazards''). The
+model's trick is learning how predictors matter while leaving the
+baseline hazard completely free.
+
+\textbf{Notes.} The workhorse regression method for censored
+time-to-event data. → Hazard function.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{multiple-testing-isl-ch.-13}{%
+\subsection{\texorpdfstring{Multiple Testing \emph{(ISL
+ch.~13)}}{Multiple Testing (ISL ch.~13)}}\label{multiple-testing-isl-ch.-13}}
+
+\hypertarget{type-i-and-type-ii-errors}{%
+\subsubsection{Type I and Type II
+errors}\label{type-i-and-type-ii-errors}}
+
+\textbf{Definition.} In a hypothesis test, a \emph{Type I error} (false
+positive) is rejecting a true null hypothesis; a \emph{Type II error}
+(false negative) is failing to reject a false null. The Type I error
+rate is the probability of a false positive.
+
+\textbf{Intuition.} Type I = crying wolf (declaring an effect that isn't
+there); Type II = missing a real effect. Lowering one generally raises
+the other. The four-step test (state hypotheses, compute a statistic,
+get a p-value, decide) controls Type I error at a chosen level
+\texttt{α}.
+
+\textbf{Notes.} They trade off much like bias and variance. → Hypothesis
+test, Family-wise error rate.
+
+\hypertarget{family-wise-error-rate-fwer}{%
+\subsubsection{Family-wise error rate
+(FWER)}\label{family-wise-error-rate-fwer}}
+
+\textbf{Definition.} When testing \texttt{m} hypotheses at once, the
+FWER is the probability of making \emph{at least one} Type I error:
+\texttt{Pr(V\ ≥\ 1)}, where \texttt{V} counts false positives.
+
+\textbf{Intuition.} Run enough tests at the usual 5\% each and false
+positives become nearly guaranteed --- flip 100 fair coins and some will
+``look'' biased. FWER control keeps the chance of \emph{any} false
+discovery low across the whole family.
+
+\textbf{Notes.} Controlling FWER is strict; with large \texttt{m} it
+gets too conservative, motivating FDR. → Bonferroni correction, Holm's
+method, False discovery rate.
+
+\hypertarget{bonferroni-correction}{%
+\subsubsection{Bonferroni correction}\label{bonferroni-correction}}
+
+\textbf{Definition.} A simple FWER-control rule: reject a hypothesis
+only if its p-value is below \texttt{α/m} (the target level divided by
+the number of tests).
+
+\begin{equation*}
+\text{reject }H_{0j}\text{ when } p_j\le \frac{\alpha}{m}
+\qquad\Longrightarrow\qquad \mathrm{FWER}\le\alpha
+\end{equation*}
+
+\textbf{Intuition.} Split your error budget evenly across all tests so
+their combined false-positive chance stays under \texttt{α}. Dead simple
+and assumption-free, but conservative --- it rejects few hypotheses,
+risking many Type II errors.
+
+\textbf{Notes.} Makes no assumptions about the tests' dependence. →
+Family-wise error rate, Holm's method.
+
+\hypertarget{holms-method}{%
+\subsubsection{Holm's method}\label{holms-method}}
+
+\textbf{Definition.} A step-down FWER-control procedure: sort the
+p-values ascending and compare each to a threshold that loosens as you
+proceed, rejecting until one fails.
+
+\textbf{Intuition.} Like Bonferroni but less harsh --- it controls FWER
+just as validly while rejecting more hypotheses (fewer Type II errors,
+more power), at no cost in assumptions.
+
+\textbf{Notes.} Generally preferred over plain Bonferroni. → Bonferroni
+correction, Family-wise error rate.
+
+\hypertarget{false-discovery-rate-fdr}{%
+\subsubsection{False discovery rate
+(FDR)}\label{false-discovery-rate-fdr}}
+
+\textbf{Definition.} The expected \emph{fraction} of false positives
+among all rejected hypotheses: \texttt{FDR\ =\ E{[}V/R{]}}, where
+\texttt{V} is false positives and \texttt{R} total rejections. The
+realized ratio \texttt{V/R} is the \emph{false discovery proportion}
+(FDP).
+
+\textbf{Intuition.} With thousands of tests, demanding zero false
+positives (FWER) is hopeless. Instead, tolerate some --- just keep the
+\emph{proportion} of your ``discoveries'' that are false below a level
+\texttt{q} (say 10\%). A far more practical target at scale.
+
+\textbf{Notes.} Controlled by the Benjamini-Hochberg procedure. →
+Family-wise error rate, Benjamini-Hochberg procedure.
+
+\hypertarget{benjamini-hochberg-procedure}{%
+\subsubsection{Benjamini-Hochberg
+procedure}\label{benjamini-hochberg-procedure}}
+
+\textbf{Definition.} A procedure that controls the FDR at a chosen level
+\texttt{q}: sort the p-values ascending, find the largest \texttt{j}
+with \texttt{p\_(j)\ \textless{}\ q·j/m}, and reject all hypotheses up
+to that one.
+
+\begin{equation*}
+\text{find } L=\max\Bigl\{j: p_{(j)}\le \frac{j}{m}q\Bigr\},\ \text{reject } H_{0(1)},\dots,H_{0(L)}
+\qquad\Longrightarrow\qquad \mathrm{FDR}\le q
+\end{equation*}
+
+\textbf{Intuition.} A ranked cutoff that lets more discoveries through
+than FWER methods while guaranteeing the false-discovery \emph{fraction}
+stays ≤ \texttt{q}. The standard tool for large-scale testing (genomics,
+screening).
+
+\textbf{Notes.} → False discovery rate, Family-wise error rate.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{statistical-inference-and-distributions-statquest}{%
+\subsection{\texorpdfstring{Statistical Inference and Distributions
+\emph{(StatQuest)}}{Statistical Inference and Distributions (StatQuest)}}\label{statistical-inference-and-distributions-statquest}}
+
+\hypertarget{normal-distribution}{%
+\subsubsection{Normal distribution}\label{normal-distribution}}
+
+\textbf{Definition.} The bell-shaped continuous distribution
+\texttt{N(μ,\ σ²)} with density
+\texttt{f(x)\ =\ (1/(σ·√(2π)))·e\^{}(−(x−μ)²/(2σ²))}, symmetric about
+its mean \texttt{μ}, with spread set by the standard deviation
+\texttt{σ}.
+
+\begin{equation*}
+f(x)=\frac{1}{\sigma\sqrt{2\pi}}\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+\qquad X\sim\mathcal{N}(\mu,\sigma^2)
+\end{equation*}
+
+\textbf{Intuition.} Many measurements (heights, weights, measurement
+noise) pile up around a central value and thin out symmetrically.
+\texttt{μ} locates the peak; \texttt{σ} sets the width --- larger
+\texttt{σ}, flatter and wider.
+
+\textbf{Example (68--95--99.7 rule).} For any \texttt{N(μ,\ σ)}: about
+\textbf{68\%} of values fall within \texttt{μ\ ±\ 1σ}, \textbf{95\%}
+within \texttt{μ\ ±\ 2σ}, and \textbf{99.7\%} within \texttt{μ\ ±\ 3σ}.
+If mouse weights are \texttt{N(20,\ 2²)} g, \textasciitilde95\% of mice
+weigh between 16 and 24 g.
+
+\textbf{Notes.} The reference distribution behind z-scores, standard
+errors, confidence intervals, t-tests, and LDA's class model. → Z-scores
+(standardization), Standard error and the sampling distribution of the
+mean, Probability distributions.
+
+\hypertarget{probability-distributions}{%
+\subsubsection{Probability
+distributions}\label{probability-distributions}}
+
+\textbf{Definition.} A function giving the probability (for discrete
+variables) or probability \emph{density} (for continuous ones) of each
+possible value; the area under it over a range is the probability of
+landing in that range, and the total area is 1.
+
+\textbf{Intuition.} If you know the distribution's shape, you can
+estimate how likely any value or bin is \emph{without} collecting every
+data point --- the distribution stands in for the whole population.
+
+\textbf{Example.} Knowing adult heights are ≈ \texttt{N(170,\ 7²)} cm
+lets you say a random person is \textasciitilde95\% likely to be
+156--184 cm, and that someone 200 cm tall is very rare --- all read off
+the distribution, no new data.
+
+\textbf{Notes.} Common ones: normal (continuous, symmetric), binomial
+(counts of successes in \texttt{n} trials), Poisson (counts per
+interval). → Normal distribution, Poisson regression.
+
+\hypertarget{standard-error-and-the-sampling-distribution-of-the-mean}{%
+\subsubsection{Standard error and the sampling distribution of the
+mean}\label{standard-error-and-the-sampling-distribution-of-the-mean}}
+
+\textbf{Definition.} Take many samples, compute each one's mean, and
+those means form a distribution --- the \emph{sampling distribution of
+the mean}. Its standard deviation is the \emph{standard error of the
+mean}: \texttt{SE\ =\ σ/√n} (estimated by \texttt{s/√n}).
+
+\begin{equation*}
+\mathrm{SE}(\bar x)=\frac{s}{\sqrt{n}}
+\qquad\text{(shrinks as }\sqrt{n}\text{: 4x the data halves the error)}
+\end{equation*}
+
+\textbf{Intuition.} A standard deviation describes the spread of the
+\emph{data}; a standard error describes the spread of a \emph{statistic}
+(here the mean) across repeated samples --- i.e.~how precisely you've
+pinned the mean down. Bigger \texttt{n} → smaller SE, because averaging
+more points steadies the estimate (the \texttt{√n}).
+
+\textbf{Example.} 100 mouse weights with \texttt{s\ =\ 4\ g} give
+\texttt{SE\ =\ 4/√100\ =\ 0.4\ g}. So the sample mean is precise to
+about ±0.8 g (2·SE) at 95\%, even though individual mice vary by ±8 g
+(2·s).
+
+\textbf{Notes.} Don't confuse the two: report the standard deviation to
+describe variability in the data, the standard error to describe
+uncertainty in the mean. Bootstrapping estimates the same SE without the
+formula. → Error bars (std dev, standard error, confidence interval),
+Confidence interval, The bootstrap, Standard error of a coefficient.
+
+\hypertarget{error-bars-std-dev-standard-error-confidence-interval}{%
+\subsubsection{Error bars (std dev, standard error, confidence
+interval)}\label{error-bars-std-dev-standard-error-confidence-interval}}
+
+\textbf{Definition.} Three different things a ± bar on a plot can
+represent: \emph{standard deviation} (spread of the data),
+\emph{standard error} (\texttt{σ/√n}, uncertainty of the mean), or a
+\emph{confidence interval} (usually 95\%, ≈ mean ± 2·SE).
+
+\textbf{Intuition.} They answer different questions --- how variable the
+data are, vs how precise the mean is, vs the plausible range for the
+true mean --- and they get smaller in that order (\texttt{SE\ =\ SD/√n};
+a 95\% CI ≈ 2·SE). Always state which one a bar shows, or it's
+meaningless.
+
+\textbf{Example.} For 100 mice with \texttt{SD\ =\ 4\ g}:
+\texttt{SE\ =\ 0.4\ g} and \texttt{95\%\ CI\ ≈\ ±0.8\ g}. A ±4 g bar
+(SD) looks alarming, but the ±0.8 g bar (CI) shows the \emph{mean} is
+actually well-pinned.
+
+\textbf{Notes.} SD is fixed by the data; SE and CI tighten as \texttt{n}
+grows. → Standard error and the sampling distribution of the mean,
+Confidence interval.
+
+\hypertarget{z-scores-standardization}{%
+\subsubsection{Z-scores
+(standardization)}\label{z-scores-standardization}}
+
+\textbf{Definition.} Rescale a value by how many standard deviations it
+sits from the mean: \texttt{z\ =\ (x\ −\ μ)/σ}. Applied to every value,
+it produces data with mean 0 and standard deviation 1.
+
+\begin{equation*}
+z=\frac{x-\mu}{\sigma}
+\qquad\text{(units of standard deviations from the mean)}
+\end{equation*}
+
+\textbf{Intuition.} Puts different features on one comparable scale and
+makes ``how unusual is this?'' explicit --- \texttt{z\ =\ 2} means two
+SDs above average (\textasciitilde top 2.5\% under a normal).
+
+\textbf{Example (heatmaps).} To build a gene-expression heatmap: for
+each gene, subtract its mean and divide by its SD (z-score its row) so
+highly- and lowly-expressed genes become comparable; then cluster the
+rows (and columns) by similarity and colour cells by z-score. Clustering
+needs a \emph{distance} --- \emph{Euclidean} \texttt{√Σ(a\_i\ −\ b\_i)²}
+or \emph{Manhattan} \texttt{Σ\textbar{}a\_i\ −\ b\_i\textbar{}} --- plus
+a \emph{linkage} rule (merge on the nearest, farthest, or average pair)
+to decide which clusters join.
+
+\textbf{Notes.} Standardization is the same operation as scikit-learn's
+\texttt{StandardScaler}. → Feature scaling (ML), Hierarchical clustering
+(ML), Normal distribution.
+
+\hypertarget{t-tests-one-sample-paired-two-sample}{%
+\subsubsection{t-tests (one-sample, paired,
+two-sample)}\label{t-tests-one-sample-paired-two-sample}}
+
+\textbf{Definition.} Tests about means using
+\texttt{t\ =\ (difference\ in\ means)\ /\ (standard\ error\ of\ that\ difference)},
+compared to a t-distribution. Flavours: \emph{one-sample} (a mean vs a
+fixed value), \emph{paired} (same subjects measured twice ---
+e.g.~before/after), and \emph{two-sample / unpaired} (two independent
+groups). The unpaired test has \emph{equal-variance} (pooled) and
+\emph{unequal-variance} (Welch) variants.
+
+\begin{equation*}
+t_{\text{one-sample}}=\frac{\bar x-\mu_0}{s/\sqrt{n}},
+\qquad
+t_{\text{two-sample}}=\frac{\bar x_1-\bar x_2}{\sqrt{s_1^2/n_1+s_2^2/n_2}}
+\end{equation*}
+
+\textbf{Intuition.} \texttt{t} asks ``how many standard errors apart are
+the means?'' Large \texttt{\textbar{}t\textbar{}} → the gap is unlikely
+to be noise → small p-value. Pairing removes between-subject variability
+(each subject is its own control), so a paired test is more powerful
+when it applies.
+
+\textbf{Example.} Blood pressure before vs after a drug on the
+\emph{same} 20 patients → a \textbf{paired} t-test on the 20
+differences. Drug vs placebo on two \emph{different} groups →
+\textbf{unpaired}; if you can't assume equal variances, use
+\textbf{Welch's} (unequal-variance) as the safe default.
+
+\textbf{Notes.} Default to a \textbf{two-tailed} test unless you have a
+strict, pre-specified directional hypothesis. Comparing 3+ groups → use
+ANOVA, not many t-tests (which inflate false positives). → One-tailed vs
+two-tailed tests, ANOVA (analysis of variance), Hypothesis test,
+t-statistic, and p-value.
+
+\hypertarget{one-tailed-vs-two-tailed-tests}{%
+\subsubsection{One-tailed vs two-tailed
+tests}\label{one-tailed-vs-two-tailed-tests}}
+
+\textbf{Definition.} A \emph{two-tailed} test asks ``is there a
+difference in \textbf{either} direction?''
+(\texttt{H\_a:\ μ\_1\ ≠\ μ\_2}); a \emph{one-tailed} test asks about a
+\textbf{single} direction (\texttt{H\_a:\ μ\_1\ \textgreater{}\ μ\_2}),
+putting the whole rejection region in one tail.
+
+\textbf{Intuition.} One-tailed has more power to detect an effect in the
+direction you specified, but it is \textbf{blind} to an effect the other
+way --- so it can claim ``better'' but can never notice ``worse.''
+Two-tailed is the honest default when either direction matters.
+
+\textbf{Example.} Testing a new drug two-tailed catches both ``helps''
+and ``harms''; a one-tailed \texttt{drug\ \textgreater{}\ placebo} test
+would miss a drug that's actively harmful. Only choose one-tailed when
+the opposite direction is genuinely irrelevant and decided in advance.
+
+\textbf{Notes.} A one-tailed p-value is half the two-tailed one (for
+symmetric distributions) --- which is exactly why switching to it
+\emph{after} seeing the data is p-hacking. → t-tests (one-sample,
+paired, two-sample), Hypothesis test, t-statistic, and p-value.
+
+\hypertarget{anova-analysis-of-variance}{%
+\subsubsection{ANOVA (analysis of
+variance)}\label{anova-analysis-of-variance}}
+
+\textbf{Definition.} Tests whether \textbf{3+ group means} are all equal
+(\texttt{H\_0:\ μ\_1\ =\ μ\_2\ =\ …\ =\ μ\_k}) with an F-statistic:
+\texttt{F\ =\ (variance\ between\ groups)\ /\ (variance\ within\ groups)}.
+\texttt{F} near 1 → groups look alike; \texttt{F} well above 1 → at
+least one mean differs.
+
+\textbf{Intuition.} Running many pairwise t-tests inflates false
+positives; ANOVA gives one overall verdict. If the spread \emph{between}
+group means dwarfs the spread \emph{within} groups, the grouping is
+explaining real structure.
+
+\textbf{Example.} Mean yield across 4 fertilizers gives
+\texttt{F\ =\ 6.2}, \texttt{p\ =\ 0.002} → they're not all equal. A
+significant ANOVA says ``some group differs'' but not which, so follow
+up with corrected pairwise tests (Tukey/Bonferroni) to locate the
+differences.
+
+\textbf{Notes.} Same variance-ratio idea as the regression F-statistic.
+→ F-statistic, Multiple Testing, Bonferroni correction.
+
+\hypertarget{fishers-exact-test}{%
+\subsubsection{Fisher's exact test}\label{fishers-exact-test}}
+
+\textbf{Definition.} An exact test of association in a 2×2 count table.
+Using the hypergeometric distribution it computes the probability of the
+observed table (with row/column totals held fixed), and the p-value is
+the \textbf{sum of the probabilities of all tables as rare or rarer}
+than the one observed.
+
+\textbf{Intuition.} It enumerates every table consistent with the
+margins and adds up the probability sitting on outcomes at least as
+extreme as yours --- no large-sample approximation, so it's the right
+tool for small counts where the chi-squared test is unreliable.
+
+\textbf{Example.} 3/10 treated vs 8/10 controls fell ill.~Fisher's test
+takes the hypergeometric probability of that split plus every
+more-extreme split; summing gives, say, \texttt{p\ =\ 0.07} --- not
+quite significant. (Only the counts matter, not the order within a
+group.)
+
+\textbf{Notes.} Exact but expensive for large tables; chi-squared
+approximates it once counts are big. → Type I and Type II errors,
+Multiple Testing.
+
+\hypertarget{statistical-power-and-power-analysis}{%
+\subsubsection{Statistical power and power
+analysis}\label{statistical-power-and-power-analysis}}
+
+\textbf{Definition.} \emph{Power} is the probability a test
+\textbf{detects a real effect} when one truly exists:
+\texttt{power\ =\ 1\ −\ β}, where \texttt{β} is the Type II
+(false-negative) rate. \emph{Power analysis} solves for the sample size
+needed to reach a target power (commonly 0.8) before the study runs.
+
+\textbf{Intuition.} Underpowered studies miss true effects and give
+irreproducible results. Power rises with \textbf{effect size} (bigger
+differences are easier to see), \textbf{sample size} \texttt{n},
+\textbf{lower noise} (variance), and a \textbf{less strict} \texttt{α}.
+Compute it \emph{first} so you collect enough data.
+
+\textbf{Example.} To detect a 5-unit difference with \texttt{SD\ =\ 10}
+at \texttt{α\ =\ 0.05} and 80\% power, a calculation might call for
+\textasciitilde64 subjects per group; halving the expected effect
+roughly \emph{quadruples} the \texttt{n} needed.
+
+\textbf{Notes.} The four knobs --- effect size, variance, \texttt{n},
+\texttt{α} --- trade off; fix any three to solve for the fourth. The
+design matters too: a paired test is more powerful than unpaired when
+pairing is valid (this is the accurate version of ``a t-test is best'').
+→ Type I and Type II errors, t-tests (one-sample, paired, two-sample).
+
+\hypertarget{biological-vs-technical-replicates}{%
+\subsubsection{Biological vs technical
+replicates}\label{biological-vs-technical-replicates}}
+
+\textbf{Definition.} \emph{Biological replicates} are independent
+samples (e.g.~different mice); \emph{technical replicates} re-measure
+the \textbf{same} sample (e.g.~the same mouse assayed three times).
+
+\textbf{Intuition.} Technical replicates only capture \emph{measurement}
+noise; biological replicates capture the \emph{biological} variability
+you actually want to generalize over. Many mice beat one mouse measured
+many times, because one mouse can't tell you about the population.
+
+\textbf{Example.} To claim a drug lowers weight in mice, 20
+\emph{different} mice (biological) support a population-level
+conclusion; weighing \emph{one} mouse 20 times (technical) only shows
+your scale is consistent.
+
+\textbf{Notes.} More biological replicates raise statistical power;
+technical replicates mainly reduce assay noise. → Statistical power and
+power analysis.
+
+\hypertarget{rpkm-fpkm-and-tpm-rna-seq-normalization}{%
+\subsubsection{RPKM, FPKM, and TPM (RNA-seq
+normalization)}\label{rpkm-fpkm-and-tpm-rna-seq-normalization}}
+
+\textbf{Definition.} Normalizations that make RNA-seq read counts
+comparable across genes and samples. \emph{RPKM} (reads per kilobase per
+million) divides counts by gene length (in kilobases) and by sequencing
+depth (in millions of reads); \emph{FPKM} is the paired-end version
+(fragments, not reads); \emph{TPM} (transcripts per million) applies the
+same two corrections in the \textbf{opposite order} so every sample's
+values sum to the same total.
+
+\textbf{Intuition.} Longer genes and more-deeply-sequenced samples rack
+up more reads for no biological reason; these divide that artefact out.
+TPM is preferred because its constant per-sample total makes proportions
+comparable across samples, which RPKM/FPKM don't guarantee.
+
+\textbf{Example.} A 4 kb gene with 400 reads in a 10-million-read
+sample: \texttt{RPKM\ =\ 400\ /\ (4\ ×\ 10)\ =\ 10}. TPM rescales so the
+sample's values sum to 1,000,000.
+
+\textbf{Notes.} Niche (bioinformatics), included for completeness ---
+prefer TPM. \emph{(The jotted ``normalizing with columns and first row''
+wasn't quite the mechanism; the two divisors are gene length and read
+depth.)}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{glossary}{%
+\subsection{Glossary}\label{glossary}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Additivity assumption} --- a predictor's effect on \texttt{Y}
+  doesn't depend on other predictors' values. →
+  \protect\hyperlink{additivity-and-linearity-assumptions}{Additivity
+  and linearity assumptions}.
+\item
+  \textbf{Adjusted R-squared} --- R² modified to penalize useless
+  predictors; larger = better. →
+  \protect\hyperlink{cp-aic-bic-and-adjusted-r-squared}{Cp, AIC, BIC,
+  and adjusted R-squared}.
+\item
+  \textbf{AIC / Cp} --- test-error estimates that tax training RSS by
+  model size; smaller = better. →
+  \protect\hyperlink{cp-aic-bic-and-adjusted-r-squared}{Cp, AIC, BIC,
+  and adjusted R-squared}.
+\item
+  \textbf{ANOVA} --- F-test that 3+ group means are all equal. →
+  \protect\hyperlink{anova-analysis-of-variance}{ANOVA (analysis of
+  variance)}.
+\item
+  \textbf{AUC} --- area under the ROC curve; chance a random positive
+  outscores a random negative. → \protect\hyperlink{roc-curve}{ROC
+  curve}.
+\item
+  \textbf{Basis functions} --- fixed transformations of \texttt{X} fed
+  into a linear model. → \protect\hyperlink{basis-functions}{Basis
+  functions}.
+\item
+  \textbf{Bayes classifier} --- assigns each point to its most probable
+  class; the ideal classifier. →
+  \protect\hyperlink{bayes-classifier}{Bayes classifier}.
+\item
+  \textbf{Bayes error rate} --- lowest possible test error rate;
+  classification analogue of irreducible error. →
+  \protect\hyperlink{bayes-error-rate}{Bayes error rate}.
+\item
+  \textbf{Bayes' theorem} --- inverts within-class densities into class
+  probabilities for generative classifiers. →
+  \protect\hyperlink{generative-classifiers-and-bayes-theorem}{Generative
+  classifiers and Bayes' theorem}.
+\item
+  \textbf{Benjamini-Hochberg procedure} --- controls the FDR via a
+  ranked p-value cutoff. →
+  \protect\hyperlink{benjamini-hochberg-procedure}{Benjamini-Hochberg
+  procedure}.
+\item
+  \textbf{BIC} --- like Cp/AIC but with a heavier size penalty, favoring
+  smaller models. →
+  \protect\hyperlink{cp-aic-bic-and-adjusted-r-squared}{Cp, AIC, BIC,
+  and adjusted R-squared}.
+\item
+  \textbf{Bias} --- error from approximating a complex truth with a
+  simpler model. → \protect\hyperlink{bias}{Bias}.
+\item
+  \textbf{Bias--variance trade-off} --- expected test MSE
+  \texttt{=\ Var()\ +\ Bias²\ +\ Var(ε)}. →
+  \protect\hyperlink{biasvariance-trade-off}{Bias--variance trade-off}.
+\item
+  \textbf{Biological vs technical replicates} --- independent samples vs
+  re-measuring one sample. →
+  \protect\hyperlink{biological-vs-technical-replicates}{Biological vs
+  technical replicates}.
+\item
+  \textbf{Bonferroni correction} --- reject only p-values below
+  \texttt{α/m} to control FWER. →
+  \protect\hyperlink{bonferroni-correction}{Bonferroni correction}.
+\item
+  \textbf{Bootstrap} --- resampling with replacement to quantify an
+  estimate's uncertainty. → \protect\hyperlink{the-bootstrap}{The
+  bootstrap}.
+\item
+  \textbf{Classification} --- predicting a qualitative (label) response.
+  → \protect\hyperlink{regression-vs-classification}{Regression vs
+  classification}.
+\item
+  \textbf{Classification error rate} --- fraction misclassified; test
+  rate \texttt{=\ Ave(I(y\_0\ ≠\ ŷ\_0))}. →
+  \protect\hyperlink{classification-error-rate}{Classification error
+  rate}.
+\item
+  \textbf{Collinearity / VIF} --- predictors too related to separate;
+  VIF \textgreater{} 5--10 flags it. →
+  \protect\hyperlink{potential-problems-in-linear-regression}{Potential
+  problems in linear regression}.
+\item
+  \textbf{Confidence interval} --- range holding the true parameter with
+  stated probability; \texttt{≈\ \ ±\ 2·SE}. →
+  \protect\hyperlink{confidence-interval}{Confidence interval}.
+\item
+  \textbf{Confounding} --- single- vs multiple-predictor results differ
+  due to correlated predictors. →
+  \protect\hyperlink{confounding}{Confounding}.
+\item
+  \textbf{Confusion matrix} --- table of predicted vs actual classes,
+  exposing error types. →
+  \protect\hyperlink{confusion-matrix-and-error-types}{Confusion matrix
+  and error types}.
+\item
+  \textbf{Cox proportional hazards model} --- survival regression
+  scaling a free baseline hazard by \texttt{exp(Σ\ x\_j\ β\_j)}. →
+  \protect\hyperlink{cox-proportional-hazards-model}{Cox proportional
+  hazards model}.
+\item
+  \textbf{Cross-validation} --- resampling to estimate test error
+  (LOOCV, k-fold). → \protect\hyperlink{k-fold-cross-validation}{k-fold
+  cross-validation}.
+\item
+  \textbf{Dimension reduction} --- regress on a few combined directions
+  instead of all predictors. →
+  \protect\hyperlink{principal-components-regression-pcr}{Principal
+  components regression (PCR)}.
+\item
+  \textbf{Dummy variable} --- 0/1 encoding of a categorical predictor. →
+  \protect\hyperlink{qualitative-predictors-and-dummy-variables}{Qualitative
+  predictors and dummy variables}.
+\item
+  \textbf{Error bars} --- a ± bar may show SD, standard error, or a
+  confidence interval. →
+  \protect\hyperlink{error-bars-std-dev-standard-error-confidence-interval}{Error
+  bars (std dev, standard error, confidence interval)}.
+\item
+  \textbf{Fisher's exact test} --- exact hypergeometric test of a 2×2
+  count table. → \protect\hyperlink{fishers-exact-test}{Fisher's exact
+  test}.
+\item
+  \textbf{F-statistic} --- tests whether all regression coefficients are
+  zero. → \protect\hyperlink{f-statistic}{F-statistic}.
+\item
+  \textbf{False discovery rate (FDR)} --- expected fraction of false
+  positives among rejections. →
+  \protect\hyperlink{false-discovery-rate-fdr}{False discovery rate
+  (FDR)}.
+\item
+  \textbf{Family-wise error rate (FWER)} --- probability of at least one
+  false positive across many tests. →
+  \protect\hyperlink{family-wise-error-rate-fwer}{Family-wise error rate
+  (FWER)}.
+\item
+  \textbf{Flexibility vs interpretability} --- the spectrum from
+  restrictive/readable to flexible/opaque. →
+  \protect\hyperlink{flexibility-vs-interpretability}{Flexibility vs
+  interpretability}.
+\item
+  \textbf{GAM} --- additive model with a smooth non-linear function per
+  predictor. →
+  \protect\hyperlink{generalized-additive-models-gams}{Generalized
+  additive models (GAMs)}.
+\item
+  \textbf{Generalized linear model (GLM)} --- linear predictor + link +
+  response distribution (linear/logistic/Poisson). →
+  \protect\hyperlink{generalized-linear-models-glms}{Generalized linear
+  models (GLMs)}.
+\item
+  \textbf{Hazard function} --- instantaneous event rate given survival
+  so far; \texttt{h(t)\ =\ f(t)/S(t)}. →
+  \protect\hyperlink{hazard-function}{Hazard function}.
+\item
+  \textbf{Heteroscedasticity} --- non-constant error variance
+  (funnel-shaped residuals). →
+  \protect\hyperlink{potential-problems-in-linear-regression}{Potential
+  problems in linear regression}.
+\item
+  \textbf{High-dimensional data} --- \texttt{p} large relative to
+  \texttt{n}; overfitting danger. →
+  \protect\hyperlink{high-dimensional-data}{High-dimensional data}.
+\item
+  \textbf{Holm's method} --- step-down FWER control; rejects more than
+  Bonferroni. → \protect\hyperlink{holms-method}{Holm's method}.
+\item
+  \textbf{Interaction term} --- product predictor capturing predictor
+  synergy. → \protect\hyperlink{interaction-terms}{Interaction terms}.
+\item
+  \textbf{Irreducible error} --- \texttt{Var(ε)}, the noise floor no
+  model removes. →
+  \protect\hyperlink{reducible-vs-irreducible-error}{Reducible vs
+  irreducible error}.
+\item
+  \textbf{k-fold cross-validation} --- average test error over
+  \texttt{k} held-out folds. →
+  \protect\hyperlink{k-fold-cross-validation}{k-fold cross-validation}.
+\item
+  \textbf{K-nearest neighbors (KNN)} --- majority vote / average of the
+  \texttt{K} closest points; \texttt{1/K} sets flexibility. →
+  \protect\hyperlink{k-nearest-neighbors-knn}{K-nearest neighbors (KNN)}
+  / \protect\hyperlink{knn-regression}{KNN regression}.
+\item
+  \textbf{Kaplan-Meier estimator} --- non-parametric step-curve estimate
+  of the survival function. →
+  \protect\hyperlink{kaplan-meier-estimator}{Kaplan-Meier estimator}.
+\item
+  \textbf{Lasso} --- L1-penalized regression that zeros out coefficients
+  (variable selection). → \protect\hyperlink{the-lasso}{The lasso}.
+\item
+  \textbf{Least squares (RSS)} --- fit that minimizes the residual sum
+  of squares. →
+  \protect\hyperlink{least-squares-and-residuals-rss}{Least squares and
+  residuals (RSS)}.
+\item
+  \textbf{Leverage} --- a point's unusualness in the predictors; high
+  leverage yanks the fit. →
+  \protect\hyperlink{potential-problems-in-linear-regression}{Potential
+  problems in linear regression}.
+\item
+  \textbf{Linear discriminant analysis (LDA)} --- Gaussian generative
+  classifier, shared covariance → linear boundary. →
+  \protect\hyperlink{linear-discriminant-analysis-lda}{Linear
+  discriminant analysis (LDA)}.
+\item
+  \textbf{Local regression} --- fit at each point from weighted nearby
+  points; span sets smoothness. →
+  \protect\hyperlink{local-regression}{Local regression}.
+\item
+  \textbf{Logistic regression} --- models class probability via the
+  logistic (S-curve) function. →
+  \protect\hyperlink{logistic-regression}{Logistic regression}.
+\item
+  \textbf{Log-odds (logit)} --- \texttt{log{[}p/(1−p){]}}; linear in
+  \texttt{X} for logistic regression. →
+  \protect\hyperlink{odds-and-log-odds-logit}{Odds and log-odds
+  (logit)}.
+\item
+  \textbf{Log-rank test} --- compares survival curves between groups. →
+  \protect\hyperlink{log-rank-test}{Log-rank test}.
+\item
+  \textbf{LOOCV} --- cross-validation holding out one point at a time. →
+  \protect\hyperlink{leave-one-out-cross-validation-loocv}{Leave-one-out
+  cross-validation (LOOCV)}.
+\item
+  \textbf{LOWESS / LOESS} --- locally weighted smoothing curve (local
+  regression). → \protect\hyperlink{local-regression}{Local regression}.
+\item
+  \textbf{Maximum likelihood} --- fit by maximizing the probability of
+  the observed data. → \protect\hyperlink{maximum-likelihood}{Maximum
+  likelihood}.
+\item
+  \textbf{Mean squared error (MSE)} ---
+  \texttt{(1/n)\ Σ\ (y\_i\ −\ (x\_i))²}; standard regression fit
+  measure. → \protect\hyperlink{mean-squared-error-mse}{Mean squared
+  error (MSE)}.
+\item
+  \textbf{Model assessment vs selection} --- grading a model vs choosing
+  its flexibility. →
+  \protect\hyperlink{model-assessment-vs-model-selection}{Model
+  assessment vs model selection}.
+\item
+  \textbf{Multiple linear regression} --- regression on \texttt{p}
+  predictors, each effect ``holding others fixed.'' →
+  \protect\hyperlink{multiple-linear-regression}{Multiple linear
+  regression}.
+\item
+  \textbf{Multinomial logistic regression} --- logistic regression for
+  more than two classes (softmax coding). →
+  \protect\hyperlink{multinomial-logistic-regression}{Multinomial
+  logistic regression}.
+\item
+  \textbf{Naive Bayes} --- generative classifier assuming within-class
+  predictor independence. → \protect\hyperlink{naive-bayes}{Naive
+  Bayes}.
+\item
+  \textbf{Natural spline} --- regression spline forced linear beyond the
+  outer knots. → \protect\hyperlink{natural-splines}{Natural splines}.
+\item
+  \textbf{Non-parametric methods} --- no assumed form for \texttt{f};
+  flexible but data-hungry. →
+  \protect\hyperlink{non-parametric-methods}{Non-parametric methods}.
+\item
+  \textbf{Normal distribution} --- bell curve N(μ, σ²); the 68--95--99.7
+  rule. → \protect\hyperlink{normal-distribution}{Normal distribution}.
+\item
+  \textbf{Odds} --- \texttt{p/(1−p)}, ranging 0 to ∞. →
+  \protect\hyperlink{odds-and-log-odds-logit}{Odds and log-odds
+  (logit)}.
+\item
+  \textbf{One-standard-error rule} --- pick the simplest model within 1
+  SE of the best. →
+  \protect\hyperlink{one-standard-error-rule}{One-standard-error rule}.
+\item
+  \textbf{One- vs two-tailed test} --- directional vs either-direction
+  alternative. →
+  \protect\hyperlink{one-tailed-vs-two-tailed-tests}{One-tailed vs
+  two-tailed tests}.
+\item
+  \textbf{Overfitting} --- following training noise; low training error,
+  high test error. → \protect\hyperlink{overfitting}{Overfitting}.
+\item
+  \textbf{Parametric methods} --- assume a form for \texttt{f}, then
+  estimate its parameters. →
+  \protect\hyperlink{parametric-methods}{Parametric methods}.
+\item
+  \textbf{Partial least squares (PLS)} --- supervised dimension
+  reduction using \texttt{Y}. →
+  \protect\hyperlink{partial-least-squares-pls}{Partial least squares
+  (PLS)}.
+\item
+  \textbf{Poisson regression} --- GLM for count responses (log link,
+  mean = variance). → \protect\hyperlink{poisson-regression}{Poisson
+  regression}.
+\item
+  \textbf{Polynomial regression} --- linear model with powers of
+  \texttt{X} as predictors. →
+  \protect\hyperlink{polynomial-regression}{Polynomial regression}.
+\item
+  \textbf{Population vs least squares line} --- true line vs its sample
+  estimate. →
+  \protect\hyperlink{population-regression-line-vs-least-squares-line}{Population
+  regression line vs least squares line}.
+\item
+  \textbf{Power (statistical)} --- 1 − β, the chance of detecting a true
+  effect. →
+  \protect\hyperlink{statistical-power-and-power-analysis}{Statistical
+  power and power analysis}.
+\item
+  \textbf{Prediction vs inference} --- accurate outputs vs understanding
+  the relationship. →
+  \protect\hyperlink{prediction-vs-inference}{Prediction vs inference}.
+\item
+  \textbf{Principal components regression (PCR)} --- regress on top
+  unsupervised variance directions. →
+  \protect\hyperlink{principal-components-regression-pcr}{Principal
+  components regression (PCR)}.
+\item
+  \textbf{Probability distribution} --- density/mass over values; total
+  area 1. → \protect\hyperlink{probability-distributions}{Probability
+  distributions}.
+\item
+  \textbf{p-value} --- chance of an association this strong under the
+  null; small → reject. →
+  \protect\hyperlink{hypothesis-test-t-statistic-and-p-value}{Hypothesis
+  test, t-statistic, and p-value}.
+\item
+  \textbf{QDA} --- Gaussian generative classifier with per-class
+  covariance → curved boundary. →
+  \protect\hyperlink{quadratic-discriminant-analysis-qda}{Quadratic
+  discriminant analysis (QDA)}.
+\item
+  \textbf{Qualitative / quantitative variables} --- labels vs numbers. →
+  \protect\hyperlink{quantitative-vs-qualitative-variables}{Quantitative
+  vs qualitative variables}.
+\item
+  \textbf{RPKM / FPKM / TPM} --- RNA-seq read normalizations (prefer
+  TPM). →
+  \protect\hyperlink{rpkm-fpkm-and-tpm-rna-seq-normalization}{RPKM,
+  FPKM, and TPM (RNA-seq normalization)}.
+\item
+  \textbf{R-squared} --- proportion of variance explained;
+  \texttt{1\ −\ RSS/TSS}. →
+  \protect\hyperlink{r-squared-and-correlation}{R-squared and
+  correlation}.
+\item
+  \textbf{Reducible vs irreducible error} --- error you can attack vs
+  the noise floor. →
+  \protect\hyperlink{reducible-vs-irreducible-error}{Reducible vs
+  irreducible error}.
+\item
+  \textbf{Regression} --- predicting a quantitative response. →
+  \protect\hyperlink{regression-vs-classification}{Regression vs
+  classification}.
+\item
+  \textbf{Regression splines} --- piecewise polynomials joined smoothly
+  at knots. → \protect\hyperlink{regression-splines}{Regression
+  splines}.
+\item
+  \textbf{Residual standard error (RSE)} --- estimated SD of the noise;
+  average deviation from the line. →
+  \protect\hyperlink{residual-standard-error-rse}{Residual standard
+  error (RSE)}.
+\item
+  \textbf{Resampling} --- refitting on repeated data subsets to estimate
+  error/variability. → \protect\hyperlink{resampling-methods}{Resampling
+  methods}.
+\item
+  \textbf{Ridge regression} --- L2-penalized regression that shrinks all
+  coefficients. → \protect\hyperlink{ridge-regression}{Ridge
+  regression}.
+\item
+  \textbf{ROC curve} --- error-type trade-offs across all thresholds. →
+  \protect\hyperlink{roc-curve}{ROC curve}.
+\item
+  \textbf{Semi-supervised learning} --- some observations labeled, some
+  not. → \protect\hyperlink{semi-supervised-learning}{Semi-supervised
+  learning}.
+\item
+  \textbf{Shrinkage / regularization} --- penalize coefficient size to
+  reduce variance. → \protect\hyperlink{ridge-regression}{Ridge
+  regression}.
+\item
+  \textbf{Simple linear regression} --- straight-line fit from one
+  predictor. → \protect\hyperlink{simple-linear-regression}{Simple
+  linear regression}.
+\item
+  \textbf{Smoothing spline} --- curve minimizing RSS + a roughness
+  penalty. → \protect\hyperlink{smoothing-splines}{Smoothing splines}.
+\item
+  \textbf{Standard error} --- typical sampling wobble of an estimate. →
+  \protect\hyperlink{standard-error-of-a-coefficient}{Standard error of
+  a coefficient}.
+\item
+  \textbf{Standard error of the mean (SEM)} --- σ/√n; spread of the
+  sample mean across samples. →
+  \protect\hyperlink{standard-error-and-the-sampling-distribution-of-the-mean}{Standard
+  error and the sampling distribution of the mean}.
+\item
+  \textbf{Statistical learning} --- approaches for estimating \texttt{f}
+  in \texttt{Y\ =\ f(X)\ +\ ε}. →
+  \protect\hyperlink{statistical-learning}{Statistical learning}.
+\item
+  \textbf{Step functions} --- piecewise-constant fit over bins of
+  \texttt{X}. → \protect\hyperlink{step-functions}{Step functions}.
+\item
+  \textbf{Stepwise selection} --- greedily add (forward) or drop
+  (backward) predictors. →
+  \protect\hyperlink{forward-and-backward-stepwise-selection}{Forward
+  and backward stepwise selection}.
+\item
+  \textbf{Subset selection (best)} --- try all \texttt{2\^{}p} predictor
+  subsets. → \protect\hyperlink{best-subset-selection}{Best subset
+  selection}.
+\item
+  \textbf{Supervised / unsupervised learning} --- labeled \texttt{(x,y)}
+  vs predictors-only. →
+  \protect\hyperlink{supervised-vs-unsupervised-learning}{Supervised vs
+  unsupervised learning}.
+\item
+  \textbf{Survival analysis (censored data)} --- modeling
+  time-until-event with censored (incomplete) observations. →
+  \protect\hyperlink{survival-analysis-and-censored-data}{Survival
+  analysis and censored data}.
+\item
+  \textbf{Survival function} ---
+  \texttt{S(t)\ =\ Pr(T\ \textgreater{}\ t)}, probability of surviving
+  past \texttt{t}. → \protect\hyperlink{survival-function}{Survival
+  function}.
+\item
+  \textbf{t-statistic} --- coefficient estimate in units of its standard
+  error. →
+  \protect\hyperlink{hypothesis-test-t-statistic-and-p-value}{Hypothesis
+  test, t-statistic, and p-value}.
+\item
+  \textbf{Test / training MSE} --- error on unseen vs fitting data; test
+  is U-shaped in flexibility. →
+  \protect\hyperlink{training-mse-vs-test-mse}{Training MSE vs test
+  MSE}.
+\item
+  \textbf{t-test} --- compares means via t = mean-difference / its
+  standard error. →
+  \protect\hyperlink{t-tests-one-sample-paired-two-sample}{t-tests
+  (one-sample, paired, two-sample)}.
+\item
+  \textbf{Type I / Type II error} --- false positive (reject true null)
+  vs false negative (miss a real effect). →
+  \protect\hyperlink{type-i-and-type-ii-errors}{Type I and Type II
+  errors}.
+\item
+  \textbf{Validation set approach} --- single train/hold-out split. →
+  \protect\hyperlink{validation-set-approach}{Validation set approach}.
+\item
+  \textbf{Variance} --- how much \texttt{} shifts across training sets;
+  rises with flexibility. → \protect\hyperlink{variance}{Variance}.
+\item
+  \textbf{Variable selection} --- choosing which predictors to include.
+  → \protect\hyperlink{best-subset-selection}{Best subset selection}.
+\item
+  \textbf{Z-score (standardization)} --- z = (x − μ)/σ; rescales to mean
+  0, SD 1. → \protect\hyperlink{z-scores-standardization}{Z-scores
+  (standardization)}.
+\end{itemize}
+
+\end{document}
