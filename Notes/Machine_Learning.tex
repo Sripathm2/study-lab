@@ -136,7 +136,7 @@
 \newunicodechar{ŷ}{\ensuremath{\hat{y}}}
 \newunicodechar{Ŷ}{\ensuremath{\hat{Y}}}
 \newunicodechar{ȳ}{\ensuremath{\bar{y}}}
-% private-use slots written by prep.py for combining-accent sequences
+
 \newunicodechar{}{\ensuremath{\hat{f}}}
 \newunicodechar{}{\ensuremath{\hat{\beta}}}
 \newunicodechar{}{\ensuremath{\hat{\sigma}}}
@@ -211,8 +211,641 @@ those concepts are marked \emph{(stat)}.
 Sources here: \emph{An Introduction to Statistical Learning} (ISL/ISLP),
 \emph{Hands-On Machine Learning} (Géron), Karpathy's \emph{Zero to
 Hero}, Chip Huyen's \emph{Designing Machine Learning Systems}, and
-Kohavi et al.'s \emph{Trustworthy Online Controlled Experiments}.
+Kohavi et al.'s \emph{Trustworthy Online Controlled Experiments}, and
+Goodfellow, Bengio and Courville's \emph{Deep Learning}.
 Section tags show which pass a topic came from.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{foundations-and-learning-tasks-deep-learning}{%
+\subsection{\texorpdfstring{Foundations and Learning Tasks \emph{(Deep
+Learning)}}{Foundations and Learning Tasks (Deep Learning)}}\label{foundations-and-learning-tasks-deep-learning}}
+
+\hypertarget{knowledge-bases-and-hard-coded-ai}{%
+\subsubsection{Knowledge bases and hard-coded
+AI}\label{knowledge-bases-and-hard-coded-ai}}
+
+\textbf{Definition.} The pre-learning approach to artificial
+intelligence: hard-code knowledge about the world in a formal language,
+and let the computer reason over those statements automatically using
+logical inference rules. The stored statements are the
+\emph{knowledge base}.
+
+\textbf{Intuition.} Write down enough facts and rules and intelligence
+falls out. It didn't work: the rules needed to describe a messy world
+run to an unbounded list, and the genuinely hard step --- turning raw
+perception into the symbols the rules operate on --- was never
+addressed.
+
+\textbf{Example.} A knowledge base can store ``a cat is a mammal'' and
+infer ``a cat has fur,'' but has no route from a
+\texttt{1024\ ×\ 1024} array of pixel intensities to the symbol
+\texttt{cat} in the first place.
+
+\textbf{Notes.} The failure of this route is exactly what motivates
+learning the \emph{representation} rather than hand-specifying it.
+\emph{(Deep Learning)} → Representation learning and autoencoders, Deep
+learning as composed representations.
+
+\hypertarget{representation-learning-and-autoencoders}{%
+\subsubsection{Representation learning and
+autoencoders}\label{representation-learning-and-autoencoders}}
+
+\textbf{Definition.} Using machine learning to discover not only the
+mapping from representation to output but \emph{the representation
+itself}. The quintessential example is the \emph{autoencoder}: an
+\emph{encoder} that maps an input to a code, and a \emph{decoder} that
+maps the code back to the input space, trained so the round trip
+reconstructs the input.
+
+\begin{equation*}
+\min_{\text{enc},\text{dec}}\ \sum_i \bigl\|x^{(i)}-\text{dec}\bigl(\text{enc}(x^{(i)})\bigr)\bigr\|^2
+\end{equation*}
+
+\textbf{Intuition.} Performance depends enormously on \emph{which}
+features the model is fed, and hand-engineering them is expensive and
+brittle. An autoencoder has to keep whatever information reconstruction
+needs, so its code is a learned, compressed summary of the input; the
+constraints you impose (a small code, sparsity, injected noise) decide
+\emph{which} properties survive the squeeze.
+
+\textbf{Example.} A 784-pixel MNIST digit compressed to a 32-unit code
+and back is a 24-fold compression --- the code cannot store pixels, so
+it is forced to store stroke shape.
+
+\textbf{Notes.} \emph{(Deep Learning)} → Deep learning as composed
+representations, Principal components analysis (PCA), Embedding layer,
+Sparse coding, The manifold hypothesis.
+
+\hypertarget{deep-learning-as-composed-representations}{%
+\subsubsection{Deep learning as composed
+representations}\label{deep-learning-as-composed-representations}}
+
+\textbf{Definition.} Deep learning solves the central problem of
+representation learning by introducing representations that are
+expressed in terms of \emph{other, simpler representations}. Its
+quintessential model is the \emph{feedforward deep network}, or
+\emph{multilayer perceptron (MLP)} --- just a mathematical function
+mapping a set of input values to output values. The input is presented
+at the \emph{visible layer} (so named because it holds the variables we
+can observe), and a series of \emph{hidden layers} then extracts
+increasingly abstract features.
+
+\textbf{Intuition.} Don't try to learn one giant leap from pixels to
+labels; learn a ladder --- edges, then corners and contours, then object
+parts, then objects. Each rung is a simple function of the rung below;
+the \emph{composition} is what carries the power.
+
+\textbf{Example.} A face network's first hidden layer responds to
+oriented edges, the second to eyes and noses assembled from those edges,
+the third to whole faces assembled from parts.
+
+\textbf{Notes.} One of the names the field has gone by is
+\emph{artificial neural networks (ANNs)}. \emph{(Deep Learning)} →
+Neural networks (feed-forward), Hidden layers and units, Multi-layer
+perceptron (MLP) and the XOR problem, Representation learning and
+autoencoders.
+
+\hypertarget{machine-learning-task-types}{%
+\subsubsection{Machine learning task
+types}\label{machine-learning-task-types}}
+
+\textbf{Definition.} A taxonomy of what a learning system can be asked
+to do. \emph{Classification:} say which of \texttt{k} categories an
+input belongs to. \emph{Classification with missing inputs:} the same,
+but not every measurement in the input vector is guaranteed to be
+present. \emph{Regression:} predict a numerical value.
+\emph{Transcription:} observe a relatively unstructured representation
+and transcribe it into discrete textual form (optical character
+recognition, speech recognition). \emph{Machine translation:} convert a
+symbol sequence in one language into a sequence in another.
+\emph{Structured output:} produce a vector or other structure whose
+elements have important relationships with each other.
+\emph{Anomaly detection:} sift through events or objects and flag the
+unusual ones. \emph{Synthesis and sampling:} generate new examples
+similar to the training data. \emph{Imputation of missing values:} fill
+in the missing entries of an example. \emph{Denoising:} recover a clean
+example from a corrupted one produced by an unknown corruption process.
+\emph{Density estimation:} learn a function that can be read as a
+probability density (continuous inputs) or mass function (discrete
+inputs) over the space the examples were drawn from.
+
+\textbf{Intuition.} The task is defined by the \emph{shape of the
+output}, not by the algorithm --- the same network trunk serves
+classification, regression, or denoising once you change the output unit
+and the loss. Naming the task first is what tells you which output unit
+and which loss are the right pair.
+
+\textbf{Example.} Same input, four tasks on a chest X-ray: classify
+(pneumonia yes/no), regress (estimate patient age), structured output
+(segment the lungs pixel by pixel), anomaly detection (flag scans unlike
+anything in the training set).
+
+\textbf{Notes.} \emph{Correction to the highlight:} the sentence ``the
+learning algorithm only has to define a single function mapping from a
+vector input to a categorical output'' belongs to \textbf{ordinary
+classification}, not to classification with missing inputs. With missing
+inputs the algorithm must effectively learn a \emph{set} of functions
+--- one for every subset of observed variables, which for \texttt{n}
+inputs is \texttt{2\^{}n} of them --- and the practical route is to
+learn the joint distribution over all the variables and
+\emph{marginalize out} the missing ones. \emph{(Deep Learning)} →
+Regression vs classification (stat), Classification task types (binary,
+multiclass, multilabel), Handling missing data, Output units (linear,
+sigmoid, softmax).
+
+\hypertarget{reinforcement-learning}{%
+\subsubsection{Reinforcement learning}\label{reinforcement-learning}}
+
+\textbf{Definition.} A learning setting in which an autonomous agent
+learns to perform a task by trial and error through interaction with an
+environment, rather than from a fixed dataset of labeled examples.
+
+\textbf{Intuition.} There is no answer key telling the agent what it
+should have done; it acts, observes the consequence, and adjusts.
+\emph{Clarification on the highlight:} ``without any guidance from the
+human operator'' means \emph{without supervised targets} --- the agent
+is still guided, by a scalar \emph{reward} signal it is trying to
+maximize over time. The hard part is credit assignment: the reward
+arrives long after the action that earned it.
+
+\textbf{Example.} A game agent gets \texttt{+1} at a win and
+\texttt{−1} at a loss and nothing in between, then has to work out which
+of its 80 moves deserved the credit.
+
+\textbf{Notes.} The third branch alongside supervised and unsupervised
+learning. \emph{(Deep Learning)} → Supervised vs unsupervised learning
+(stat), Reward modeling and RLHF, Bandit algorithms.
+
+\hypertarget{capacity-and-the-hypothesis-space}{%
+\subsubsection{Capacity and the hypothesis
+space}\label{capacity-and-the-hypothesis-space}}
+
+\textbf{Definition.} \emph{Capacity} is a model's ability to fit a wide
+variety of functions. One way to control it is by choosing the
+\emph{hypothesis space} --- the set of functions the learning algorithm
+is allowed to select from as a solution.
+
+\textbf{Intuition.}  Too little capacity and the model cannot represent
+the truth (underfitting); too much and it has enough freedom to memorize
+noise (overfitting). Choosing the hypothesis space is the cleanest
+capacity knob because it is set before any data is seen.
+
+\textbf{Example.} Linear regression on \texttt{x} has hypothesis space
+\texttt{\{b\ +\ w₁x\}}; admitting \texttt{x²} and \texttt{x³} enlarges
+it to cubic polynomials. Same algorithm, three times the capacity.
+
+\textbf{Notes.} \emph{Effective} capacity is usually below
+\emph{representational} capacity, because the optimizer does not find
+the best function in the space. → Bias--variance trade-off (stat),
+Overfitting (stat), Double descent, Neural network regularization,
+Parametric vs non-parametric models.
+
+\hypertarget{parametric-vs-non-parametric-models}{%
+\subsubsection{Parametric vs non-parametric
+models}\label{parametric-vs-non-parametric-models}}
+
+\textbf{Definition.} A \emph{parametric} model has a parameter vector of
+fixed, finite size chosen before any data arrives. A
+\emph{non-parametric} model's complexity is a function of the training
+set size. The standard practical example is \emph{nearest neighbor
+regression}: unlike linear regression, which carries a fixed-length
+weight vector, it simply stores \texttt{X} and \texttt{y} from the
+training set and predicts using the closest stored point.
+
+\textbf{Intuition.} Parametric models compress the training set into
+weights and throw the data away; non-parametric models keep the data and
+do the work at query time. Capacity therefore grows automatically with
+\texttt{n}, which is why non-parametric methods can reach the best
+possible error given enough data --- and why they get slower the more
+data you give them.
+
+\textbf{Example.} Training pairs \texttt{(1,2)}, \texttt{(3,6)},
+\texttt{(7,1)}; query \texttt{x\ =\ 4}. Distances are 3, 1, 3, so the
+nearest neighbor is \texttt{x\ =\ 3} and the prediction is \texttt{6}.
+
+\textbf{Notes.} Some non-parametric models are purely theoretical
+abstractions (an algorithm searching over \emph{all} probability
+distributions); practical ones make complexity a function of \texttt{n}.
+\emph{(Deep Learning)} → K-nearest neighbors (KNN) (stat), Capacity and
+the hypothesis space.
+
+\hypertarget{objective-cost-loss-and-error-functions}{%
+\subsubsection{Objective, cost, loss, and error
+functions}\label{objective-cost-loss-and-error-functions}}
+
+\textbf{Definition.} The function to be minimized or maximized is the
+\emph{objective function} or \emph{criterion}; when it is being
+minimized it is also called the \emph{cost function}, \emph{loss
+function}, or \emph{error function}. These terms are used
+interchangeably (some publications assign narrower meanings to each).
+
+\begin{equation*}
+\mathrm{MSE}_{\text{test}}=\frac{1}{m}\sum_{i=1}^{m}\bigl(\hat y^{(\text{test})}_i-y^{(\text{test})}_i\bigr)^2
+\end{equation*}
+
+\textbf{Intuition.} The objective is the only thing the optimizer
+actually cares about --- everything else (architecture, regularizer,
+metric) is either a constraint on the search or a report you read
+afterwards. Getting the objective wrong is unfixable by better
+optimization.
+
+\textbf{Example.} Predictions \texttt{(3,\ 5)} against truths
+\texttt{(2,\ 5)}: \texttt{MSE\ =\ (1²\ +\ 0²)/2\ =\ 0.5}.
+
+\textbf{Notes.} Where the literature does distinguish, ``loss'' tends to
+mean the per-example term and ``cost'' the averaged objective including
+regularization. \emph{(Deep Learning)} → Gradient descent, Output layer
+and loss, Training MSE vs test MSE (stat), Weight decay and parameter
+norm penalties.
+
+\hypertarget{the-manifold-hypothesis}{%
+\subsubsection{The manifold
+hypothesis}\label{the-manifold-hypothesis}}
+
+\textbf{Definition.} The assumption --- used by many algorithms to
+overcome the curse of dimensionality --- that the data of interest lie
+near a \emph{low-dimensional manifold} embedded in the high-dimensional
+input space.
+
+\textbf{Intuition.} Uniformly random pixel values essentially never look
+like a photograph, so real images occupy a vanishingly thin sheet inside
+pixel space. You do not have to model all of \texttt{R\^{}n}; you have
+to model the sheet, and the sheet has few degrees of freedom.
+
+\textbf{Example.} A \texttt{100\ ×\ 100} grayscale image lives in
+\texttt{R\^{}10000}, but the set of images of one object rotating traces
+a \emph{1-dimensional} curve through that space --- one degree of
+freedom, ten thousand coordinates.
+
+\textbf{Notes.} The premise behind autoencoders, sparse coding, and
+representation learning generally. \emph{(Deep Learning)} → Principal
+components analysis (PCA), Representation learning and autoencoders,
+Sparse coding, Linear factor models.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{probability-and-information-theory-deep-learning}{%
+\subsection{\texorpdfstring{Probability and Information Theory
+\emph{(Deep
+Learning)}}{Probability and Information Theory (Deep Learning)}}\label{probability-and-information-theory-deep-learning}}
+
+\hypertarget{probability-distributions-and-mass-functions}{%
+\subsubsection{Probability distributions and mass
+functions}\label{probability-distributions-and-mass-functions}}
+
+\textbf{Definition.} A \emph{probability distribution} is a description
+of how likely a random variable, or a set of random variables, is to
+take on each of its possible states. Over discrete variables it is given
+by a \emph{probability mass function (PMF)}; over continuous variables
+by a \emph{probability density function (PDF)}. A distribution over many
+variables at once is a \emph{joint probability distribution}, written
+\texttt{P(x\ =\ x,\ y\ =\ y)} --- the probability that both hold
+simultaneously --- or just \texttt{P(x,\ y)}.
+
+\begin{equation*}
+0\le P(x)\le 1\quad\text{and}\quad\sum_{x} P(x)=1
+\qquad\text{(PMF)},
+\qquad
+\int p(x)\,dx=1
+\qquad\text{(PDF)}
+\end{equation*}
+
+\textbf{Intuition.} A PMF assigns probability to each state and the
+assignments must total 1. A PDF assigns \emph{density}, not probability
+--- \texttt{p(x)} may exceed 1; only its integral over a region is a
+probability. Joint distributions are where dependence lives: everything
+interesting (conditioning, marginalizing, independence) is an operation
+on a joint.
+
+\textbf{Example.} Fair die: \texttt{P(x)\ =\ 1/6} for each of six states,
+summing to 1. Two fair coins: the joint has four states each at
+\texttt{0.25}; marginalizing over the second coin recovers
+\texttt{P(H)\ =\ 0.5}.
+
+\textbf{Notes.} \emph{(Deep Learning)} → Expectation, Variance and
+covariance, Bernoulli, multinoulli, and Gaussian distributions,
+Shannon entropy.
+
+\hypertarget{expectation}{%
+\subsubsection{Expectation}\label{expectation}}
+
+\textbf{Definition.} The \emph{expectation} or \emph{expected value} of
+a function \texttt{f} with respect to a distribution \texttt{P} is the
+average value \texttt{f} takes on when \texttt{x} is drawn from
+\texttt{P}.
+
+\begin{equation*}
+\mathbb{E}_{x\sim P}\bigl[f(x)\bigr]=\sum_x P(x)f(x)
+\qquad\text{(discrete)},
+\qquad
+\mathbb{E}_{x\sim p}\bigl[f(x)\bigr]=\int p(x)f(x)\,dx
+\qquad\text{(continuous)}
+\end{equation*}
+
+\textbf{Intuition.} A weighted average, with the probabilities as
+weights. Expectations are \emph{linear}, which is why almost every
+training objective is written as one --- and why a minibatch average is
+a legitimate estimate of it.
+
+\textbf{Example.} Fair die with \texttt{f(x)\ =\ x}:
+\texttt{E\ =\ (1+2+3+4+5+6)/6\ =\ 3.5}.
+
+\textbf{Notes.} Linearity: \texttt{E{[}αf\ +\ βg{]}\ =\ αE{[}f{]}\ +\ βE{[}g{]}}
+even when \texttt{f} and \texttt{g} are dependent. \emph{(Deep
+Learning)} → Variance and covariance, Stochastic gradient descent (SGD).
+
+\hypertarget{variance-and-covariance}{%
+\subsubsection{Variance and
+covariance}\label{variance-and-covariance}}
+
+\textbf{Definition.} The \emph{variance} measures how much the values of
+a function of a random variable vary as \texttt{x} is sampled from its
+distribution. The \emph{covariance} measures how much two values are
+\emph{linearly} related to each other, and also carries the scale of
+those variables.
+
+\begin{equation*}
+\operatorname{Var}\bigl(f(x)\bigr)=\mathbb{E}\Bigl[\bigl(f(x)-\mathbb{E}[f(x)]\bigr)^{2}\Bigr],
+\qquad
+\operatorname{Cov}\bigl(f(x),g(y)\bigr)=\mathbb{E}\Bigl[\bigl(f(x)-\mathbb{E}[f]\bigr)\bigl(g(y)-\mathbb{E}[g]\bigr)\Bigr]
+\end{equation*}
+
+\textbf{Intuition.} Variance is spread; its square root, the standard
+deviation, is spread in the original units. Covariance has a sign
+(do they move together or oppositely?) but its magnitude is
+uninterpretable until you divide out both standard deviations to get
+correlation. Crucially, zero covariance means \emph{uncorrelated}, not
+\emph{independent} --- a variable and its square can have zero
+covariance and total dependence.
+
+\textbf{Example.} Fair die:
+\texttt{E{[}x²{]}\ =\ 91/6\ ≈\ 15.167}, so
+\texttt{Var\ =\ 15.167\ −\ 3.5²\ =\ 2.917} and the standard deviation is
+about \texttt{1.708}.
+
+\textbf{Notes.} The covariance \emph{matrix} of a random vector holds
+\texttt{Cov(x\_i,\ x\_j)} in entry \texttt{(i,\ j)} and variances on its
+diagonal --- the object PCA diagonalizes. \emph{(Deep Learning)} →
+Expectation, Bias, variance, and standard error of an estimator,
+Principal components analysis (PCA), Independent component analysis
+(ICA).
+
+\hypertarget{bernoulli-multinoulli-and-gaussian-distributions}{%
+\subsubsection{Bernoulli, multinoulli, and Gaussian
+distributions}\label{bernoulli-multinoulli-and-gaussian-distributions}}
+
+\textbf{Definition.} The \emph{Bernoulli} distribution is a distribution
+over a single binary random variable, controlled by one parameter
+\texttt{φ\ ∈\ {[}0,1{]}} giving \texttt{P(x\ =\ 1)\ =\ φ}. The
+\emph{multinoulli} (categorical) distribution covers a single discrete
+variable with \texttt{k} different states, \texttt{k} finite,
+parameterized by a vector of state probabilities. The \emph{Gaussian}
+(normal) distribution is the most commonly used distribution over real
+numbers.
+
+\begin{equation*}
+\mathcal{N}(x;\mu,\sigma^{2})=\sqrt{\frac{1}{2\pi\sigma^{2}}}\;\exp\!\Bigl(-\frac{(x-\mu)^{2}}{2\sigma^{2}}\Bigr)
+\end{equation*}
+
+\textbf{Intuition.} These three are the default output distributions of
+a neural network: Bernoulli for a binary label (sigmoid output),
+multinoulli for one-of-\texttt{k} (softmax output), Gaussian for a real
+value (linear output, squared-error loss). The Gaussian is the default
+for real numbers for two reasons --- the central limit theorem makes
+sums of independent effects approximately normal, and among all
+distributions with a given variance it is the one with maximum entropy,
+so it inserts the least extra structure.
+
+\textbf{Example.} Bernoulli with \texttt{φ\ =\ 0.3}: mean \texttt{0.3},
+variance \texttt{φ(1\ −\ φ)\ =\ 0.21}.
+
+\textbf{Notes.} \emph{Correction:} two names were lost to OCR in the
+highlights --- the \texttt{k}-state distribution is the
+\textbf{multinoulli (categorical)} distribution, and ``the most commonly
+used distribution over real numbers'' is the \textbf{normal / Gaussian}
+distribution. \emph{(Deep Learning)} → Logistic sigmoid, Softmax, Output
+units (linear, sigmoid, softmax), Gaussian mixture model (GMM).
+
+\hypertarget{logistic-sigmoid}{%
+\subsubsection{Logistic sigmoid}\label{logistic-sigmoid}}
+
+\textbf{Definition.} The function
+\texttt{σ(z)\ =\ 1/(1\ +\ e\^{}\{−z\})}, with range
+\texttt{(0,\ 1)}.
+
+\begin{equation*}
+\sigma(z)=\frac{1}{1+e^{-z}},
+\qquad
+\sigma'(z)=\sigma(z)\bigl(1-\sigma(z)\bigr),
+\qquad
+\zeta(z)=\log\bigl(1+e^{z}\bigr)\ \text{ with }\ \zeta'(z)=\sigma(z)
+\end{equation*}
+
+\textbf{Intuition.} The sigmoid is commonly used to produce the
+\texttt{φ} parameter of a Bernoulli distribution precisely because its
+range \texttt{(0,\ 1)} is exactly the valid range for that parameter ---
+it turns an unconstrained score into a probability. It saturates in both
+tails, where its derivative goes to nearly zero, which is why it is fine
+as an \emph{output} unit (the log in the loss undoes the exponential)
+and poor as a \emph{hidden} unit.
+
+\textbf{Example.} \texttt{z\ =\ 2} gives
+\texttt{σ\ =\ 1/(1\ +\ e\^{}\{−2\})\ ≈\ 0.881}; the derivative there is
+\texttt{0.881\ ×\ 0.119\ ≈\ 0.105}, already a tenth of its peak
+\texttt{0.25} at \texttt{z\ =\ 0}.
+
+\textbf{Notes.} The softplus is its integral, and
+\texttt{tanh(z)\ =\ 2σ(2z)\ −\ 1}. \emph{(Deep Learning)} → Activation
+function, Activation saturation, Output units (linear, sigmoid,
+softmax), Softmax, Other hidden units (RBF, softplus, hard tanh).
+
+\hypertarget{shannon-entropy}{%
+\subsubsection{Shannon entropy}\label{shannon-entropy}}
+
+\textbf{Definition.} The amount of uncertainty in an entire probability
+distribution, measured as the expected surprise (negative log
+probability) of a draw from it.
+
+\begin{equation*}
+H(P)=-\mathbb{E}_{x\sim P}\bigl[\log P(x)\bigr]=-\sum_x P(x)\log P(x)
+\end{equation*}
+
+\textbf{Intuition.} Rare events are surprising, so \texttt{−log\ P}
+is large for them; entropy averages that surprise over the whole
+distribution. A distribution concentrated on one outcome has zero
+entropy; a uniform one has the most. In nats (natural log) or bits
+(base 2), it is the average number of units needed to encode a draw.
+
+\textbf{Example.} Fair coin:
+\texttt{H\ =\ −2(0.5\ log\ 0.5)\ =\ 0.693} nats
+(\texttt{=\ 1} bit). Biased coin with \texttt{φ\ =\ 0.9}:
+\texttt{H\ =\ −(0.9\ log\ 0.9\ +\ 0.1\ log\ 0.1)\ ≈\ 0.325} nats ---
+less than half the uncertainty.
+
+\textbf{Notes.} Cross-entropy and KL divergence are built from it, and
+average negative log-likelihood over a softmax \emph{is} a
+cross-entropy. The same quantity is the split criterion in
+classification trees. \emph{(Deep Learning)} → Likelihood and negative
+log-likelihood, Classification trees, Softmax, Mode collapse.
+
+\hypertarget{jacobian-and-hessian-matrices}{%
+\subsubsection{Jacobian and Hessian
+matrices}\label{jacobian-and-hessian-matrices}}
+
+\textbf{Definition.} When a function's input \emph{and} output are both
+vectors, the matrix of all its partial derivatives is the
+\emph{Jacobian}. When a function has multiple input dimensions it has
+many second derivatives, and the matrix collecting them is the
+\emph{Hessian}.
+
+\begin{equation*}
+J_{i,j}=\frac{\partial f(\mathbf{x})_i}{\partial x_j},
+\qquad
+H_{i,j}=\frac{\partial^{2} f(\mathbf{x})}{\partial x_i\,\partial x_j}
+\end{equation*}
+
+\textbf{Intuition.} The Jacobian is the local linear map --- the
+first-order picture of what the function does to a small nudge. The
+Hessian is curvature: it says how the slope itself changes, so its
+eigenvalues tell you how large a learning rate each direction can
+tolerate. Back-propagation is, formally, repeated multiplication by
+Jacobians travelling backwards through the graph.
+
+\textbf{Example.} For
+\texttt{f(x₁,\ x₂)\ =\ (x₁x₂,\ x₁\ +\ x₂)} the Jacobian is
+\texttt{{[}{[}x₂,\ x₁{]},\ {[}1,\ 1{]}{]}}; at \texttt{(2,\ 3)} that is
+\texttt{{[}{[}3,\ 2{]},\ {[}1,\ 1{]}{]}}.
+
+\textbf{Notes.} The Hessian is symmetric wherever the second derivatives
+are continuous, and is \texttt{n\ ×\ n} in the number of parameters ---
+hopeless to form for a network with millions of them, which is why deep
+learning lives on first-order methods. \emph{(Deep Learning)} →
+Backpropagation, Gradient descent, Adam and AdamW.
+
+\hypertarget{maximum-likelihood-estimation}{%
+\subsubsection{Maximum likelihood
+estimation}\label{maximum-likelihood-estimation}}
+
+\textbf{Definition.} Given \texttt{m} examples drawn independently from
+an unknown data-generating distribution, and a parametric family
+\texttt{p\_model(x;\ θ)}, the \emph{maximum likelihood estimator} for
+\texttt{θ} is the parameter setting that makes the observed data most
+probable.
+
+\begin{equation*}
+\theta_{\text{ML}}=\arg\max_{\theta}\ \prod_{i=1}^{m}p_{\text{model}}\bigl(x^{(i)};\theta\bigr)
+=\arg\max_{\theta}\ \sum_{i=1}^{m}\log p_{\text{model}}\bigl(x^{(i)};\theta\bigr)
+\end{equation*}
+
+\textbf{Intuition.} Rather than inventing a loss, derive one: pick the
+parameters under which what actually happened was least surprising.
+Taking logs converts a product of tiny numbers into a stable sum without
+changing the argmax, which is the whole reason losses are written with
+logs.
+
+\textbf{Example.} Bernoulli, 7 heads in 10 flips. The log-likelihood
+\texttt{7\ log\ φ\ +\ 3\ log(1\ −\ φ)} has derivative
+\texttt{7/φ\ −\ 3/(1\ −\ φ)}, zero at \texttt{φ\ =\ 0.7} --- the
+estimator is just the observed frequency.
+
+\textbf{Notes.} \emph{(Deep Learning)} → Likelihood and negative
+log-likelihood, Conditional maximum likelihood, MAP estimation, Maximum
+likelihood (stat).
+
+\hypertarget{conditional-maximum-likelihood}{%
+\subsubsection{Conditional maximum
+likelihood}\label{conditional-maximum-likelihood}}
+
+\textbf{Definition.} The generalization of maximum likelihood to
+estimating a \emph{conditional} probability \texttt{P(y\ \textbar{}\ x;\ θ)}
+in order to predict \texttt{y} from \texttt{x}. With \texttt{X} all the
+inputs and \texttt{Y} all the observed targets, and examples assumed
+i.i.d., the objective decomposes into a sum over examples.
+
+\begin{equation*}
+\theta_{\text{ML}}=\arg\max_{\theta} P(\mathbf{Y}\mid\mathbf{X};\theta)
+=\arg\max_{\theta}\sum_{i=1}^{m}\log P\bigl(y^{(i)}\mid x^{(i)};\theta\bigr)
+\end{equation*}
+
+\textbf{Intuition.} This is the most common situation because it is the
+basis for essentially all supervised learning. It also explains where
+the standard losses come from rather than treating them as arbitrary
+choices: assume Gaussian noise around the network's output and you
+\emph{derive} squared error; assume a multinoulli and you derive
+cross-entropy.
+
+\textbf{Example.} With
+\texttt{p(y\textbar{}x)\ =\ N(y;\ f(x),\ σ²)} and \texttt{σ} fixed, the
+per-example log-likelihood is
+\texttt{−(y\ −\ f(x))²/(2σ²)} plus a constant --- maximizing it is
+exactly minimizing mean squared error.
+
+\textbf{Notes.} \emph{(Deep Learning)} → Output layer and loss, Output
+units (linear, sigmoid, softmax), Likelihood and negative
+log-likelihood, Maximum likelihood estimation.
+
+\hypertarget{map-estimation}{%
+\subsubsection{MAP estimation}\label{map-estimation}}
+
+\textbf{Definition.} \emph{Maximum a posteriori} estimation: a point
+estimate that keeps some of the benefit of the Bayesian approach by
+letting a \emph{prior} influence the choice, taking the point of maximal
+posterior probability (or density).
+
+\begin{equation*}
+\theta_{\text{MAP}}=\arg\max_{\theta}p(\theta\mid x)=\arg\max_{\theta}\ \log p(x\mid\theta)+\log p(\theta)
+\end{equation*}
+
+\textbf{Intuition.} Most operations involving the full Bayesian
+posterior are intractable for interesting models, so a point estimate is
+a tractable approximation --- but rather than fall all the way back to
+maximum likelihood, MAP keeps the prior term. That extra term is not a
+formality: many familiar regularizers \emph{are} the log-prior in
+disguise.
+
+\textbf{Example.} A Gaussian prior
+\texttt{w\ ~\ N(0,\ 1/λ)} contributes
+\texttt{log\ p(w)\ =\ −(λ/2)‖w‖²} plus a constant --- which is exactly
+L2 weight decay. A Laplace prior gives the L1 penalty.
+
+\textbf{Notes.} Buys reduced variance at the price of increased bias.
+\emph{(Deep Learning)} → Weight decay and parameter norm penalties,
+Maximum likelihood estimation, Ridge regression (stat), The lasso
+(stat).
+
+\hypertarget{bias-variance-and-standard-error-of-an-estimator}{%
+\subsubsection{Bias, variance, and standard error of an
+estimator}\label{bias-variance-and-standard-error-of-an-estimator}}
+
+\textbf{Definition.} Just as the expectation of an estimator gives its
+\emph{bias}, its variance says how much it is expected to vary as a
+function of the data sample --- the random variable being \emph{the
+training set itself}. The square root of that variance is the
+\emph{standard error}.
+
+\begin{equation*}
+\operatorname{Bias}(\hat\theta)=\mathbb{E}[\hat\theta]-\theta,
+\qquad
+\operatorname{SE}(\hat\theta)=\sqrt{\operatorname{Var}(\hat\theta)},
+\qquad
+\operatorname{SE}(\hat\mu_m)=\frac{\sigma}{\sqrt{m}}
+\end{equation*}
+
+\textbf{Intuition.} Resample the training set and refit: bias is how far
+off you are on average, variance is how much the answer jumps around.
+This is what makes reported test accuracies comparable or not --- a
+difference smaller than a couple of standard errors is noise in the
+draw of the test set, not evidence.
+
+\textbf{Example.} \texttt{σ\ =\ 10} and \texttt{m\ =\ 100} give
+\texttt{SE\ =\ 1}; quadrupling to \texttt{m\ =\ 400} only halves it to
+\texttt{0.5} --- the usual \texttt{1/sqrt(m)} tax.
+
+\textbf{Notes.} Mean squared error of an estimator decomposes as
+\texttt{bias²\ +\ variance}, which is the bias--variance trade-off in
+estimator form. \emph{(Deep Learning)} → Bias--variance trade-off
+(stat), Variance and covariance, Capacity and the hypothesis space.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -378,7 +1011,10 @@ blocks. Bagging, random forests, boosting, and BART are all tree
 ensembles.
 
 \textbf{Notes.} They differ in \emph{how} they build and combine the
-trees. → Bagging, Random forests, Boosting, BART.
+trees. The general strategy --- train several models separately, then
+have them all vote on the output --- is \emph{model averaging}, and it
+is not specific to trees; bagging (bootstrap aggregating, Breiman) is
+one instance of it. → Bagging, Random forests, Boosting, BART.
 
 \hypertarget{bagging}{%
 \subsubsection{Bagging}\label{bagging}}
@@ -1414,14 +2050,37 @@ Recurrent neural network, Language model.
 \subsubsection{LSTM}\label{lstm}}
 
 \textbf{Definition.} \emph{Long short-term memory} --- an elaboration of
-the RNN that maintains two tracks of hidden activations, so a unit can
+the RNN built around a \emph{self-loop}: a cell state that carries
+information forward along a near-identity path, gated by sigmoid units
+(forget, input, output) that learn when to keep, write, and read it. The
+cell state and the hidden activation are the two tracks, so a unit can
 draw on context from both the recent and the more distant past.
 
-\textbf{Intuition.} Plain RNNs struggle to remember information from far
-back in a sequence. LSTM adds a longer-memory channel alongside the
-short-term one, so important early signal isn't washed out.
+\begin{equation*}
+c^{(t)}=f^{(t)}\odot c^{(t-1)}+i^{(t)}\odot\tilde c^{(t)},
+\qquad
+h^{(t)}=o^{(t)}\odot\tanh\bigl(c^{(t)}\bigr)
+\end{equation*}
 
-\textbf{Notes.} → Recurrent neural network.
+\textbf{Intuition.} The clever idea is introducing self-loops to produce
+paths where the gradient can flow for long durations --- the core
+contribution of the original LSTM. A plain RNN multiplies by the same
+recurrent weight at every step, so the signal from far back either
+decays or explodes geometrically; a self-loop whose weight is near 1
+lets it survive. Making that self-loop weight \emph{gated} --- decided
+by the context rather than fixed --- lets the time scale of memory
+change dynamically, so the cell can hold something for 200 steps and
+then clear it in one.
+
+\textbf{Example.} A forget gate sitting at \texttt{0.99} retains
+\texttt{0.99\^{}100\ ≈\ 0.37} of a signal over 100 steps; a fixed
+recurrent weight of \texttt{0.9} retains
+\texttt{0.9\^{}100\ ≈\ 0.000027} --- the difference between remembering
+and not.
+
+\textbf{Notes.} The GRU is the streamlined cousin with fewer gates. →
+Recurrent neural network (RNN), Unfolding computational graphs,
+Vanishing and exploding gradients, Residual (skip) connections.
 
 \hypertarget{autoregressive-models-and-autocorrelation}{%
 \subsubsection{Autoregressive models and
@@ -1499,7 +2158,12 @@ extreme --- barely any data per iteration, so it's fast and can train on
 huge sets since only one instance need be held at a time; the cost is a
 noisy, jittery descent path. \emph{(Hands-On ML)}
 
-\textbf{Notes.} The standard optimizer for large networks. Key knobs:
+\textbf{Notes.} The standard optimizer for large networks. The insight
+licensing it is that the gradient is an \emph{expectation}, which a
+small sample estimates: the minibatch size \texttt{m} is typically a
+number from 1 to a few hundred and is held \emph{fixed} as the training
+set grows, so a set with billions of examples can be fit with updates
+computed on a hundred at a time. Key knobs:
 batch size and number of \emph{epochs} (full passes over the training
 set). → Gradient descent, Backpropagation, Learning-rate schedule.
 
@@ -1543,8 +2207,8 @@ shrinkage acts as intended.
 \textbf{Notes.} A common default learning rate is \textasciitilde3e-4.
 The GPT build trains with
 \texttt{torch.optim.AdamW(model.parameters(),\ lr=...)}.
-\emph{(Karpathy)} → Stochastic gradient descent (SGD), Learning-rate
-schedule, Neural network regularization.
+\emph{(Karpathy)} → AdaGrad and RMSProp, Momentum, Stochastic gradient descent (SGD),
+Learning-rate schedule, Neural network regularization.
 
 \hypertarget{dropout}{%
 \subsubsection{Dropout}\label{dropout}}
@@ -1680,6 +2344,474 @@ Hence ``double'' descent.
 bias--variance trade-off --- the trade-off governs behavior up to
 interpolation. Helps explain why huge over-parameterized networks can
 still generalize. → Bias--variance trade-off (stat), Overfitting (stat).
+
+\hypertarget{output-units-linear-sigmoid-softmax}{%
+\subsubsection{Output units (linear, sigmoid,
+softmax)}\label{output-units-linear-sigmoid-softmax}}
+
+\textbf{Definition.} The form of the final layer, chosen to match the
+distribution you are modelling over \texttt{y}. A \emph{linear unit} is
+an affine transformation with no non-linearity, used for the mean of a
+Gaussian. A \emph{sigmoid unit} produces the \texttt{φ} of a Bernoulli
+for binary targets --- and any two-class problem can be cast in this
+form. A \emph{softmax unit} generalizes the sigmoid to a distribution
+over \texttt{n} discrete values. The unconstrained score \texttt{z}
+inside such an exponentiate-and-normalize construction is called a
+\emph{logit}.
+
+\begin{equation*}
+\hat y=W^{\mathsf T}h+b\ \ \text{(linear)},
+\qquad
+\hat y=\sigma(z)\ \ \text{(sigmoid)},
+\qquad
+\hat y_k=\frac{e^{z_k}}{\sum_j e^{z_j}}\ \ \text{(softmax)}
+\end{equation*}
+
+\textbf{Intuition.} Pick the output distribution first, and the output
+unit and the loss both fall out of it: the loss is the negative
+log-likelihood of that distribution. This pairing is not cosmetic ---
+the \texttt{log} in the loss cancels the \texttt{exp} in the unit, which
+is what stops a badly-wrong saturated output from having a vanishing
+gradient. Pair a sigmoid with squared error instead and a confidently
+wrong output barely learns.
+
+\textbf{Example.} Three-class logits \texttt{(2.0,\ 1.0,\ 0.1)}
+exponentiate to \texttt{(7.389,\ 2.718,\ 1.105)}, summing to
+\texttt{11.212}, giving probabilities
+\texttt{(0.659,\ 0.242,\ 0.099)}.
+
+\textbf{Notes.} Probability distributions built by exponentiation and
+normalization are common throughout statistical modelling, not just in
+neural nets. \emph{(Deep Learning)} → Output layer and loss, Softmax,
+Logits, Logistic sigmoid, Conditional maximum likelihood, Bernoulli,
+multinoulli, and Gaussian distributions.
+
+\hypertarget{relu-generalizations-absolute-value-leaky-prelu}{%
+\subsubsection{ReLU generalizations (absolute value, leaky,
+PReLU)}\label{relu-generalizations-absolute-value-leaky-prelu}}
+
+\textbf{Definition.} One drawback of rectified linear units is that they
+cannot learn by gradient-based methods on examples where their
+activation is zero. Three generalizations fix this by using a non-zero
+slope \texttt{α\_i} when \texttt{z\_i\ \textless{}\ 0}.
+\emph{Absolute value rectification} fixes \texttt{α\_i\ =\ −1}, giving
+\texttt{g(z)\ =\ \textbar{}z\textbar{}}. \emph{Leaky ReLU} fixes
+\texttt{α\_i} to a small value like \texttt{0.01}. \emph{Parametric ReLU
+(PReLU)} treats \texttt{α\_i} as a learnable parameter.
+
+\begin{equation*}
+h_i=g(z,\alpha)_i=\max(0,z_i)+\alpha_i\min(0,z_i)
+\end{equation*}
+
+\textbf{Intuition.} A plain ReLU that lands on the flat side is not just
+outputting zero --- it is passing zero gradient, so nothing pushes it
+back. Giving the negative side a small slope keeps a trickle of gradient
+everywhere, so a unit is never permanently switched off.
+
+\textbf{Example.} At \texttt{z\ =\ −3}: ReLU outputs \texttt{0} with
+gradient \texttt{0}; leaky ReLU at \texttt{α\ =\ 0.01} outputs
+\texttt{−0.03} with gradient \texttt{0.01}; absolute value
+rectification outputs \texttt{3} with gradient \texttt{−1}.
+
+\textbf{Notes.} Absolute value rectification was used for object
+recognition from images (Jarrett et al., 2009), where it makes sense to
+seek features invariant under a \emph{polarity reversal} of the input
+illumination --- a white-on-black edge and a black-on-white edge are the
+same edge. \emph{(Deep Learning)} → Activation function, Activation
+saturation, Other hidden units (RBF, softplus, hard tanh), Vanishing and
+exploding gradients.
+
+\hypertarget{other-hidden-units-rbf-softplus-hard-tanh}{%
+\subsubsection{Other hidden units (RBF, softplus, hard
+tanh)}\label{other-hidden-units-rbf-softplus-hard-tanh}}
+
+\textbf{Definition.} Three further hidden-unit types. The
+\emph{radial basis function (RBF)} unit becomes more active as
+\texttt{x} approaches a template \texttt{W\_\{:,i\}}. The
+\emph{softplus} \texttt{softplus(a)\ =\ log(1\ +\ e\^{}a)} is a smooth
+version
+of the rectifier. \emph{Hard tanh} is shaped like tanh and the rectifier
+but, unlike the rectifier, is bounded.
+
+\begin{equation*}
+h_i=\exp\!\Bigl(-\tfrac{1}{\sigma_i^{2}}\bigl\|W_{:,i}-x\bigr\|^{2}\Bigr),
+\qquad
+\zeta(a)=\log\bigl(1+e^{a}\bigr),
+\qquad
+g(a)=\max\bigl(-1,\min(1,a)\bigr)
+\end{equation*}
+
+\textbf{Intuition.} The softplus is the cautionary tale of the whole
+topic: it is differentiable everywhere and saturates less completely
+than a sigmoid, so it \emph{ought} to beat the rectifier --- and
+empirically it does not, so its use is generally discouraged.
+Hidden-unit performance is counterintuitive; the honest procedure is to
+try one and measure, not to argue from smoothness. The RBF has the
+opposite problem: it saturates to zero for most \texttt{x}, so most
+units are silent most of the time and hard to optimize.
+
+\textbf{Example.} \texttt{softplus(0)\ =\ log\ 2\ ≈\ 0.693} against
+\texttt{ReLU(0)\ =\ 0}, but
+\texttt{softplus(5)\ ≈\ 5.007} against \texttt{ReLU(5)\ =\ 5} --- the
+two agree everywhere except near the kink, which is precisely where the
+smoothness was supposed to help.
+
+\textbf{Notes.} The softplus is the integral of the logistic sigmoid ---
+equivalently, the derivative of the softplus \emph{is} the sigmoid. \emph{(Deep Learning)} →
+Activation function, Logistic sigmoid, ReLU generalizations (absolute
+value, leaky, PReLU).
+
+\hypertarget{weight-decay-and-parameter-norm-penalties}{%
+\subsubsection{Weight decay and parameter norm
+penalties}\label{weight-decay-and-parameter-norm-penalties}}
+
+\textbf{Definition.} Add a parameter norm penalty --- written
+\texttt{Omega(θ)} below and in the equation --- to the objective. The L2 penalty --- commonly called \emph{weight decay}, and
+known in other communities as \emph{ridge regression} or
+\emph{Tikhonov regularization} --- drives the weights closer to the
+origin. The L1 penalty sums absolute values instead.
+
+\begin{equation*}
+\Omega(\theta)=\tfrac{1}{2}\|w\|_2^{2}
+\quad\text{(L2)},
+\qquad
+\Omega(\theta)=\|w\|_1=\sum_i|w_i|
+\quad\text{(L1)},
+\qquad
+J(w)=\mathrm{MSE}_{\text{train}}+\lambda\, w^{\mathsf T}w
+\end{equation*}
+
+\textbf{Intuition.} The objective becomes a sum of two demands: fit the
+training data, and prefer small weights. L2 shrinks every weight in
+proportion to its size, which mostly kills the directions the loss is
+insensitive to and leaves the useful ones. L1 shrinks by a constant
+amount instead, so small weights hit exactly zero --- sparsity, and
+therefore feature selection, for free. Biases are usually left
+unpenalized: each bias controls a single variable, needs more data to
+fit accurately than a weight does, and penalizing it just induces
+underfitting.
+
+\textbf{Example.} With \texttt{λ\ =\ 0.01} and
+\texttt{w\ =\ (3,\ −0.5)} the L2 penalty is
+\texttt{0.01(9\ +\ 0.25)\ =\ 0.0925} and its gradient contribution is
+\texttt{2λw\ =\ (0.06,\ −0.01)} --- both weights pulled toward zero,
+the big one six times harder.
+
+\textbf{Notes.} \emph{Correction:} the highlighted formula came through
+OCR-garbled. The weight-decay objective is
+\texttt{J(w)\ =\ MSE\_train\ +\ λwᵀw} --- mean squared error on the
+training set plus a criterion expressing a preference for weights with
+smaller squared L2 norm. It is also exactly MAP estimation under a
+Gaussian prior on the weights. \emph{(Deep Learning)} → Neural network
+regularization, MAP estimation, Ridge regression (stat), The lasso
+(stat), Max-norm regularization.
+
+\hypertarget{momentum}{%
+\subsubsection{Momentum}\label{momentum}}
+
+\textbf{Definition.} An optimizer modification that accumulates an
+exponentially decaying moving average of past gradients and continues to
+move in their direction. It introduces a variable \texttt{v} playing the
+role of \emph{velocity} --- the direction and speed at which the
+parameters move through parameter space --- and a hyperparameter
+\texttt{α\ ∈\ {[}0,\ 1)} setting how quickly the contributions of
+previous gradients decay.
+
+\begin{equation*}
+v\leftarrow\alpha v-\varepsilon\,\nabla_\theta\Bigl(\frac{1}{m}\sum_{i=1}^{m}L\bigl(f(x^{(i)};\theta),y^{(i)}\bigr)\Bigr),
+\qquad
+\theta\leftarrow\theta+v
+\end{equation*}
+
+\textbf{Intuition.} Designed to accelerate learning in the face of high
+curvature, small but consistent gradients, or noisy gradients. In the
+physics reading the negative gradient is a \emph{force} moving a
+particle through parameter space; momentum in physics is mass times
+velocity, and here unit mass is assumed, so \texttt{v} is both. The
+practical effect: consistent gradient directions compound while
+oscillating components cancel, so the optimizer stops ping-ponging
+across a narrow ravine and runs down it.
+
+\textbf{Example.} With \texttt{α\ =\ 0.9},
+\texttt{ε\ =\ 0.1} and a constant gradient of magnitude \texttt{1}, the
+velocity converges to
+\texttt{ε/(1\ −\ α)\ =\ 0.1/0.1\ =\ 1} --- a terminal step ten times
+larger than plain gradient descent would take.
+
+\textbf{Notes.} (Polyak, 1964.) \emph{(Deep Learning)} → Stochastic
+gradient descent (SGD), Nesterov momentum, AdaGrad and RMSProp, Adam and
+AdamW.
+
+\hypertarget{nesterov-momentum}{%
+\subsubsection{Nesterov momentum}\label{nesterov-momentum}}
+
+\textbf{Definition.} A variant of momentum in which the gradient is
+evaluated \emph{after} the current velocity is applied --- at
+\texttt{θ\ +\ αv} rather than at \texttt{θ}.
+
+\begin{equation*}
+v\leftarrow\alpha v-\varepsilon\,\nabla_\theta\Bigl(\frac{1}{m}\sum_{i=1}^{m}L\bigl(f(x^{(i)};\theta+\alpha v),y^{(i)}\bigr)\Bigr),
+\qquad
+\theta\leftarrow\theta+v
+\end{equation*}
+
+\textbf{Intuition.} Look before you leap: peek at where momentum is
+about to carry you and take the gradient \emph{there}, so the update
+can brake before overshooting instead of only correcting afterwards. It
+is a partial lookahead, which is why it damps the overshoot that plain
+momentum causes at the bottom of a valley.
+
+\textbf{Example.} Approaching a minimum with \texttt{αv} large enough to
+sail past it, plain momentum still reads an uphill-behind gradient and
+keeps accelerating; Nesterov reads the gradient on the far side, which
+already points back, and cuts the velocity that same step.
+
+\textbf{Notes.} (Sutskever et al., 2013, inspired by Nesterov's
+accelerated gradient method.) \emph{(Deep Learning)} → Momentum,
+Stochastic gradient descent (SGD).
+
+\hypertarget{adagrad-and-rmsprop}{%
+\subsubsection{AdaGrad and RMSProp}\label{adagrad-and-rmsprop}}
+
+\textbf{Definition.} \emph{AdaGrad} individually adapts the learning
+rates of all model parameters by scaling them inversely proportional to
+the square root of the sum of all of their historical squared gradient
+values. \emph{RMSProp} modifies AdaGrad by changing that accumulation
+into an exponentially weighted moving average.
+
+\begin{equation*}
+r\leftarrow r+g\odot g
+\quad\text{(AdaGrad)},
+\qquad
+r\leftarrow\rho r+(1-\rho)\,g\odot g
+\quad\text{(RMSProp)},
+\qquad
+\Delta\theta=-\frac{\varepsilon}{\epsilon_{\text{stab}}+\sqrt{r}}\odot g
+\end{equation*}
+
+\textbf{Intuition.} Parameters with the largest partial derivative of
+the loss get a correspondingly rapid decrease in their learning rate,
+while parameters with small partial derivatives get only a small
+decrease --- so the net effect is greater progress in the more gently
+sloped directions of parameter space. AdaGrad is designed to converge
+rapidly on a \emph{convex} function; applied to a non-convex network,
+the learning trajectory passes through many different structures before
+arriving at a locally convex bowl, and by then AdaGrad's ever-growing
+accumulator may have shrunk the step size too far. RMSProp forgets the
+distant past, so it still has step size left when it gets there.
+
+\textbf{Example.} AdaGrad with \texttt{ε\ =\ 0.1} and a gradient of
+\texttt{1} every step: \texttt{r} runs \texttt{1,\ 2,\ 3}, so the
+effective steps are \texttt{0.1,\ 0.0707,\ 0.0577} --- decaying like
+\texttt{1/sqrt(t)} whether or not that is warranted.
+
+\textbf{Notes.} (Duchi et al.; Hinton, 2012.) \emph{(Deep Learning)} →
+Adam and AdamW, Learning-rate schedule, Stochastic gradient descent
+(SGD), Momentum.
+
+\hypertarget{parameter-initialization-and-optimization-difficulty}{%
+\subsubsection{Parameter initialization and optimization
+difficulty}\label{parameter-initialization-and-optimization-difficulty}}
+
+\textbf{Definition.} Deep-learning training algorithms are iterative and
+therefore require the user to specify some initial point from which to
+begin, and most of them are \emph{strongly} affected by that choice.
+
+\textbf{Intuition.} Some optimization algorithms are not iterative at
+all, and some iterative ones converge acceptably regardless of where
+they start. Deep learning has neither luxury. The initial point can
+determine whether the algorithm converges at all --- some points are so
+unstable that training hits numerical difficulties and fails outright
+--- and, when it does converge, how fast it gets there and whether it
+lands somewhere with high or low cost. Worse, points of \emph{comparable
+cost} can have wildly varying generalization error, so initialization
+affects test performance through a channel the training loss cannot see.
+
+\textbf{Example.} Two runs of the same architecture reaching the same
+training loss can differ by percentage points of test accuracy purely
+from their random seed --- which is why a single-seed comparison between
+two models is not evidence.
+
+\textbf{Notes.} Modern initialization schemes are simple and heuristic
+precisely because the phenomenon is not well understood. \emph{(Deep
+Learning)} → Weight initialization, Batch normalization, Bias, variance,
+and standard error of an estimator.
+
+\hypertarget{convolution-and-parameter-sharing}{%
+\subsubsection{Convolution and parameter
+sharing}\label{convolution-and-parameter-sharing}}
+
+\textbf{Definition.} Convolutional networks are simply neural networks
+that use \emph{convolution} in place of general matrix multiplication in
+at least one of their layers. Convolution is a weighted average of a
+signal under a weighting function \texttt{w} (the \emph{kernel}),
+applied at every position; it is denoted with an asterisk.
+\emph{Parameter sharing} is the consequence: the same kernel weights are
+reused at every position rather than learned separately per location.
+
+\begin{equation*}
+s(t)=\int x(a)\,w(t-a)\,da=(x*w)(t),
+\qquad
+s(t)=\sum_{a}x(a)\,w(t-a)\ \ \text{(discrete)}
+\end{equation*}
+
+\textbf{Intuition.} The motivating example is smoothing a noisy sensor:
+more recent measurements are more relevant, so you want a weighted
+average that gives more weight to them --- apply that weighting at every
+moment and you have a convolution. The deep-learning payoff is parameter
+sharing: a feature detector that is useful in one place is useful in
+another, so learning it once and sliding it everywhere gives an enormous
+reduction in parameters and builds in translation equivariance.
+
+\textbf{Example.} A 1-D input \texttt{(1,\ 2,\ 3,\ 4)} with kernel
+\texttt{(1,\ −1)} gives \texttt{(2−1,\ 3−2,\ 4−3)\ =\ (1,\ 1,\ 1)}:
+\emph{two} parameters produce three outputs, where a dense layer from
+4 inputs to 3 outputs would need \texttt{12}.
+
+\textbf{Notes.} Parameter sharing is the property, convolution is the
+mechanism --- the same trick reappears as weight sharing across time in
+recurrent networks. \emph{(Deep Learning)} → Convolutional neural
+network (CNN), Convolution filter, Stages of a convolutional layer,
+Time-delay neural networks (TDNN), Unfolding computational graphs.
+
+\hypertarget{stages-of-a-convolutional-layer}{%
+\subsubsection{Stages of a convolutional
+layer}\label{stages-of-a-convolutional-layer}}
+
+\textbf{Definition.} A typical layer of a convolutional network consists
+of three stages. First, the layer performs several convolutions in
+parallel to produce a set of linear activations. Second, each linear
+activation is run through a non-linear activation function such as the
+rectifier --- this is sometimes called the \emph{detector} stage. Third,
+a \emph{pooling} function further modifies the output.
+
+\textbf{Intuition.} Naming the middle step ``detector'' makes the whole
+layer legible: convolve to score how well each patch matches a template,
+rectify to keep only the positive evidence and discard the anti-matches,
+pool to summarize ``this feature occurred somewhere around here.''
+
+\textbf{Example.} A \texttt{3\ ×\ 3} edge kernel over a
+\texttt{28\ ×\ 28} image gives a \texttt{26\ ×\ 26} map of signed edge
+scores; ReLU zeroes the negatives; \texttt{2\ ×\ 2} max pooling reduces
+it to \texttt{13\ ×\ 13}.
+
+\textbf{Notes.} Terminology varies --- some authors call all three
+stages one layer, others call each stage its own layer; the arithmetic
+is the same either way. \emph{(Deep Learning)} → Convolution and
+parameter sharing, Convolution filter, Pooling, Convolutional neural
+network (CNN), Activation function.
+
+\hypertarget{time-delay-neural-networks-tdnn}{%
+\subsubsection{Time-delay neural networks
+(TDNN)}\label{time-delay-neural-networks-tdnn}}
+
+\textbf{Definition.} Networks trained by back-propagation over a fixed
+window of past inputs (Lang and Hinton, 1988). In contemporary
+terminology, TDNNs are \emph{one-dimensional convolutional networks
+applied to time series}.
+
+\textbf{Intuition.} Slide the kernel over time instead of over space and
+you get the same parameter economy and the same translation equivariance
+--- a pattern learned at one moment is recognized at any moment. This is
+the direct ancestor both of modern 1-D convolutions over sequences and
+of the fixed-context-window language model.
+
+\textbf{Example.} A width-5 kernel over a speech spectrogram sees five
+consecutive frames at every position, with one shared parameter set,
+rather than a separate weight per (frame, position) pair.
+
+\textbf{Notes.} \emph{(Deep Learning)} → Convolution and parameter
+sharing, Convolutional neural network (CNN), WaveNet / hierarchical
+context, Recurrent neural network (RNN), Language model.
+
+\hypertarget{unfolding-computational-graphs}{%
+\subsubsection{Unfolding computational
+graphs}\label{unfolding-computational-graphs}}
+
+\textbf{Definition.} Rewriting a recursive or recurrent definition ---
+a hidden state defined in terms of its own previous value --- as a
+repeated, chain-structured computational graph with one node per time
+step.
+
+\begin{equation*}
+h^{(t)}=f\bigl(h^{(t-1)},x^{(t)};\theta\bigr)
+\qquad\Longrightarrow\qquad
+h^{(3)}=f\bigl(f(f(h^{(0)},x^{(1)};\theta),x^{(2)};\theta),x^{(3)};\theta\bigr)
+\end{equation*}
+
+\textbf{Intuition.} Once unfolded, an RNN is an ordinary feedforward
+network that happens to share one parameter set across all its layers,
+so ordinary back-propagation applies --- this is
+\emph{back-propagation through time}. Two payoffs come from keeping the
+\emph{folded} form as the model: the learned transition function has the
+same input size no matter how long the sequence is, and the same
+function with the same parameters is used at every step, so the model
+generalizes to lengths it never saw.
+
+\textbf{Example.} For a length-3 sequence, \texttt{θ} appears in three
+places in the unfolded graph, so its gradient is the \emph{sum} of the
+three contributions --- the same accumulate-over-paths rule that makes
+zeroing gradients necessary in a hand-written training loop.
+
+\textbf{Notes.} \emph{(Deep Learning)} → Recurrent neural network (RNN),
+Backpropagation, Computational graph and autograd, Zeroing gradients,
+Vanishing and exploding gradients.
+
+\hypertarget{causal-structure-and-bidirectional-rnns}{%
+\subsubsection{Causal structure and bidirectional
+RNNs}\label{causal-structure-and-bidirectional-rnns}}
+
+\textbf{Definition.} The recurrent networks considered so far have a
+\emph{causal} structure: the state at time \texttt{t} captures
+information only from the past and the present input. A
+\emph{bidirectional} RNN drops that restriction by running one
+recurrence forward over the sequence and a second one backward, and
+concatenating the two states at each position.
+
+\textbf{Intuition.} Causality is a \emph{requirement} only when the
+model must generate or predict online, with the future genuinely
+unavailable. For labelling a sequence you already hold in full ---
+tagging words, segmenting audio --- refusing to look right is throwing
+away evidence, because the correct reading of a word often depends on
+the words after it.
+
+\textbf{Example.} Tagging ``book'' in ``I will book a flight'' versus
+``I read the book'': the disambiguating evidence sits \emph{after} the
+word in one case and before it in the other, so only a bidirectional
+pass gets both.
+
+\textbf{Notes.} The same fork appears in transformers as masked
+(decoder) versus unmasked (encoder) self-attention. \emph{(Deep
+Learning)} → Recurrent neural network (RNN), Causal (masked)
+self-attention, Encoder, decoder, and cross-attention, Deep recurrent
+networks.
+
+\hypertarget{deep-recurrent-networks}{%
+\subsubsection{Deep recurrent
+networks}\label{deep-recurrent-networks}}
+
+\textbf{Definition.} The computation in most RNNs decomposes into three
+blocks of parameters and associated transformations: from the input to
+the hidden state, from the previous hidden state to the next hidden
+state, and from the hidden state to the output. Each of the three can be
+made \emph{deep} by replacing its affine map with its own MLP.
+
+\textbf{Intuition.} ``Deep in time'' is not the same as ``deep in
+layers.'' An unfolded RNN is already very deep along the sequence, but
+each of its three transformations may still be a single shallow affine
+map plus a squash. Adding depth inside them buys representational power
+--- at the cost of a longer path between one time step and the next,
+which makes optimization harder; skip connections between steps are the
+usual remedy.
+
+\textbf{Example.} A 100-step sequence with single-layer transitions has
+a 100-step gradient path; making the hidden-to-hidden map two layers
+deep makes it 200, doubling the number of multiplications a gradient
+must survive.
+
+\textbf{Notes.} \emph{(Deep Learning)} → Recurrent neural network (RNN),
+Unfolding computational graphs, Residual (skip) connections, Vanishing
+and exploding gradients.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -2595,6 +3727,129 @@ safe upper bound on \texttt{k}. A useful answer to the ``how do I choose
 \texttt{K}?'' problem that K-means leaves open. \emph{(Hands-On ML)} →
 Gaussian mixture model, K-means clustering.
 
+\hypertarget{linear-factor-models}{%
+\subsubsection{Linear factor models}\label{linear-factor-models}}
+
+\textbf{Definition.} The simplest family of probabilistic models with
+latent variables: draw explanatory factors \texttt{h} from some prior,
+then produce the observation as a linear transformation of them plus
+noise. In the simplest case the latent prior is a unit-variance
+Gaussian.
+
+\begin{equation*}
+h\sim p(h)=\prod_i p(h_i),
+\qquad
+x=Wh+b+\text{noise}
+\end{equation*}
+
+\textbf{Intuition.} One shared skeleton --- ``the data is a mixture of a
+few underlying signals'' --- with the entire difference between family
+members living in the choice of prior \texttt{p(h)}. Gaussian prior
+gives probabilistic PCA and factor analysis; non-Gaussian independent
+prior gives ICA; sparsity-inducing prior gives sparse coding; a
+slowness penalty gives slow feature analysis.
+
+\textbf{Example.} With \texttt{W} of shape \texttt{100\ ×\ 5}, a
+100-dimensional observation is explained by 5 numbers plus noise --- the
+low-dimensional manifold assumption made concrete and linear.
+
+\textbf{Notes.} The linear special case of the manifold hypothesis, and
+the historical bridge from PCA to autoencoders. \emph{(Deep Learning)} →
+Principal components analysis (PCA), The manifold hypothesis,
+Independent component analysis (ICA), Slow feature analysis (SFA),
+Sparse coding, Representation learning and autoencoders.
+
+\hypertarget{independent-component-analysis-ica}{%
+\subsubsection{Independent component analysis
+(ICA)}\label{independent-component-analysis-ica}}
+
+\textbf{Definition.} Among the oldest representation-learning
+algorithms. An approach to modelling linear factors that seeks to
+separate an observed signal into many underlying signals which are
+scaled and added together to form the observed data --- signals intended
+to be \emph{fully independent}, rather than merely decorrelated from
+each other.
+
+\textbf{Intuition.} The cocktail-party problem: several microphones each
+record a different mixture of several simultaneous speakers, and ICA
+recovers the speakers. The word ``independent'' is doing real work here.
+PCA only removes linear correlation and is happy with any rotation of a
+Gaussian; independence is a much stronger demand, and it is only
+achievable when the latent factors are \emph{non-Gaussian} --- with
+Gaussian factors the model is unidentifiable up to rotation.
+
+\textbf{Example.} Two microphones, two speakers: the recordings are two
+linear mixtures, and ICA finds the \texttt{2\ ×\ 2} unmixing matrix that
+makes the two recovered signals statistically independent rather than
+merely uncorrelated.
+
+\textbf{Notes.} \emph{(Deep Learning)} → Linear factor models, Principal
+components analysis (PCA), Variance and covariance.
+
+\hypertarget{slow-feature-analysis-sfa}{%
+\subsubsection{Slow feature analysis
+(SFA)}\label{slow-feature-analysis-sfa}}
+
+\textbf{Definition.} A linear factor model that uses information from
+\emph{time signals} to learn invariant features, motivated by the
+general \emph{slowness principle}: the important characteristics of a
+scene change slowly compared with the individual measurements that
+describe it.
+
+\begin{equation*}
+\min\ \mathbb{E}_t\Bigl[\bigl(f(x^{(t+1)})-f(x^{(t)})\bigr)^{2}\Bigr]
+\qquad\text{subject to zero mean, unit variance, decorrelated outputs}
+\end{equation*}
+
+\textbf{Intuition.} Individual pixels flicker violently as a zebra walks
+across the frame; the fact ``there is a zebra'' barely changes at all.
+Penalize features that change quickly between consecutive frames and
+what survives is the semantically meaningful, slowly-varying content.
+The variance and decorrelation constraints are what stop the trivial
+solution of a constant feature, which would be perfectly slow and
+perfectly useless.
+
+\textbf{Example.} On video of a rotating object, the slowest features
+track pose and identity, while fast features track lighting flicker and
+sensor noise.
+
+\textbf{Notes.} A supervision signal extracted from time itself, with no
+labels. \emph{(Deep Learning)} → Linear factor models, Data
+augmentation, Representation learning and autoencoders.
+
+\hypertarget{sparse-coding}{%
+\subsubsection{Sparse coding}\label{sparse-coding}}
+
+\textbf{Definition.} A linear factor model, heavily studied as an
+unsupervised feature learning and feature extraction mechanism, in which
+the prior on the latent code is sparsity-inducing so that most entries
+of \texttt{h} are zero. Strictly, \emph{sparse coding} refers to the
+process of \emph{inferring} \texttt{h} in this model and \emph{sparse
+modeling} to designing and learning the model --- but ``sparse coding''
+is commonly used for both.
+
+\begin{equation*}
+\min_{h}\ \|x-Wh\|_2^{2}+\lambda\|h\|_1
+\end{equation*}
+
+\textbf{Intuition.} Explain each input using a handful of atoms drawn
+from a large learned dictionary, rather than a little bit of everything.
+The dictionary can be \emph{overcomplete} (more atoms than input
+dimensions), which a fixed basis like PCA cannot be, and the sparsity
+constraint is what keeps that from being vacuous. Trained on natural
+image patches, the learned atoms come out as oriented edge detectors
+resembling V1 receptive fields.
+
+\textbf{Example.} A 256-atom dictionary coding a 64-pixel patch with
+only 8 non-zero coefficients: the representation is longer than the
+input but describes it with 8 numbers and 8 indices.
+
+\textbf{Notes.} Inference is an \emph{optimization per example}, unlike
+an autoencoder's single forward pass, which makes sparse coding slow at
+test time --- the practical reason encoders replaced it. \emph{(Deep
+Learning)} → Linear factor models, Representation learning and
+autoencoders, The lasso (stat), The manifold hypothesis.
+
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
 \hypertarget{machine-learning-systems-design-designing-ml-systems}{%
@@ -3295,6 +4550,10 @@ tests (perturbation, invariance, slice-based).
   informative examples. → \protect\hyperlink{active-learning}{Active
   learning}.
 \item
+  \textbf{AdaGrad / RMSProp} --- per-parameter learning rates scaled by
+  accumulated (or decayed) squared gradients. →
+  \protect\hyperlink{adagrad-and-rmsprop}{AdaGrad and RMSProp}.
+\item
   \textbf{Adam / AdamW} --- adaptive per-parameter optimizer; AdamW
   decouples weight decay. → \protect\hyperlink{adam-and-adamw}{Adam and
   AdamW}.
@@ -3309,6 +4568,11 @@ tests (perturbation, invariance, slice-based).
   \texttt{L} values. →
   \protect\hyperlink{autoregressive-models-and-autocorrelation}{Autoregressive
   models and autocorrelation}.
+\item
+  \textbf{Autoencoder} --- encoder/decoder pair trained to reconstruct
+  its input, learning a code on the way. →
+  \protect\hyperlink{representation-learning-and-autoencoders}{Representation
+  learning and autoencoders}.
 \item
   \textbf{Bag-of-words} --- represent a document by which dictionary
   words it contains. → \protect\hyperlink{bag-of-words}{Bag-of-words}.
@@ -3340,6 +4604,17 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{batch-features-vs-streaming-features}{Batch
   features vs streaming features}.
 \item
+  \textbf{Bernoulli / multinoulli / Gaussian} --- the default output
+  distributions for binary, one-of-\texttt{k}, and real-valued targets.
+  →
+  \protect\hyperlink{bernoulli-multinoulli-and-gaussian-distributions}{Bernoulli,
+  multinoulli, and Gaussian distributions}.
+\item
+  \textbf{Bidirectional RNN} --- forward and backward recurrences
+  concatenated, dropping the causal restriction. →
+  \protect\hyperlink{causal-structure-and-bidirectional-rnns}{Causal
+  structure and bidirectional RNNs}.
+\item
   \textbf{Broadcasting} --- stretch a smaller tensor to match a larger
   one for element-wise ops; mind \texttt{keepdims}. →
   \protect\hyperlink{broadcasting}{Broadcasting}.
@@ -3368,6 +4643,11 @@ tests (perturbation, invariance, slice-based).
   frequent token pairs. →
   \protect\hyperlink{tokenization-and-byte-pair-encoding-bpe}{Tokenization
   and byte-pair encoding (BPE)}.
+\item
+  \textbf{Capacity / hypothesis space} --- how wide a family of
+  functions a model may fit. →
+  \protect\hyperlink{capacity-and-the-hypothesis-space}{Capacity and the
+  hypothesis space}.
 \item
   \textbf{CatBoost / XGBoost / LightGBM} --- production
   gradient-boosting libraries; CatBoost adds ordered boosting + native
@@ -3402,6 +4682,11 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{computational-graph-and-autograd}{Computational
   graph and autograd}.
 \item
+  \textbf{Conditional maximum likelihood} --- maximize
+  \texttt{P(y\textbar x;θ)}; the basis of supervised losses. →
+  \protect\hyperlink{conditional-maximum-likelihood}{Conditional maximum
+  likelihood}.
+\item
   \textbf{Constrained prompting} --- templates forcing structured
   (e.g.~JSON) output. →
   \protect\hyperlink{constrained-prompting}{Constrained prompting}.
@@ -3410,6 +4695,11 @@ tests (perturbation, invariance, slice-based).
   incremental training. →
   \protect\hyperlink{continual-learning-stateless-vs-stateful}{Continual
   learning (stateless vs stateful)}.
+\item
+  \textbf{Convolution / parameter sharing} --- one kernel reused at
+  every position, in place of matrix multiplication. →
+  \protect\hyperlink{convolution-and-parameter-sharing}{Convolution and
+  parameter sharing}.
 \item
   \textbf{Convolution filter} --- small learned matrix slid over image
   patches to detect local patterns. →
@@ -3452,6 +4742,10 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{decoupling-objectives-multi-objective-optimization}{Decoupling
   objectives (multi-objective optimization)}.
 \item
+  \textbf{Deep recurrent network} --- depth added inside the
+  input/transition/output blocks of an RNN. →
+  \protect\hyperlink{deep-recurrent-networks}{Deep recurrent networks}.
+\item
   \textbf{Degenerate feedback loop} --- predictions shape future
   training data, entrenching bias. →
   \protect\hyperlink{degenerate-feedback-loops}{Degenerate feedback
@@ -3469,6 +4763,11 @@ tests (perturbation, invariance, slice-based).
   \textbf{Dendrogram} --- the nested-cluster tree produced by
   hierarchical clustering. →
   \protect\hyperlink{hierarchical-clustering}{Hierarchical clustering}.
+\item
+  \textbf{Detector stage} --- the non-linearity between convolution and
+  pooling in a conv layer. →
+  \protect\hyperlink{stages-of-a-convolutional-layer}{Stages of a
+  convolutional layer}.
 \item
   \textbf{Distributed training} --- data parallelism (split the batch)
   vs model parallelism (split the model). →
@@ -3495,9 +4794,18 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{ensemble-methods-and-weak-learners}{Ensemble
   methods and weak learners}.
 \item
+  \textbf{Estimator bias / variance / standard error} --- average error,
+  sample-to-sample wobble, and its square root. →
+  \protect\hyperlink{bias-variance-and-standard-error-of-an-estimator}{Bias,
+  variance, and standard error of an estimator}.
+\item
   \textbf{ETL} --- extract, transform, load: the data pipeline. →
   \protect\hyperlink{etl-extract-transform-load}{ETL (extract,
   transform, load)}.
+\item
+  \textbf{Expectation} --- probability-weighted average of a function
+  under a distribution. →
+  \protect\hyperlink{expectation}{Expectation}.
 \item
   \textbf{Feature crossing} --- combine features into a new joint
   feature (an interaction). →
@@ -3532,6 +4840,11 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{categorical-feature-encoding-hashing-trick}{Categorical
   feature encoding (hashing trick)}.
 \item
+  \textbf{Hessian matrix} --- matrix of all second derivatives;
+  curvature of the loss. →
+  \protect\hyperlink{jacobian-and-hessian-matrices}{Jacobian and Hessian
+  matrices}.
+\item
   \textbf{Hinge loss} --- \texttt{max(0,\ 1\ −\ t)}; the SVM's margin
   objective. → \protect\hyperlink{hinge-loss}{Hinge loss}.
 \item
@@ -3551,9 +4864,24 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{in-context-learning-zeroonefew-shot}{In-context
   learning (zero/one/few-shot)}.
 \item
+  \textbf{Independent component analysis (ICA)} --- unmix an observed
+  signal into fully independent (non-Gaussian) sources. →
+  \protect\hyperlink{independent-component-analysis-ica}{Independent
+  component analysis (ICA)}.
+\item
+  \textbf{Jacobian matrix} --- all partial derivatives of a
+  vector-to-vector function. →
+  \protect\hyperlink{jacobian-and-hessian-matrices}{Jacobian and Hessian
+  matrices}.
+\item
   \textbf{K-means clustering} --- partition into \texttt{K} clusters via
   centroids. → \protect\hyperlink{k-means-clustering}{K-means
   clustering}.
+\item
+  \textbf{Knowledge base} --- hard-coded formal facts plus inference
+  rules; the pre-learning approach to AI. →
+  \protect\hyperlink{knowledge-bases-and-hard-coded-ai}{Knowledge bases
+  and hard-coded AI}.
 \item
   \textbf{Knowledge distillation} --- train a small student model to
   mimic a large teacher. →
@@ -3580,6 +4908,10 @@ tests (perturbation, invariance, slice-based).
   \textbf{Learning rate} --- the step size in gradient descent. →
   \protect\hyperlink{gradient-descent}{Gradient descent}.
 \item
+  \textbf{Linear factor model} --- latent factors linearly mapped to
+  observations; PCA/ICA/SFA/sparse coding share the skeleton. →
+  \protect\hyperlink{linear-factor-models}{Linear factor models}.
+\item
   \textbf{Linkage} --- rule for cluster-to-cluster dissimilarity
   (complete/average/single/centroid). →
   \protect\hyperlink{hierarchical-clustering}{Hierarchical clustering}.
@@ -3603,16 +4935,39 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{principal-components-analysis-pca}{Principal
   components analysis (PCA)}.
 \item
+  \textbf{Logistic sigmoid} --- \texttt{σ(z)\ =\ 1/(1\ +\ e\^{}\{−z\})};
+  produces a Bernoulli parameter. →
+  \protect\hyperlink{logistic-sigmoid}{Logistic sigmoid}.
+\item
   \textbf{Logits} --- un-normalized scores (log-counts) fed into
   softmax. → \protect\hyperlink{logits}{Logits}.
 \item
   \textbf{LoRA / PEFT} --- parameter-efficient fine-tuning via a few
   added weights. →
-  \protect\hyperlink{parameter-efficient-fine-tuning-lora--peft}{Parameter-efficient
+  \protect\hyperlink{parameter-efficient-fine-tuning-lora-peft}{Parameter-efficient
   fine-tuning (LoRA / PEFT)}.
 \item
   \textbf{LSTM} --- RNN variant with long- and short-term memory tracks.
   → \protect\hyperlink{lstm}{LSTM}.
+\item
+  \textbf{Machine learning task types} --- classification, regression,
+  transcription, structured output, denoising, density estimation, and
+  the rest. →
+  \protect\hyperlink{machine-learning-task-types}{Machine learning task
+  types}.
+\item
+  \textbf{Manifold hypothesis} --- real data lies near a
+  low-dimensional surface in a high-dimensional space. →
+  \protect\hyperlink{the-manifold-hypothesis}{The manifold hypothesis}.
+\item
+  \textbf{MAP estimation} --- point estimate maximizing likelihood plus
+  log-prior; regularizers are priors. →
+  \protect\hyperlink{map-estimation}{MAP estimation}.
+\item
+  \textbf{Maximum likelihood estimation} --- pick the parameters making
+  the observed data most probable. →
+  \protect\hyperlink{maximum-likelihood-estimation}{Maximum likelihood
+  estimation}.
 \item
   \textbf{Max-norm regularization} --- cap each neuron's incoming weight
   norm at \texttt{r}. →
@@ -3645,6 +5000,9 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{model-compression-distillation-pruning-quantization}{Model
   compression (distillation, pruning, quantization)}.
 \item
+  \textbf{Momentum} --- decaying average of past gradients used as a
+  velocity. → \protect\hyperlink{momentum}{Momentum}.
+\item
   \textbf{Multi-head attention} --- several parallel attention heads
   concatenated and projected. →
   \protect\hyperlink{multi-head-attention}{Multi-head attention}.
@@ -3658,6 +5016,10 @@ tests (perturbation, invariance, slice-based).
   solves XOR. →
   \protect\hyperlink{multi-layer-perceptron-mlp-and-the-xor-problem}{Multi-layer
   perceptron (MLP) and the XOR problem}.
+\item
+  \textbf{Nesterov momentum} --- take the gradient after applying the
+  velocity; a lookahead brake. →
+  \protect\hyperlink{nesterov-momentum}{Nesterov momentum}.
 \item
   \textbf{Neural network} --- layered model of derived features; basis
   of deep learning. →
@@ -3678,6 +5040,11 @@ tests (perturbation, invariance, slice-based).
   before exp so nothing overflows. →
   \protect\hyperlink{numerical-stability}{Numerical stability}.
 \item
+  \textbf{Objective / cost / loss / error function} --- the quantity the
+  optimizer minimizes; the terms are interchangeable. →
+  \protect\hyperlink{objective-cost-loss-and-error-functions}{Objective,
+  cost, loss, and error functions}.
+\item
   \textbf{OEC (Overall Evaluation Criterion)} --- the long-term metric
   an experiment optimizes. →
   \protect\hyperlink{overall-evaluation-criterion-oec}{Overall
@@ -3689,6 +5056,21 @@ tests (perturbation, invariance, slice-based).
   \textbf{Out-of-bag (OOB) error} --- free test-error estimate from
   bagging's unused points. →
   \protect\hyperlink{out-of-bag-oob-error}{Out-of-bag (OOB) error}.
+\item
+  \textbf{Output units} --- linear, sigmoid, or softmax final layer,
+  paired with the matching negative log-likelihood. →
+  \protect\hyperlink{output-units-linear-sigmoid-softmax}{Output units
+  (linear, sigmoid, softmax)}.
+\item
+  \textbf{Parameter initialization} --- the starting point decides
+  convergence, speed, and even generalization. →
+  \protect\hyperlink{parameter-initialization-and-optimization-difficulty}{Parameter
+  initialization and optimization difficulty}.
+\item
+  \textbf{Parametric vs non-parametric} --- fixed-size parameter vector
+  vs complexity that grows with \texttt{n}. →
+  \protect\hyperlink{parametric-vs-non-parametric-models}{Parametric vs
+  non-parametric models}.
 \item
   \textbf{Perceptron / TLU} --- weighted sum plus a step function;
   single layer of threshold units. →
@@ -3728,6 +5110,11 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{principal-components-analysis-pca}{Principal
   components analysis (PCA)}.
 \item
+  \textbf{Probability distribution / PMF / PDF} --- how likely each
+  state is; mass for discrete, density for continuous. →
+  \protect\hyperlink{probability-distributions-and-mass-functions}{Probability
+  distributions and mass functions}.
+\item
   \textbf{Pruning (cost-complexity)} --- trim a grown tree via an
   \texttt{α·\textbar{}T\textbar{}} penalty. →
   \protect\hyperlink{tree-pruning-cost-complexity}{Tree pruning
@@ -3743,9 +5130,28 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{parameters-variants-and-randomization-unit}{Parameters,
   variants, and randomization unit}.
 \item
+  \textbf{RBF / softplus / hard tanh} --- less common hidden units;
+  softplus is the counterintuitive one. →
+  \protect\hyperlink{other-hidden-units-rbf-softplus-hard-tanh}{Other
+  hidden units (RBF, softplus, hard tanh)}.
+\item
   \textbf{Regex pre-tokenization} --- split text before BPE so merges
   don't cross word/space boundaries. →
   \protect\hyperlink{regex-pre-tokenization}{Regex pre-tokenization}.
+\item
+  \textbf{Reinforcement learning} --- learn by trial and error against a
+  reward signal, with no labeled targets. →
+  \protect\hyperlink{reinforcement-learning}{Reinforcement learning}.
+\item
+  \textbf{ReLU generalizations} --- absolute value rectification, leaky
+  ReLU, PReLU: non-zero slope below zero. →
+  \protect\hyperlink{relu-generalizations-absolute-value-leaky-prelu}{ReLU
+  generalizations (absolute value, leaky, PReLU)}.
+\item
+  \textbf{Representation learning} --- learn the features, not just the
+  mapping from features to output. →
+  \protect\hyperlink{representation-learning-and-autoencoders}{Representation
+  learning and autoencoders}.
 \item
   \textbf{Reservoir sampling} --- uniform sample of k items from a
   stream of unknown length. →
@@ -3800,8 +5206,21 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{deployment-strategies-shadow-canary-ab-testing}{Deployment
   strategies (shadow, canary, A/B testing)}.
 \item
+  \textbf{Shannon entropy} --- expected surprise; the uncertainty in a
+  whole distribution. →
+  \protect\hyperlink{shannon-entropy}{Shannon entropy}.
+\item
+  \textbf{Slow feature analysis (SFA)} --- learn features that change
+  slowly across time. →
+  \protect\hyperlink{slow-feature-analysis-sfa}{Slow feature analysis
+  (SFA)}.
+\item
   \textbf{Softmax} --- exponentiate logits then normalize into class
   probabilities. → \protect\hyperlink{softmax}{Softmax}.
+\item
+  \textbf{Sparse coding} --- explain each input with a few atoms of a
+  large learned dictionary. →
+  \protect\hyperlink{sparse-coding}{Sparse coding}.
 \item
   \textbf{Special tokens} --- reserved non-content tokens
   (e.g.~\texttt{\textless{}\textbar{}endoftext\textbar{}\textgreater{}})
@@ -3846,6 +5265,11 @@ tests (perturbation, invariance, slice-based).
   code points. → \protect\hyperlink{tiktoken-vs-sentencepiece}{tiktoken
   vs SentencePiece}.
 \item
+  \textbf{Time-delay neural network (TDNN)} --- a 1-D convolutional
+  network over a time series. →
+  \protect\hyperlink{time-delay-neural-networks-tdnn}{Time-delay neural
+  networks (TDNN)}.
+\item
   \textbf{Tokenization} --- reversible text↔integer mapping (char, BPE,
   SentencePiece). →
   \protect\hyperlink{tokenization-and-byte-pair-encoding-bpe}{Tokenization
@@ -3858,7 +5282,7 @@ tests (perturbation, invariance, slice-based).
 \item
   \textbf{torch.compile} --- compiles/fuses model ops for a large
   speedup after a one-time cost. →
-  \protect\hyperlink{torchcompile}{torch.compile}.
+  \protect\hyperlink{torch.compile}{torch.compile}.
 \item
   \textbf{Transfer learning} --- reuse a model trained on a related,
   data-rich task. → \protect\hyperlink{transfer-learning}{Transfer
@@ -3876,13 +5300,18 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{activation-function}{Activation function}.
 \item
   \textbf{Train / dev / test split} --- fit / tune / final-check
-  partitions. → \protect\hyperlink{train--dev--test-split}{Train / dev /
+  partitions. → \protect\hyperlink{train-dev-test-split}{Train / dev /
   test split}.
 \item
   \textbf{Twyman's law} --- a surprising figure is probably an error;
   verify it. →
   \protect\hyperlink{twymans-law-and-trustworthiness}{Twyman's law and
   trustworthiness}.
+\item
+  \textbf{Unfolding computational graphs} --- rewrite a recurrence as a
+  chain so ordinary backprop applies. →
+  \protect\hyperlink{unfolding-computational-graphs}{Unfolding
+  computational graphs}.
 \item
   \textbf{Unsupervised learning} --- finding structure with no response
   variable. → \protect\hyperlink{unsupervised-learning}{Unsupervised
@@ -3893,20 +5322,34 @@ tests (perturbation, invariance, slice-based).
   \protect\hyperlink{vanishing-and-exploding-gradients}{Vanishing and
   exploding gradients}.
 \item
+  \textbf{Variance / covariance} --- spread of one variable; linear
+  co-movement and scale of two. →
+  \protect\hyperlink{variance-and-covariance}{Variance and covariance}.
+\item
   \textbf{Variant / parameter / level} --- a tested experience; a knob
   (factor) set to values. →
   \protect\hyperlink{parameters-variants-and-randomization-unit}{Parameters,
   variants, and randomization unit}.
 \item
+  \textbf{Visible layer} --- the input layer holding the observed
+  variables, below the hidden stack. →
+  \protect\hyperlink{deep-learning-as-composed-representations}{Deep
+  learning as composed representations}.
+\item
   \textbf{WaveNet / hierarchical context} --- fuse a sequence
   progressively in a tree. →
-  \protect\hyperlink{wavenet--hierarchical-context}{WaveNet /
+  \protect\hyperlink{wavenet-hierarchical-context}{WaveNet /
   hierarchical context}.
 \item
   \textbf{Weak supervision} --- programmatic noisy labels from
   regex/heuristics/other models. →
   \protect\hyperlink{labeling-and-weak-supervision}{Labeling and weak
   supervision}.
+\item
+  \textbf{Weight decay (L2) / L1 penalty} --- parameter norm penalties;
+  L2 shrinks, L1 sparsifies. →
+  \protect\hyperlink{weight-decay-and-parameter-norm-penalties}{Weight
+  decay and parameter norm penalties}.
 \item
   \textbf{Weight init (Kaiming / fan-in)} --- scale weights by
   gain/√(fan\_in) to keep activations healthy. →

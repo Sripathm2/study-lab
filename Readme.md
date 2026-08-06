@@ -124,7 +124,7 @@ Listed by title only (links move over time and are easy to find by name). Checke
 - [x] **Aurélien Géron — Hands-On Machine Learning** (ch. 10–16)
 - [x] **Chip Huyen — Designing Machine Learning Systems** (Stanford CS329S)
 - [x] **StatQuest** (Josh Starmer) — videos
-- [ ] **Ian Goodfellow et al. — Deep Learning**
+- [x] **Ian Goodfellow et al. — Deep Learning**
 - [x] **Ron Kohavi et al. — Trustworthy Online Controlled Experiments**
 - [x] **Harvard Stat 110 — Probability** (Joe Blitzstein) — ch. 1–4 & 6–8
 - [x] **3Blue1Brown — Essence of Linear Algebra**
